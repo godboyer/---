@@ -1,19 +1,25 @@
 import { createRouter,createWebHashHistory,createWebHistory } from "vue-router";
-const routes: any = [
-    {
-      path: "/",
-      name: "首页",
-      component: 'HomeView',
-    },
-    {
-      path: "/user",
-      name: "个人中心",
-      component: 'UserView',
-      children: [],
-    }]
+import { getSession } from "../utils/storage";
+import { routes } from "./config";
+
 const router = createRouter({
     history: createWebHashHistory(import.meta.env.BASE_URL),
     routes
 })
+
+router.beforeEach((to,from,next) => { 
+
+    console.log(to, from);
+    if (to.path === '/admin') {
+        let userInfo = getSession('userInfo')
+        if (!userInfo) {
+            next({
+              path: "/login",
+            });
+        }
+    }
+    next()
+})
+
 
 export default router
