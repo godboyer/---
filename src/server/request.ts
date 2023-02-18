@@ -98,7 +98,7 @@ export const PostAction = (
   params?: any,
   headers?: object
 ) => {
-  let encyptedData = encrypto(data);
+  let encyptedData =  {data:encrypto(data)} ;
   return new Promise((resolve, reject) => {
     request({
       url: url,

@@ -13,7 +13,8 @@
     "skipLibCheck": true,
     "noEmit": true,
     "types": [
-      "pinia-plugin-persist"
+      "pinia-plugin-persist",
+      "naive-ui/volar"
     ]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "vite-env.d.ts"],
