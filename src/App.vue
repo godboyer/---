@@ -9,6 +9,7 @@ onMounted(() => {
   // 监听浏览器窗口尺寸变化
   windowDraw();
   calcRate();
+ 
 });
 
 onUnmounted(() => {

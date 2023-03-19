@@ -1,17 +1,44 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import router from "./router";
-import { createPinia } from "pinia";
+import AppLoading from './components/common/AppLoading.vue';
+import { setupRouter } from './router';
+import { setupStore } from './store';
+import { setupDirectives } from './directives';
+
 import "./styles/index.scss";
 import "normalize.css";
-import piniaPersist from "pinia-plugin-persist";
+import 'uno.css'
 import Logo from "./components/Logo.vue";
-import "amfe-flexible/index.js";
-const pinia = createPinia();
-pinia.use(piniaPersist); //pinia数据持久化
-const app = createApp(App);
-app.use(router);
-app.use(pinia);
-app.component("Logo", Logo);
 
-app.mount("#app");
+async function setupApp() {
+
+
+  //网站页面加载
+  // const appLoading = createApp(AppLoading)
+  // appLoading.mount("#appLoading")
+
+  //创建app
+  const app = createApp(App);
+
+  //安装 store plugin: pinia
+  setupStore(app)
+
+  //安装自定义指令 vue custom directives
+  setupDirectives(app)
+  //安装 vue router
+  await setupRouter(app)
+
+  //安装全局组件
+  app.component("Logo", Logo);
+  //挂载mount app
+  app.mount("#app")
+  
+}
+
+//执行安装app函数
+setupApp()
+
+
+
+
+

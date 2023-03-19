@@ -13,10 +13,25 @@
     "skipLibCheck": true,
     "noEmit": true,
     "types": [
+      "vite/client",
       "pinia-plugin-persist",
-      "naive-ui/volar"
-    ]
+      "naive-ui/volar",
+      "unplugin-vue-define-options/macros-global",
+      "unplugin-vue-define-options/vite"
+    ],
+    "baseUrl": ".", // 解析非相对模块的基础地址，默认是当前目录
+    "paths": {
+      // 路径映射，相对于baseUrl
+      "@/*": ["./src/*"],
+      "~/*": ["./*"]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "vite-env.d.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "vite-env.d.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
