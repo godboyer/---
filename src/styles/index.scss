@@ -24,6 +24,23 @@
     src: url(../assets/Vesper_Libre/VesperLibre-Bold.ttf);
 }
 
+:root {
+
+    --themeone-color: hsl(349, 100%, 61%);
+    --themetwe-color: hsl(183, 100%, 27%);
+
+
+
+}
+
+.text-one {
+    color: var(--themeone-color);
+}
+
+.text-twe {
+    color: var(--themetwe-color);
+}
+
 html,
 body {
     // font-family: mono4;

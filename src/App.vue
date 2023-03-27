@@ -1,28 +1,40 @@
+
+
+<template>
+  <n-config-provider
+    :theme="theme.naiveTheme"
+    :theme-overrides="theme.naiveThemeOverrides"
+    :locale="zhCN"
+    :date-locale="dateZhCN"
+    class="h-full"
+  >
+    <naive-provider>
+      <router-view></router-view>
+    </naive-provider>
+  </n-config-provider>
+</template>
 <script setup lang="ts">
-import { Login, Register } from "./server/api/index";
-import FrontLayout from "./layouts/website/FrontLayout.vue";
 import windowResize from "./utils/resize";
 import { onMounted, onUnmounted } from "vue";
-const { screenRef, calcRate, windowDraw, unWindowDraw } = windowResize();
+
+import { dateZhCN, zhCN } from "naive-ui";
+import { subscribeStore, useThemeStore } from "@/store";
+import { useGlobalEvents } from "@/composables";
+
+const theme = useThemeStore();
+
+subscribeStore();
+useGlobalEvents();
+const {  calcRate, windowDraw, unWindowDraw } = windowResize();
 
 onMounted(() => {
   // 监听浏览器窗口尺寸变化
   windowDraw();
   calcRate();
- 
 });
 
 onUnmounted(() => {
   unWindowDraw();
 });
 </script>
-
-<template>
-  <!-- <div ref="screenRef"> -->
-  <n-message-provider>
-    <router-view></router-view>
-  </n-message-provider>
-  <!-- <front-layout/>/ -->
-</template>
-
 <style scoped></style>

@@ -4,9 +4,9 @@
     <n-space justify="center">
       <n-button
         v-for="item in accounts"
-        :key="item.userName"
+        :key="item.username"
         type="primary"
-        @click="login(item.userName, item.password)"
+        @click="login(item.username, item.password)"
       >
         {{ item.label }}
       </n-button>
@@ -16,7 +16,7 @@
 
 <script lang="ts" setup>
 interface Emits {
-  (e: 'login', param: { userName: string; password: string }): void;
+  (e: 'login', param: { username: string; password: string }): void;
 }
 
 const emit = defineEmits<Emits>();
@@ -24,23 +24,23 @@ const emit = defineEmits<Emits>();
 const accounts = [
   {
     label: '超级管理员',
-    userName: 'Super',
+    username: 'Super',
     password: 'super123'
   },
   {
     label: '管理员',
-    userName: 'Admin',
+    username: 'Admin',
     password: 'admin123'
   },
   {
     label: '普通用户',
-    userName: 'User01',
+    username: 'User01',
     password: 'user01123'
   }
 ];
 
-function login(userName: string, password: string) {
-  emit('login', { userName, password });
+function login(username: string, password: string) {
+  emit('login', { username, password });
 }
 </script>
 

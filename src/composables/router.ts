@@ -1,6 +1,6 @@
-import { useRouter } from 'vue-router';
-import type { RouteLocationRaw } from 'vue-router';
-import { router as globalRouter, routeName } from '@/router';
+import { useRouter } from "vue-router";
+import type { RouteLocationRaw } from "vue-router";
+import { router as globalRouter, routeName } from "@/router";
 
 /**
  * 路由跳转
@@ -18,7 +18,7 @@ export function useRouterPush(inSetup = true) {
   function routerPush(to: RouteLocationRaw, newTab = false) {
     if (newTab) {
       const routerData = router.resolve(to);
-      window.open(routerData.href, '_blank');
+      window.open(routerData.href, "_blank");
     } else {
       router.push(to);
     }
@@ -33,9 +33,15 @@ export function useRouterPush(inSetup = true) {
    * 跳转首页
    * @param newTab - 在新的浏览器标签打开
    */
-  function toHome(newTab = false) {
-    console.log("route",route);
-    routerPush({ name: routeName('root') }, newTab);
+  function toWebsiteHome(newTab = false) {
+    routerPush({ name: routeName("root") }, newTab);
+  }
+  /**
+   * 跳转后台首页
+   * @param newTab - 在新的浏览器标签打开
+   */
+  function toAdminHome(newTab = false) {
+    routerPush({ name: routeName("admin") }, newTab);
   }
 
   /**
@@ -43,11 +49,14 @@ export function useRouterPush(inSetup = true) {
    * @param loginModule - 展示的登录模块
    * @param redirectUrl - 重定向地址(登录成功后跳转的地址),默认undefined表示取当前地址为重定向地址
    */
-  function toLogin(loginModule?: EnumType.LoginModuleKey, redirectUrl?: string) {
-    const module: EnumType.LoginModuleKey = loginModule || 'pwd-login';
+  function toLogin(
+    loginModule?: EnumType.LoginModuleKey,
+    redirectUrl?: string
+  ) {
+    const module: EnumType.LoginModuleKey = loginModule || "pwd-login";
     const routeLocation: RouteLocationRaw = {
-      name: routeName('login'),
-      params: { module }
+      name: routeName("login"),
+      params: { module },
     };
     const redirect = redirectUrl || route.value.fullPath;
     Object.assign(routeLocation, { query: { redirect } });
@@ -60,7 +69,7 @@ export function useRouterPush(inSetup = true) {
    */
   function toLoginModule(module: EnumType.LoginModuleKey) {
     const { query } = route.value;
-    routerPush({ name: routeName('login'), params: { module }, query });
+    routerPush({ name: routeName("login"), params: { module }, query });
   }
 
   /**
@@ -68,20 +77,21 @@ export function useRouterPush(inSetup = true) {
    */
   function toLoginRedirect() {
     const { query } = route.value;
-    console.log('query: ', query);
+    console.log("query: ", query);
     if (query?.redirect) {
       routerPush(query.redirect as string);
     } else {
-      toHome();
+      toAdminHome();
+      // toHome();
     }
   }
 
   return {
     routerPush,
     routerBack,
-    toHome,
+    toWebsiteHome,
     toLogin,
     toLoginModule,
-    toLoginRedirect
+    toLoginRedirect,
   };
 }

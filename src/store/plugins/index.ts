@@ -13,6 +13,7 @@ export function resetSetupStore(context: PiniaPluginContext) {
     const { $state } = context.store;
 
     const defaultStore = cloneDeep($state);
+    console.log('defaultStore: ', defaultStore);
 
     context.store.$reset = () => {
       context.store.$patch(defaultStore);

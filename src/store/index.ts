@@ -7,7 +7,7 @@ import piniaPersist from "pinia-plugin-persist";
 export function setupStore(app: App) {
   const store = createPinia();
   store.use(resetSetupStore);
-  store.use(piniaPersist); //pinia数据持久化
+  // store.use(piniaPersist); //pinia数据持久化
   app.use(store);
 }
 

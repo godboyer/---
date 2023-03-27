@@ -10,7 +10,7 @@ export async function createPermissionGuard(
   from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) {
-  // 动态路由
+  // 创建动态路由
   const permission = await createDynamicRouteGuard(to, from, next);
   if (!permission) return;
 
@@ -25,14 +25,15 @@ export async function createPermissionGuard(
   const isLogin = Boolean(localStg.get('token'));
   const permissions = to.meta.permissions || [];
   const needLogin = Boolean(to.meta?.requiresAuth) || Boolean(permissions.length);
-  const hasPermission = !permissions.length || permissions.includes(auth.userInfo.userRole);
+  const hasPermission = !permissions.length || permissions.includes(auth.userInfo.role_permission);
 
   const actions: Common.StrategyAction[] = [
     // 已登录状态跳转登录页，跳转至首页
     [
       isLogin && to.name === routeName('login'),
       () => {
-        next({ name: routeName('root') });
+        //跳转至后台首页
+        next({ name: routeName('admin') });
       }
     ],
     // 不需要登录权限的页面直接通行

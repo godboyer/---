@@ -1,108 +1,105 @@
 <template>
-  <header :class="{headerAfter:showSearch}" class="header-box flex items-center justify-between b-b-0.5 pl-6 pr-6 fixed w-100% z-100 h-20 bg-#fff">
-      <div class="w-20">
-         <Logo :src="isSticky ? logoSrcIn : logoSrc" :to="'/website'" />
-      </div>
+  <header
+    :class="{ headerAfter: showSearch }"
+    class="header-box flex items-center justify-between b-b-0.5 pl-6 pr-6 fixed w-100% z-100 h-20 bg-#fff"
+  >
+    <router-link :to="'/home'">
+      <system-logo class="text-64px text-one" />
+    </router-link>
+
+    <nav :class="!isSticky ? 'nav-box' : 'nav-box shot'">
+      <slot name="nav"></slot>
+      <slot name="search" :changeBgAfter="changeBgAfter"></slot>
      
+    </nav>
 
-          <nav :class="!isSticky ? 'nav-box' : 'nav-box shot'">
-          <slot  name="nav"></slot>
-           <slot  name="search" :changeBgAfter="changeBgAfter" ></slot>
-         <!-- <Transition
-          @before-enter="onBeforeEnter"
-          @enter="onEnter"
-          @after-enter="onAfterEnter"
-          @enter-cancelled="onEnterCancelled"
-          @before-leave="onBeforeLeave"
-          @leave="onLeave"
-          @after-leave="onAfterLeave"
-          @leave-cancelled="onLeaveCancelled"
-        >
-   
-        </Transition> -->
-      </nav>
-   
-      <div class="h-10.5 flex-y-center justify-between  ">
-      <!-- <RouterLink class="ft-18 font-700" to="/login">登录</RouterLink> -->
-        <n-dropdown size="large" :options="options" @select="handleSelect">
-          <div @click="visible = !visible" class="login-button hover-bg b-2 ">
-            <img src="../assets/mune.png" alt="mune" />
-            <img src="../assets/user.png" alt="user" />
-          </div>
-        </n-dropdown>
-      </div>
+    <div class="h-10.5 flex-y-center justify-between">
+      <n-dropdown size="large" :options="options" @select="handleSelect">
+        <div class="login-button hover-bg b-2">
+          <img src="../assets/mune.png" alt="mune" />
+          <img src="../assets/user.png" alt="user" />
+        </div>
+      </n-dropdown>
+    </div>
 
-    <div v-show="showSearch" :class="{backdrop:showSearch}" class="hidden" ></div>
+    <div
+      v-show="showSearch"
+      :class="{ backdrop: showSearch }"
+      class="hidden"
+    ></div>
+    <login-action-modal
+      v-model:visible="visible"
+      :module="loginModule"
+    ></login-action-modal>
   </header>
 </template>
 
 <script setup lang="ts">
 import { useMessage } from "naive-ui";
-import { onBeforeUnmount, onMounted, reactive, Ref, ref } from "vue";
+import { onBeforeUnmount, onMounted, reactive, Ref, ref, watch } from "vue";
 import { RouterLink, useRouter } from "vue-router";
-import { navItem,loginItem } from "./data/index";
-import logoSrc from "../assets/logo_7.svg";
-import logoSrcIn from "../assets/logo_8.svg";
-
+import { navItem, loginItem } from "./data/index";
+import { useBoolean, useLoading } from "@/hooks";
 import anime from "animejs/lib/anime.es.js";
+import { useRouterPush } from "@/composables";
+import LoginActionModal from "@/pages/website/loginmodel/index.vue";
 
+const { loading, startLoading, endLoading } = useLoading(false);
+const { bool: visible, setTrue: openModal } = useBoolean();
+
+const { routerPush, toWebsiteHome } = useRouterPush();
 const isSticky: Ref<boolean> = ref(false);
-const showSearch: Ref<boolean> = ref(false)
-const visible = ref(false);
+const showSearch: Ref<boolean> = ref(false);
+const loginModule = ref<UnionKey.LoginModule>("code-login");
 const showNav = ref(true);
 const message = useMessage();
 const router = useRouter();
 let timerId: number | null = null;
-let options:any = ref(loginItem);
-function handleResize(e: Event) {
-  if (timerId) return; // 如果上一个定时器还没执行完，则直接返回，不创建新的定时器
-  (timerId as any) = setTimeout(() => {
-    const windowWidth = window.innerWidth;
+let options: any = ref(loginItem);
 
-    if (windowWidth <= 375) {
-      options.value = [...navItem,...loginItem]
-      showNav.value = false
-    } else {
-      showNav.value = true
-      options.value = [...loginItem]
-    }
-    timerId = null; // 执行完之后，清除定时器id
-  }, 100); // 300ms内只执行一次handleResize
-}
 const handleSelect = function (key: string | number) {
-  if (key === "publish") {
-    router.push("/publish");
+  switch (key) {
+    case "admin":
+      routerPush(
+        {
+          path: "/login",
+          query: {
+            redirect: "/admin",
+          },
+        },
+        true
+      );
+      break;
+    case "login":
+      loginModule.value = "code-login";
+      openModal();
+      break;
+
+    case "publish":
+      routerPush("/publish");
+      break;
+    default:
+      break;
   }
 
   message.info(String(key));
 };
-const handleScroll = function (event: any) {
-  console.log(window.scrollY);
-  console.log(event);
-  if (window.scrollY > 80) {
-    isSticky.value = true;
-  } else {
-    isSticky.value = false;
-  }
-};
-function changeBgAfter() {
-    //触发后header的after,向下延申
-  showSearch.value  = !showSearch.value;
 
+function changeBgAfter(flag:boolean) {
+  console.log('flag: ', flag);
+  //触发后header的after,向下延申
+  showSearch.value = flag;
 
-  console.log("object");
 }
 
-onMounted(() => {
-  window.scrollTo(0, 0);
-    // options.value = [...loginItem]
-  window.addEventListener('resize', handleResize)
-  // window.addEventListener("scroll", handleScroll);
-});
+watch(
+  changeBgAfter,
+   (newvalue) => {
+    console.log('newvalue: ', newvalue);
+      debugger
+    }
+)
 
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize)
-})
 // 在元素被插入到 DOM 之前被调用
 // 用这个来设置元素的 "enter-from" 状态
 function onBeforeEnter(el: any) {
@@ -167,7 +164,7 @@ function onBeforeLeave(el: any) {
 function onLeave(el: any, done: () => void) {
   // 调用回调函数 done 表示过渡结束
   // 如果与 CSS 结合使用，则这个回调是可选参数
-  console.log(el);
+  // console.log(el);
   anime({
     targets: el,
     translateX: 250,
@@ -203,38 +200,41 @@ function onLeaveCancelled(el: any) {
 </script>
 
 <style lang="scss" scoped>
-header{
+header {
   position: fixed;
 }
-.header-box::before{
-   content:'';
-    position: absolute;
-    left: 0px;
-    top: 80px;
-    width:100%;
-    height: 0px;
-    opacity: 0;
-    background-color:#fff;
-    transform-origin: 50% 0%;
-    transition: transform 250ms ease;
-    transform: scaleY(1);
-    box-shadow: rgb(0 0 0 / 8%) 0 1px 1px;
 
+.header-box::before {
+  content: "";
+  position: absolute;
+  left: 0px;
+  top: 80px;
+  width: 100%;
+  height: 0px;
+  opacity: 0;
+  background-color: #fff;
+  transform-origin: 50% 0%;
+  transition: transform 250ms ease;
+  transform: scaleY(1);
+  box-shadow: rgb(0 0 0 / 8%) 0 1px 1px;
+}
 
+.headerAfter::before {
+  height: 40px;
+  background-color: #fff;
+  transform: scaleY(2);
+  opacity: 1;
 }
-.headerAfter::before{ 
-    height: 40px;
-    background-color:#fff;
-    transform: scaleY(2);
-    opacity: 1;
-}
-.headerAfter{
+
+.headerAfter {
   border: none;
   border: 0;
 }
-.backdrop{
+
+.backdrop {
   display: block;
 }
+
 .backdrop::after {
   content: "";
   position: absolute;
@@ -244,24 +244,18 @@ header{
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.308);
   filter: blur(1px);
-  // z-index: 9;
+  z-index: 9;
 }
 
-
-.search-box{
+.search-box {
   position: absolute;
 }
-// header {
-//   position: fixed;
-//   top: 0px;
-//   left: 0px;
-//   height: 80px;
-//   width: 100%;
-//   z-index: 99;
-// }
-.ft-18{
-  font-size: 18px
+
+
+.ft-18 {
+  font-size: 18px;
 }
+
 .nav-box {
   flex: 1;
   // align-self: center;
@@ -273,12 +267,11 @@ header{
   position: relative;
 }
 
-
-.hover-bg{
+.hover-bg {
   transition: 0.3s;
-   &:hover {
-        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-      }
-}
 
+  &:hover {
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  }
+}
 </style>

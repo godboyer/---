@@ -1,61 +1,20 @@
 import { getLoginModuleRegExp } from "@/utils";
 export const AdminRoutes: AuthRoute.Route[] = [
-  // {
-  //   path: "/login",
-  //   name: "login",
-  //   component: "self",
-  //   meta: {
-  //     title: "后台管理登录",
-  //     requiresAuth: true,
-  //     keepAlive: true,
-  //     singleLayout: "blank",
-  //     icon: "fluent:book-information-24-regular",
-  //   },
-  // },
   {
-    name: "login",
-    path: "/login",
+    path: "/admin/home",
+    name: "admin_home",
     component: "self",
-    props: (route: any) => {
-      const moduleType =
-        (route.params.module as EnumType.LoginModuleKey) || "pwd-login";
-      return {
-        module: moduleType,
-      };
-    },
     meta: {
-      title: "登录",
-      dynamicPath: `/login/:module(${getLoginModuleRegExp()})?`,
-      singleLayout: "blank",
-    },
-  },
-  {
-    path: "/admin",
-    name: "admin",
-    component: "basic",
-    redirect: "/admin/home",
-    children: [
-      {
-        path: "/admin/home",
-        name: "admin_home",
-        component: "self",
-        meta: {
-          title: "首页",
-          requiresAuth: true,
-          keepAlive: true,
-          permissions: ["super", "admin", "user"],
-          icon: "fluent:book-information-24-regular",
-          order: 1,
-        },
-      },
-    ],
-    meta: {
-      title: "首页",
+      title: "管理首页",
       requiresAuth: true,
+      singleLayout: "basic",
       keepAlive: true,
+      permissions: ["super", "admin", "user"],
+      icon: "fluent:home-12-regular",
       order: 1,
     },
   },
+
   {
     path: "/houseComment",
     name: "houseComment",
@@ -70,7 +29,7 @@ export const AdminRoutes: AuthRoute.Route[] = [
           requiresAuth: true,
           keepAlive: true,
           permissions: ["super", "admin", "user"],
-          icon: "fluent:book-information-24-regular",
+          icon: "majesticons:checkbox-list-line",
         },
       },
     ],
@@ -79,7 +38,7 @@ export const AdminRoutes: AuthRoute.Route[] = [
       requiresAuth: true,
       keepAlive: true,
       permissions: ["super", "admin", "user"],
-      icon: "fluent:book-information-24-regular",
+      icon: "tabler:home-edit",
       order: 2,
     },
   },
@@ -89,24 +48,21 @@ export const AdminRoutes: AuthRoute.Route[] = [
     component: "basic",
     children: [
       {
-        path: "/houseInfo/list",
         name: "houseInfo_list",
+        path: "/houseInfo/list",
         component: "self",
         meta: {
           title: "房源信息列表",
           requiresAuth: true,
-          keepAlive: true,
-          permissions: ["super", "admin", "user"],
-          icon: "fluent:book-information-24-regular",
+          icon: "majesticons:checkbox-list-line",
         },
       },
     ],
     meta: {
       title: "房源管理",
-      requiresAuth: true,
       keepAlive: true,
       permissions: ["super", "admin", "user"],
-      icon: "fluent:book-information-24-regular",
+      icon: "tabler:home-cog",
       order: 3,
     },
   },
@@ -124,7 +80,7 @@ export const AdminRoutes: AuthRoute.Route[] = [
           requiresAuth: true,
           keepAlive: true,
           permissions: ["super", "admin", "user"],
-          icon: "fluent:book-information-24-regular",
+          icon: "fa-regular:list-alt",
         },
       },
     ],
@@ -132,8 +88,7 @@ export const AdminRoutes: AuthRoute.Route[] = [
       title: "房屋租赁管理",
       requiresAuth: true,
       keepAlive: true,
-      permissions: ["super", "admin", "user"],
-      icon: "fluent:book-information-24-regular",
+      icon: "tabler:home-move",
       order: 4,
     },
   },
@@ -150,8 +105,7 @@ export const AdminRoutes: AuthRoute.Route[] = [
           title: "城市列表",
           requiresAuth: true,
           keepAlive: true,
-          permissions: ["super", "admin", "user"],
-          icon: "fluent:book-information-24-regular",
+         icon: "fa-regular:list-alt",
           order: 5,
         },
       },
@@ -160,23 +114,22 @@ export const AdminRoutes: AuthRoute.Route[] = [
       title: "城市管理",
       requiresAuth: true,
       keepAlive: true,
-      permissions: ["super", "admin", "user"],
-      icon: "fluent:book-information-24-regular",
+      icon: "icon-park-outline:city-one",
       order: 5,
     },
   },
 
   {
-    path: "/admin/user",
     name: "admin_user",
+    path: "/admin/user",
     component: "self",
     meta: {
       title: "用户管理",
       requiresAuth: true,
       keepAlive: true,
       singleLayout: "basic",
-      permissions: ["super", "admin", "user"],
-      icon: "fluent:book-information-24-regular",
+      permissions: ["super", "admin","user"],
+      icon: "tabler:user-cog",
       order: 6,
     },
   },
@@ -194,6 +147,7 @@ export const AdminRoutes: AuthRoute.Route[] = [
           title: "公告列表",
           requiresAuth: true,
           keepAlive: true,
+          icon: "fa-regular:list-alt",
         },
       },
     ],
@@ -201,6 +155,32 @@ export const AdminRoutes: AuthRoute.Route[] = [
       title: "公告管理",
       requiresAuth: true,
       keepAlive: true,
+      icon: "fe:notice-active",
+    },
+  },
+  {
+    //留言管理
+    path: "/leaveword",
+    name: "leaveword",
+    component: "basic",
+    children: [
+      {
+        path: "/leaveword/list",
+        name: "leaveword_list",
+        component: "self",
+        meta: {
+          title: "留言列表",
+          requiresAuth: true,
+          keepAlive: true,
+          icon: "fa-regular:list-alt",
+        },
+      },
+    ],
+    meta: {
+      title: "留言管理",
+      requiresAuth: true,
+      keepAlive: true,
+      icon: "majesticons:messages-line",
     },
   },
   {
@@ -212,36 +192,9 @@ export const AdminRoutes: AuthRoute.Route[] = [
       requiresAuth: true,
       keepAlive: true,
       singleLayout: "basic",
-      permissions: ["super", "admin", "user"],
+      permissions: ["super", "admin","user"],
       icon: "fluent:book-information-24-regular",
       order: 10,
-    },
-  },
-  {
-    name: "403",
-    path: "/403",
-    component: "self",
-    meta: {
-      title: "无权限",
-      singleLayout: "blank",
-    },
-  },
-  {
-    name: "404",
-    path: "/404",
-    component: "self",
-    meta: {
-      title: "未找到",
-      singleLayout: "blank",
-    },
-  },
-  {
-    name: "500",
-    path: "/500",
-    component: "self",
-    meta: {
-      title: "服务器错误",
-      singleLayout: "blank",
     },
   },
 ];

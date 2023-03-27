@@ -12,31 +12,32 @@ declare namespace Auth {
   /** 用户信息 */
   interface UserInfo {
     /**文档id */
-    _id?: string;
+    _id?: string | null;
     /** 用户id */
-    user_id: string;
+    user_id: string | null;
     /**用户状态 */
-    user_status: string;
+    user_status: string | null;
     /** 用户名 */
-    username: string;
+    username: string | null;
     /**密码 */
     password?: string;
     /**手机号 */
-    phone?: number;
+    phone?: number | null;
     /** 用户头像 */
-    avatar?: string;
+    avatar?: string | null;
+    gender: "0" | "1" | null;
     /** 用户角色类型 */
     role_permission: RoleType;
-    createtime:string
+    createtime: string;
   }
 }
 
 declare namespace UserManagement {
   interface User extends ApiUserManagement.User {
     /** 序号 */
-    index: number;
+    index: number | null;
     /** 表格的key（id） */
-    key: string;
+    key: string | null;
   }
 
   /**
@@ -53,5 +54,231 @@ declare namespace UserManagement {
    * - 3: 冻结
    * - 4: 软删除
    */
-  type UserStatusKey = NonNullable<User["userStatus"]>;
+  type UserStatusKey = NonNullable<User["user_status"]>;
+
+  type UserRoleKey = NonNullable<User["role_permission"]>;
+}
+
+/**城市相关模块 */
+declare namespace CityManagement {
+  interface City extends ApiCityManagement.City {
+    /** 序号 */
+    index: number | null;
+    /** 表格的key（id） */
+    key: string | null;
+  }
+
+  /**城市信息 */
+  interface CityInfo {
+    /**
+     * 城市编号
+     */
+    city_id: string;
+    /**
+     * 城市名称
+     */
+    city_name: string;
+    /**
+     * 删除状态
+     */
+    deleted_state: string;
+  }
+   /**
+   * 城市状态
+   * - 1: 启用
+   * - 2: 禁用
+   * - 3: 冻结
+   * - 4: 软删除
+   */
+  type CityStatusKey = NonNullable<City["deleted_state"]>;
+}
+
+/**评论管理相关模块 */
+declare namespace CommentManagement {
+  // CommentStatusKey
+  interface Comment extends ApiCommentManagement.Comment {
+    /** 序号 */
+    index: number | null;
+    /** 表格的key（id） */
+    key: string | null;
+  }
+
+  /*评论信息 */
+  interface CommentInfo {
+    /**文档id */
+    _id: string | null;
+    /**
+     * 点评信息的ID，该点评信息的ID
+     */
+    comment_id: string;
+    /**
+     * 用户ID，点评人的ID
+     */
+    user_id: string;
+    /**
+     * 房屋ID，点评的房屋ID
+     */
+    house_id: string;
+    /**
+     * 内容，评价内容
+     */
+
+    content: string;
+
+    /**
+     * 删除状态，该条[评论是否删除或者能否查看
+     */
+    deleted_state: string;
+
+    /**
+     * 创建时间
+     */
+    create_time?: string;
+  }
+
+   /**
+   * 评论状态
+   * - 1: 启用
+   * - 2: 禁用
+   * - 3: 冻结
+   * - 4: 软删除
+   */
+  type CommentStatusKey = NonNullable<Comment["deleted_state"]>;
+}
+
+/**公告管理相关模块 --NoticeManagement*/
+declare namespace NoticeManagement {
+  // CommentStatusKey
+  interface Notice extends ApiNoticeManagement.Notice {
+    /** 序号 */
+    index: number | null;
+    /** 表格的key（id） */
+    key: string | null;
+  }
+
+  /**公告信息 */
+  interface NoticeInfo {
+    /**文档id */
+    _id: string | null;
+   /**
+     * 公告编号
+     */
+    notice_id: string;
+    /**
+     * 创建时间
+     */
+    create_time: string;
+  
+    /**
+     * 公告内容
+     */
+    notice_content: string;
+
+    /**
+     * 公告标题
+     */
+    notice_title: string;
+    /**
+     * 更新时间
+     */
+    updated_time: string;
+      /**
+     * 状态
+     */
+    deleted_state: string;
+  }
+
+   /**
+   * 评论状态
+   * - 1: 启用
+   * - 2: 禁用
+   * - 3: 冻结
+   * - 4: 软删除
+   */
+  type NoticeStatusKey = NonNullable<Notice["deleted_state"]>;
+}
+
+/**留言管理相关模块--LeavewordManagement */
+declare namespace LeavewordManagement {
+  // CommentStatusKey
+  interface Leaveword extends ApiLeavewordManagement.Leaveword {
+    /** 序号 */
+    index: number | null;
+    /** 表格的key（id） */
+    key: string | null;
+  }
+
+  /**公告信息 */
+  interface LeavewordInfo {
+    /**文档id */
+    _id: string | null;
+   /**
+     * 公告编号
+     */
+    notice_id: string;
+    /**
+     * 创建时间
+     */
+    create_time: string;
+  
+    /**
+     * 公告内容
+     */
+    notice_content: string;
+
+    /**
+     * 公告标题
+     */
+    notice_title: string;
+    /**
+     * 更新时间
+     */
+    updated_time: string;
+      /**
+     * 状态
+     */
+    deleted_state: string;
+  }
+
+   /**
+   * 评论状态
+   * - 1: 启用
+   * - 2: 禁用
+   * - 3: 冻结
+   * - 4: 软删除
+   */
+  type LeavewordStatusKey = NonNullable<Leaveword["deleted_state"]>;
+}
+
+/**房源相关模块 */
+declare namespace HouseManagement {
+   interface House extends ApiHouseManagement.House {
+    /** 序号 */
+    index: number | null;
+    /** 表格的key（id） */
+    key: string | null;
+  }
+
+  /**房屋信息 */
+  interface HouseInfo { }
+  
+  /**
+   * 出租状态
+   */
+  type leaseStatusKey = NonNullable<House["lease_state"]>;
+
+   
+  /**
+   * 审核状态
+   */
+  type examStatusKey = NonNullable<House["exam_status"]>;
+
+    /**
+   * 默认状态
+   * 1:new新房
+   * 2:"启用"
+   * 
+   */
+  type defaultStatusKey = NonNullable<House["deleted_state"]>;
+
 }

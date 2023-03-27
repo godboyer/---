@@ -79,9 +79,12 @@ export const useTabStore = defineStore('tab-store', {
     initHomeTab(routeHomeName: string, router: Router) {
       const routes = router.getRoutes();
       const findHome = routes.find(item => item.name === routeHomeName);
+      // console.log('findHome: ', findHome);
+      
       if (findHome && !findHome.children.length) {
         // 有子路由的不能作为Tab
         this.homeTab = getTabRouteByVueRoute(findHome);
+        // console.log('this.homeTab: ', this.homeTab);
       }
     },
     /**

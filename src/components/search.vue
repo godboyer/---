@@ -1,69 +1,39 @@
 <template>
-  <div
-    id="search"
-    v-click-outside="handleSearchOff"
-    ref="search"
-    class="search-body"
-  >
+  <div id="search" v-click-outside="handleSearchOff" ref="search" class="search-body">
     <Transition name="actionform">
-      <div
-        v-if="!showSearch"
-        @click="ClickSearch"
-        class="flex justify-between b-2 p-3 items-center w-81 h-12 b-rd-8 bg-#fff"
-      >
-        <div class="lh-5" style="font-size: 14px">搜索房源</div>
+      <div v-if="!showSearch" @click="ClickSearch"
+        class="top-search-box flex justify-between p-3 items-center w-81 h-12 b-rd-8 bg-#fff">
+        <div class="lh-5" style="font-size: 14px; color: #333">搜索房源</div>
         <button class="flex-col-center w-8 h-8 b-rd-50% bg-#ff385c">
           <img src="../assets/search-logo.png" alt="" class="w-5 h-5" />
         </button>
       </div>
       <div v-else @click="ClickSearch">
-        <div class="top-title">搜索房源</div>
+        <div class="top-title c-#333">搜索房源</div>
       </div>
+
     </Transition>
+    <small-search @show-true-search="handletransferSearch"/>
 
     <Transition name="form">
-      <n-form
-        v-if="showSearch"
-        label-position="top"
-        class="search-tab"
-        ref="formRef"
-      >
+      <n-form v-if="showSearch" label-position="top" class="search-tab" ref="formRef">
         <div class="top-form">
           <div :class="activeName == 'city' ? 'active item' : 'item'">
-            <n-form-item
-              class="item-form"
-              label="城市"
-              @click="setActiveKey('city')"
-            >
-              <input
-                v-model="ruleForm['city']"
-                type="text"
-                placeholder="你想去哪个城市"
-              />
+            <n-form-item class="item-form" label="城市" @click="setActiveKey('city')">
+              <input v-model="searchStore.cityName" type="text" placeholder="你想去哪个城市" />
+
             </n-form-item>
           </div>
           <div :class="activeName == 'date' ? 'active item' : 'item'">
-            <n-form-item
-              class="item-form"
-              label="日期"
-              @click="setActiveKey('date')"
-            >
-              <input
-                v-model="ruleForm.date"
-                type="text"
-                placeholder="请在日历中选择"
-              />
+            <n-form-item class="item-form" label="日期" @click="setActiveKey('date')">
+              <input v-model="searchStore.lease_long" type="text" placeholder="请在日历中选择" />
             </n-form-item>
           </div>
 
           <div :class="activeName == 'keywords' ? 'active item ' : 'item '">
             <div class="item-form search-play">
               <n-form-item label="关键字" @click="setActiveKey('keywords')">
-                <input
-                  v-model="ruleForm.keywords"
-                  type="text"
-                  placeholder="景点/地点/房源名"
-                />
+                <input v-model="searchStore.keywords" type="text" placeholder="景点/地点/房源名" />
               </n-form-item>
               <button :class="{ 'active-btn': flag }" class="flex-center">
                 <img src="../assets/search-logo.png" alt="" />
@@ -73,14 +43,18 @@
           </div>
         </div>
 
-        <div
-          ref="contentRef"
-          v-click-outside="handleClickOutside"
-          v-show="showContent"
-          class="bot-form"
-        >
-          <div v-show="activeName == 'city'">城市</div>
-          <div v-if="activeName == 'date'"></div>
+        <div ref="contentRef" v-click-outside="handleClickOutside" v-show="showContent" class="bot-form">
+          <div class="wh-full" v-show="activeName == 'city'">
+            <cityTab />
+
+
+
+          </div>
+          <div v-if="activeName == 'date'">
+            <date-tab />
+
+
+          </div>
           <div v-if="activeName == 'keywords'"></div>
         </div>
       </n-form>
@@ -100,6 +74,12 @@ import {
   onUpdated,
   watch,
 } from "vue";
+import { useSearchStore } from "@/store"
+import { smallSearch } from "./search/component";
+
+const searchStore = useSearchStore()
+
+
 const showSearch: Ref<boolean> = ref(false);
 const showSearchTwo: Ref<boolean> = ref(false);
 const flag: Ref<boolean> = ref(false);
@@ -159,12 +139,21 @@ const handleSearchOff = function (event: any) {
   //关闭搜索面板
   if (!showContent.value && showSearch.value) {
     // sh owSearch.value = false
-     console.log("点击的标签是=>", event.target,event.target.classList.contains("backdrop"));
-    console.log("获取与该事件的目标元素最接近的具有 n-form 类名的祖先元素", event.target.closest('.n-form'));
-    if (event.target.classList.contains("backdrop") || event.target.nodeName === "IMG") {
+    console.log(
+      "点击的标签是=>",
+      event.target,
+      event.target.classList.contains("backdrop")
+    );
+    console.log(
+      "获取与该事件的目标元素最接近的具有 n-form 类名的祖先元素",
+      event.target.closest(".n-form")
+    );
+    if (
+      event.target.classList.contains("backdrop") ||
+      event.target.nodeName === "IMG"
+    ) {
       showSearch.value = false;
       if (!showSearch.value) {
-        
         emit("changeBgAfter");
       }
     }
@@ -196,11 +185,28 @@ onMounted(() => {
   // document.body.addEventListener("scroll", handleScroll);
 });
 
-onUpdated(() => {});
-onUnmounted(() => {});
+onUpdated(() => { });
+onUnmounted(() => { });
+
+/**
+ * 改变搜索显示
+ */
+
+function handletransferSearch(show:boolean) {
+  console.log('show: ', show);  
+
+    showSearch.value = show;
+}
+
 </script>
 
 <style lang="scss" scoped>
+.top-search-box {
+  border: 1px solid #333;
+
+  filter: drop-shadow(3px 3px 2px 2px hsla(0, 0%, 1%, 0.774));
+}
+
 .form-enter-active {
   transform: scale(1) translateY(0px);
 
@@ -210,6 +216,7 @@ onUnmounted(() => {});
 .form-leave-active {
   transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
+
 .form-enter-from,
 .form-leave-to {
   transform: scale(0) translateY(-80px);
@@ -222,6 +229,7 @@ onUnmounted(() => {});
 
   transition: transform 250ms ease;
 }
+
 .actionform-leave-to {
   transform: scale(1.5) translateY(10px);
   opacity: 0;
@@ -230,6 +238,7 @@ onUnmounted(() => {});
 .top-title {
   // margin-top: 20px;
 }
+
 .last {
   height: 170px !important;
   // background: #ff385df5 !important;
@@ -238,28 +247,33 @@ onUnmounted(() => {});
 .active {
   background: #fff;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+
   &:hover {
     // display: ;
     background: #fff !important;
   }
-  & > .item-form::after {
+
+  &>.item-form::after {
     display: none;
   }
 }
+
 :deep(.el-form-item__label) {
   font-weight: bold;
 }
+
 .bot-form {
   width: 995px;
   height: 400px;
   position: absolute;
   top: 90px;
   border-radius: 32px;
-  background-color: #2b2626;
+  background-color: #fff;
   padding: 22px;
   box-sizing: border-box;
   z-index: 999;
 }
+
 .bot-box {
   width: 100%;
   height: 80px;
@@ -274,14 +288,15 @@ onUnmounted(() => {});
   align-items: center;
   box-sizing: border-box;
 }
-.srh {
-}
+
+.srh {}
 
 .top-form {
   position: absolute;
   // z-index: 9;
   display: flex;
   width: 995px;
+
   .item {
     box-sizing: border-box;
     padding: 5px 32px 0px;
@@ -291,6 +306,7 @@ onUnmounted(() => {});
     position: relative;
     z-index: 99;
     cursor: pointer;
+
     &:hover {
       background: rgba(0, 0, 0, 0.25);
     }
@@ -303,20 +319,16 @@ onUnmounted(() => {});
     }
   }
 }
-.search-body {
-  // position: absolute ;
 
-  // width: 995px;
+.search-body {
   height: 80px;
-  // position: absolute;
-  // top: 0;
-  // left: 0;
-  // background-color: red;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 9;
+
   .top-search {
     position: absolute;
     margin-top: 20px;
@@ -324,6 +336,8 @@ onUnmounted(() => {});
     justify-self: flex-start;
     width: 350px;
     height: 48px;
+    border: 1px solid #333;
+
     // background: #fff;
     border-radius: 32px;
     border: 1px solid #343232;
@@ -335,14 +349,17 @@ onUnmounted(() => {});
     &:hover {
       box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     }
+
     transition: all 200ms ease;
     cursor: pointer;
+
     .btn {
       width: 32px;
       height: 32px;
       background: #ff385c;
       border-radius: 50%;
       border: none;
+
       // float: right;
       img {
         width: 20px;
@@ -376,6 +393,7 @@ onUnmounted(() => {});
 
   .item-form {
     width: 100%;
+
     &::after {
       content: "";
       position: absolute;
@@ -387,15 +405,18 @@ onUnmounted(() => {});
       background-color: #646262;
     }
   }
+
   .search-play {
     display: flex;
     // align-items: center;
 
     justify-content: space-between;
+
     &::after {
       content: "" !important;
       display: none;
     }
+
     button {
       outline: none;
       border: none;
@@ -408,6 +429,7 @@ onUnmounted(() => {});
       transition: all 200ms ease;
       //   align-self: center;
     }
+
     .active-btn {
       box-sizing: border-box;
       padding: 10px;

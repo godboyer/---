@@ -1,118 +1,120 @@
 <template>
-  <n-h3> 房源信息列表 </n-h3>
-  <!-- 搜索 -->
+  <n-card title="用户管理" :bordered="false" class="rounded-16px shadow-sm">
+    <n-h3> 房源信息列表 </n-h3>
+    <!-- 搜索 -->
 
-  <n-form
-    ref="formRef"
-    :model="model"
-    inline
-    label-placement="left"
-    :label-width="80"
-    :style="{
-      maxWidth: '1240px',
-    }"
-  >
-    <n-form-item label="房屋类别:" path="selectValue">
-      <n-select
-        v-model:value="model.selectValue"
-        placeholder="Select"
-        :options="generalOptions"
-        style="width: 200px"
-      />
-    </n-form-item>
-    <n-form-item label="城市:" path="city">
-      <n-select
-        v-model:value="model.selectValue"
-        placeholder="Select"
-        :options="generalOptions"
-        style="width: 200px"
-      />
-    </n-form-item>
-    <n-form-item label="关键字:" path="inputValue">
-      <n-input v-model:value="model.inputValue" placeholder="Input" />
-    </n-form-item>
-    <n-form-item><n-button type="primary"> 搜索 </n-button></n-form-item>
-  </n-form>
-  <n-table :single-line="false">
-    <thead>
-      <tr>
-        <th v-for="(v, idx) in TableTh" :key="idx" :class="v.key">
-          {{ v.label }}
-        </th>
-      </tr>
-    </thead>
-    <Suspense>
-      <tbody>
-        <tr
-          v-for="(item, i) in useGetTableDataEs(store.houseInfoList)"
-          :key="item.id"
-        >
-          <td v-for="v in TableTh" :class="v.key" :key="v.key">
-            <template v-if="v.key === 'first_picture'">
-              <img :src="item.tableItem[v.key][1]" alt="房源图片" />
-            </template>
-            <template v-else-if="v.key === 'Homeowner_info'">
-              {{ item.tableItem[v.key].username }}</template
-            ><template v-else-if="v.key === 'house_description'">
-              <n-ellipsis :line-clamp="2" :tooltip="false">
-                <p v-if="item.tableItem[v.key] != ''">
-                  {{ item.tableItem[v.key] }}
-                </p>
-                <p v-else>
-                  房源位置 这是1套自如品质房源，位于汉阳人信汇二期天悦。
-                </p>
-              </n-ellipsis>
-            </template>
-            <template v-else-if="v.key == 'operation'">
-              <n-button text @click="showHouse(item.id as string)"
-                >查看</n-button
-              >
-              <n-button text @click="updataHouse(item.id as string)"
-                >修改</n-button
-              ><n-button text>删除</n-button>
-            </template>
-
-            <template v-else> {{ item.tableItem[v.key] }}</template>
-          </td>
+    <n-form
+      ref="formRef"
+      :model="model"
+      inline
+      label-placement="left"
+      :label-width="80"
+      :style="{
+        maxWidth: '1240px',
+      }"
+    >
+      <n-form-item label="房屋类别:" path="selectValue">
+        <n-select
+          v-model:value="model.selectValue"
+          placeholder="Select"
+          :options="generalOptions"
+          style="width: 200px"
+        />
+      </n-form-item>
+      <n-form-item label="城市:" path="city">
+        <n-select
+          v-model:value="model.selectValue"
+          placeholder="Select"
+          :options="generalOptions"
+          style="width: 200px"
+        />
+      </n-form-item>
+      <n-form-item label="关键字:" path="inputValue">
+        <n-input v-model:value="model.inputValue" placeholder="Input" />
+      </n-form-item>
+      <n-form-item><n-button type="primary"> 搜索 </n-button></n-form-item>
+    </n-form>
+    <n-table :single-line="false">
+      <thead>
+        <tr>
+          <th v-for="(v, idx) in TableTh" :key="idx" :class="v.key">
+            {{ v.label }}
+          </th>
         </tr>
-      </tbody>
+      </thead>
+      <Suspense>
+        <tbody>
+          <tr
+            v-for="(item, i) in useGetTableDataEs(store.houseInfoList)"
+            :key="item.id"
+          >
+            <td v-for="v in TableTh" :class="v.key" :key="v.key">
+              <template v-if="v.key === 'first_picture'">
+                <img :src="item.tableItem[v.key][1]" alt="房源图片" />
+              </template>
+              <template v-else-if="v.key === 'Homeowner_info'">
+                {{ item.tableItem[v.key].username }}</template
+              ><template v-else-if="v.key === 'house_description'">
+                <n-ellipsis :line-clamp="2" :tooltip="false">
+                  <p v-if="item.tableItem[v.key] != ''">
+                    {{ item.tableItem[v.key] }}
+                  </p>
+                  <p v-else>
+                    房源位置 这是1套自如品质房源，位于汉阳人信汇二期天悦。
+                  </p>
+                </n-ellipsis>
+              </template>
+              <template v-else-if="v.key == 'operation'">
+                <n-button text @click="showHouse(item.id as string)"
+                  >查看</n-button
+                >
+                <n-button text @click="updataHouse(item.id as string)"
+                  >修改</n-button
+                ><n-button text>删除</n-button>
+              </template>
 
-      <template #fallback>
-        <tbody class="table-loading">
-          <n-spin size="large" />
+              <template v-else> {{ item.tableItem[v.key] }}</template>
+            </td>
+          </tr>
         </tbody>
-      </template>
-    </Suspense>
-  </n-table>
-  <div class="pagination">
-    <n-pagination
-      :page-count="Math.ceil(store.getHouseNums / pageSize)"
-      size="medium"
-      show-quick-jumper
-      show-size-picker
-      :page-sizes="[10, 20, 30, 40]"
-      :on-update:page="updatePage"
-      :on-update:page-size="upDataPageSize"
-    />
-  </div>
-  <n-modal
-    v-model:show="showModal"
-    :style="bodyStyle"
-    size="huge"
-    :bordered="false"
-  >
-    <div>
-      <n-thing>
-        <template #header>房源信息详情 </template>
-        <template #header-extra>
-          <n-button tertiary size="small" @click="showModal = false"
-            ><n-icon :component="CloseOutline" size="40" :depth="1"
-          /></n-button>
+
+        <template #fallback>
+          <tbody class="table-loading">
+            <n-spin size="large" />
+          </tbody>
         </template>
-      </n-thing>
-      <showCard :house-data-one="(housedataone as IhouseInfo)" />
+      </Suspense>
+    </n-table>
+    <div class="pagination">
+      <n-pagination
+        :page-count="Math.ceil(store.getHouseNums / pageSize)"
+        size="medium"
+        show-quick-jumper
+        show-size-picker
+        :page-sizes="[10, 20, 30, 40]"
+        :on-update:page="updatePage"
+        :on-update:page-size="upDataPageSize"
+      />
     </div>
-  </n-modal>
+    <n-modal
+      v-model:show="showModal"
+      :style="bodyStyle"
+      size="huge"
+      :bordered="false"
+    >
+      <div>
+        <n-thing>
+          <template #header>房源信息详情 </template>
+          <template #header-extra>
+            <n-button tertiary size="small" @click="showModal = false"
+              ><n-icon :component="CloseOutline" size="40" :depth="1"
+            /></n-button>
+          </template>
+        </n-thing>
+        <show-card :house-data-one="(housedataone as IhouseInfo)" />
+      </div>
+    </n-modal>
+  </n-card>
 </template>
 
 <script setup lang="ts">

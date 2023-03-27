@@ -1,6 +1,7 @@
 <template>
     <main  class="w-full h-full relative z-5 ">
         <n-carousel
+     
         touchable
         effect="custom"
         :transition-props="{ name: 'creative' }"
@@ -14,7 +15,7 @@
           v-for="(src, idx) in cardData?.swiper_pic"
           :key="src"
           class="carousel-img"
-          :src="src"
+          :src.camel="src"
           @click="GoToHouseDetail(cardData?.house_id)"
         />
 
@@ -45,50 +46,15 @@
           </div>
         </template>
       </n-carousel>
-
-    <button class="Collection-btn" @click.stop="Collection = !Collection">
-        <svg
-          v-if="!Collection"
-          viewBox="0 0 24 24"
-          fill="#484848"
-          fill-opacity="0.5"
-          stroke="#ffffff"
-          stroke-width="2"
-          focusable="false"
-          aria-label="添加房源到心愿单"
-          role="img"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          style="height: 28px; width: 28px; display: block; overflow: visible"
-        >
-          <path
-            d="m17.5 2.9c-2.1 0-4.1 1.3-5.4 2.8-1.6-1.6-3.8-3.2-6.2-2.7-1.5.2-2.9 1.2-3.6 2.6-2.3 4.1 1 8.3 3.9 11.1 1.4 1.3 2.8 2.5 4.3 3.6.4.3 1.1.9 1.6.9s1.2-.6 1.6-.9c3.2-2.3 6.6-5.1 8.2-8.8 1.5-3.4 0-8.6-4.4-8.6"
-            stroke-linejoin="round"
-          ></path>
-        </svg>
-        <svg
-          v-else
-          viewBox="0 0 24 24"
-          fill="#FF5A5F"
-          fill-opacity="1"
-          stroke="#ffffff"
-          stroke-width="2"
-          focusable="false"
-          aria-label="将房源从列表中删除"
-          role="img"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          style="height: 28px; width: 28px; display: block; overflow: visible"
-        >
-          <path
-            d="m17.5 2.9c-2.1 0-4.1 1.3-5.4 2.8-1.6-1.6-3.8-3.2-6.2-2.7-1.5.2-2.9 1.2-3.6 2.6-2.3 4.1 1 8.3 3.9 11.1 1.4 1.3 2.8 2.5 4.3 3.6.4.3 1.1.9 1.6.9s1.2-.6 1.6-.9c3.2-2.3 6.6-5.1 8.2-8.8 1.5-3.4 0-8.6-4.4-8.6"
-            stroke-linejoin="round"
-          ></path>
-        </svg>
-    </button>
-
+    
+        <button class="Collection-btn" @click.stop="Collection = !Collection">
+            <icon-local-love   v-if="!Collection" class="text-24px"/>
+            <icon-local-love-on v-else class="text-24px"/>
+        </button>
+   
     </main>
-  
+
+    
 
 </template>
 
@@ -114,7 +80,7 @@ const onMouseLeave = function () {
 
 //跳转对应的详情
 const GoToHouseDetail = function (id: string) {
-    console.log("点击了");
+    // console.log("点击了");
   router.push({
     path: `/house/${id}`,
   });

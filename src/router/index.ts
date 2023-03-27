@@ -9,12 +9,12 @@ import { getSession } from "../utils/storage";
 import { constantRoutes } from "./routes";
 import { createRouterGuard } from './guard';
 import { transformAuthRouteToVueRoutes } from '@/utils/router/transform';
-console.log(import.meta.env.BASE_URL);
+
 export const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(import.meta.env.VITE_BASE_URL),
   routes:transformAuthRouteToVueRoutes(constantRoutes),
 });
-console.log("处理后的路由=> ",transformAuthRouteToVueRoutes(constantRoutes));
+// console.log("处理后的路由=> ",transformAuthRouteToVueRoutes(constantRoutes));
 
 
 /**安装vue路由 */
@@ -34,7 +34,7 @@ export async function setupRouter(app: App) {
   /**挂载路由 */
   app.use(router)
   /**创建路由守卫 */
-  // createRouterGuard(router);
+  createRouterGuard(router);
   
   await router.isReady()
   

@@ -10,6 +10,7 @@ interface AppState {
   siderCollapse: boolean;
   /** vertical-mix模式下 侧边栏的固定状态 */
   mixSiderFixed: boolean;
+  /**设置地图找房 */
   showMapFlag: boolean;
 }
 

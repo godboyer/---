@@ -23,8 +23,8 @@ onMounted(() => {
     // ...
     // 返回 false 以取消导航
     path.value = to.path;
-    console.log("to", to);
-    console.log("from", from);
+    // console.log("to", to);
+    // console.log("from", from);
     return true;
   });
 });
@@ -46,6 +46,7 @@ nav {
   gap: 10%;
   font-size: 18px;
   .nav-a {
+    color: #222;
     position: relative;
     &::before {
       content: "";

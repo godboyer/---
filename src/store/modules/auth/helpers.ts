@@ -13,7 +13,8 @@ export function getUserInfo() {
 		role_permission: "user",
 		avatar: '',
 		user_status: "1",
-		createtime:''
+		createtime: '',
+		gender: null
 	};
 
 	const userInfo: Auth.UserInfo = localStg.get("userInfo") || emptyInfo;

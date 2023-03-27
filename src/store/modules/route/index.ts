@@ -4,7 +4,11 @@ import {
 	constantRoutes,
 	router,
 	routes as staticRoutes,
+	
 } from "@/router";
+
+import {AdminRoutes} from  "@/router/routes/adminRoutes";
+
 import { fetchUserRoutes, fetchUserRoutesMock } from "@/service";
 import {
 	localStg,
@@ -13,7 +17,7 @@ import {
 	getConstantRouteNames,
 	transformAuthRouteToVueRoutes,
 	transformAuthRouteToVueRoute,
-	// transformAuthRouteToMenu,
+	transformAuthRouteToMenu,
 	convertToNaiveUiMenuData,
 	transformAuthRouteToSearchMenus,
 	transformRouteNameToRoutePath,
@@ -46,7 +50,7 @@ export const useRouteStore = defineStore("route-store", {
 		authRouteMode: import.meta.env.VITE_AUTH_ROUTE_MODE,
 		isInitAuthRoute: false,
 		routeHomeName: transformRoutePathToRouteName(
-			import.meta.env.VITE_ROUTE_HOME_PATH
+			import.meta.env.VITE_ADMIN_URL
 		),
 		menus: [],
 		searchMenus: [],
@@ -74,6 +78,7 @@ export const useRouteStore = defineStore("route-store", {
 		 */
 		isConstantRoute(name: AuthRoute.AllRouteKey) {
 			const constantRouteNames = getConstantRouteNames(constantRoutes);
+			// console.log('固定路由的名称constantRouteNames: ', constantRouteNames);
 			return constantRouteNames.includes(name);
 		},
 		/**
@@ -89,25 +94,18 @@ export const useRouteStore = defineStore("route-store", {
 		 * 处理权限路由
 		 * @param routes - 权限路由
 		 */
-	async	handleAuthRoute(routes: AuthRoute.Route[], data: any) {
-			// (this.menus as App.GlobalMenuOption[]) = transformAuthRouteToMenu(routes);
-			//
-			// if (tmp) {
-			// 	let menuList = convertToNaiveUiMenuData(tmp);
-			// 	console.log("menuList: ", menuList);
-
-			// 	this.menus = this.menus.concat(menuList);
-			// }
-			// let tmp = data.slice(0, 2);
-			// console.log("tmp: ", tmp);
-			(this.menus as App.GlobalMenuOption[]) = await convertToNaiveUiMenuData(data);
-			console.log('this.menus: ', this.menus);
-
-			// debugger
+		async handleAuthRoute(routes: AuthRoute.Route[]) {
+		//将权限路由转换成菜单
+			(this.menus as App.GlobalMenuOption[]) = transformAuthRouteToMenu(routes);
+			// console.log('this.menus: ', this.menus);
+			
+			// 将权限路由转换成搜索的菜单数据
 			this.searchMenus = transformAuthRouteToSearchMenus(routes);
+			// console.log('this.searchMenus: ', this.searchMenus);
 
 			const vueRoutes = transformAuthRouteToVueRoutes(routes);
-
+			// console.log('vueRoutes: ', vueRoutes);
+				// debugger
 			vueRoutes.forEach((route) => {
 				router.addRoute(route);
 			});
@@ -133,24 +131,25 @@ export const useRouteStore = defineStore("route-store", {
 		async initDynamicRoute() {
 			const { initHomeTab } = useTabStore();
 
-			const { userId } = localStg.get("userInfo") || {};
+			const { user_id } = localStg.get("userInfo") || {};
 			// debugger
 
-			if (!userId) {
+			if (!user_id) {
 				throw new Error("userId 不能为空!");
 			}
 
-			const res = await fetchUserRoutes(userId);
-			const { error, data } = await fetchUserRoutesMock(userId);
+			const res = await fetchUserRoutes(user_id);
+			const { error, data } = await fetchUserRoutesMock(user_id);
 
 			if (!error) {
-				let homePath: AuthRoute.AllRouteKey = "dashboard_analysis";
 				this.routeHomeName = data.home; //dashboard_analysis
 				// this.routeHomeName = "dashboard_analysis";
+				// 动态路由模式下：更新根路由的重定向
 				this.handleUpdateRootRedirect(data.home);
 
 				// debugger;
-				this.handleAuthRoute(data.routes as any, res.data);
+				// 处理权限路由
+				this.handleAuthRoute(data.routes as any);
 
 				initHomeTab(data.home, router);
 
@@ -161,14 +160,17 @@ export const useRouteStore = defineStore("route-store", {
 		async initStaticRoute() {
 			const { initHomeTab } = useTabStore();
 			const auth = useAuthStore();
-			console.log('auth: ', auth);
-			
+			// console.log('auth: ', auth);
+			// 根据用户权限过滤路由
 			const routes = filterAuthRoutesByUserPermission(
-				staticRoutes,
-				auth.userInfo.userRole
+				AdminRoutes, //需要过滤的路由
+				auth.userInfo.role_permission //当前用户的权限
 			);
-			this.handleAuthRoute(routes, "");
-
+			// console.log('routes: ', routes);
+			// debugger
+			// 处理权限路由	
+			this.handleAuthRoute(routes);
+			//初始化首页页签路由
 			initHomeTab(this.routeHomeName, router);
 
 			this.isInitAuthRoute = true;

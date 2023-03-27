@@ -1,7 +1,7 @@
 <template>
     <div>
         <headerComp></headerComp>
-        
+         
      </div>
 
 </template>

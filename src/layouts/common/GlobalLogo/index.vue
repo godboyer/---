@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="routeHomePath" class="flex-center w-full nowrap-hidden">
+  <router-link :to="routeAdminPath" class="flex-center w-full nowrap-hidden">
     <system-logo class="text-32px text-primary" />
     <h2
       v-show="showTitle"
@@ -24,7 +24,7 @@ interface Props {
 
 defineProps<Props>();
 
-const routeHomePath = routePath('root');
+const routeAdminPath = routePath('admin');
 
 let flag = true;
 function toggleLocal() {

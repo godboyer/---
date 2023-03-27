@@ -48,7 +48,30 @@ import logoSrc from "../assets/logo_7.svg";
 import logoSrcIn from "../assets/logo_8.svg";
 
 import anime from "animejs/lib/anime.es.js";
+const handleSelect = function (key: string | number) {
+  if (key === "publish") {
+    router.push("/publish");
+  }
 
+  switch (key) {
+    case "admin":
+
+      routerPush({
+        path: "/login",
+        query: {
+          redirect: "/admin"
+        }
+      }, true)
+      break;
+
+    default:
+      break;
+  }
+
+
+
+  message.info(String(key));
+};
 const isSticky: Ref<boolean> = ref(false);
 const visible = ref(false);
 const showNav = ref(true);

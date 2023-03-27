@@ -6,13 +6,13 @@
     <slot name="title"></slot>
   </div>
 </template>
-
 <script setup lang="ts">
 defineProps<{
   src: string;
   to: string;
 }>();
 </script>
+
 
 <style lang="scss" scoped>
 

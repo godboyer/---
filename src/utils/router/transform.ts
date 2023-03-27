@@ -7,7 +7,6 @@ import { getLayoutComponent, getViewComponent } from './component';
  * @description 所有多级路由都会被转换成二级路由
  */
 export function transformAuthRouteToVueRoutes(routes: AuthRoute.Route[]) {
-	console.log('routes: ', routes);
 
   return routes.map(route => transformAuthRouteToVueRoute(route)).flat(1);
 }
@@ -157,7 +156,11 @@ export function transformAuthRouteToSearchMenus(routes: AuthRoute.Route[], treeM
 /** 将路由名字转换成路由路径 */
 export function transformRouteNameToRoutePath(name: Exclude<AuthRoute.AllRouteKey, 'not-found'>): AuthRoute.RoutePath {
   const rootPath: AuthRoute.RoutePath = '/';
+  const adminPath: AuthRoute.RoutePath = '/admin';
+  const websitePath: AuthRoute.RoutePath = '/website';
   if (name === 'root') return rootPath;
+  if (name === 'admin') return adminPath;
+  if (name === 'website') return websitePath;
 
   const splitMark = '_';
   const pathSplitMark = '/';
@@ -174,7 +177,8 @@ export function transformRoutePathToRouteName<K extends AuthRoute.RoutePath>(pat
   const routeSplitMark = '_';
 
   const name = path.split(pathSplitMark).slice(1).join(routeSplitMark) as AuthRoute.AllRouteKey;
-
+  // console.log('name: ', name);
+  
   return name;
 }
 
@@ -219,7 +223,6 @@ function hasChildren(item: AuthRoute.Route) {
  * @param item - 权限路由
  */
 function isSingleRoute(item: AuthRoute.Route) {
-  // return Boolean(item.meta.singleLayout);
-  return Boolean(false);
+  return Boolean(item.meta.singleLayout);
 
 }

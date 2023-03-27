@@ -5,6 +5,7 @@ import {
   GetHouseInfoOne,
   GetHouseInfoPage,
 } from "@/server/api/house";
+
 import {
   IapiResponse,
   IcardData,
@@ -13,22 +14,25 @@ import {
 } from "@/typings/ApiInterface";
 import * as _ from "lodash";
 import { useGetTableData, useGetTableDataEs } from "../admin/tableData";
+import HouseFetch from "@/service/api/house";
+const { fetchHouseAddToAdmin, fetchHouseListToAdmin, fetchHouseListToCard } =
+  new HouseFetch();
 
 // 注意事项：state和actions还有getters里面声明的变量不能重名，否则会报错
 export const useHouseInfoStore = defineStore("HouseInfoStore", {
   state: (): {
     HouseInfo: Array<IhouseInfo>;
-    HouseCardInfo: Array<IcardData>;
+    HouseCardInfo: HousePage.CardList[] |null;
     HouseDetail: IhouseInfo | null;
     houseInfoList: Array<IhouseInfo>;
-    showMapFlag:Boolean
+    showMapFlag: Boolean;
   } => {
     return {
       HouseInfo: [],
       HouseCardInfo: [],
       HouseDetail: null,
       houseInfoList: [],
-      showMapFlag:false
+      showMapFlag: false,
     };
   },
   actions: {
@@ -57,21 +61,21 @@ export const useHouseInfoStore = defineStore("HouseInfoStore", {
      * 获取房源卡片信息
      * @param payload 分页查询参数
      */
-    async setHouseCardInfo(payload: any) {
-      let res = (await GetCardsInfoPage(
-        payload
-      )) as unknown as IapiResponse<IhouseInfo>;
-      this.HouseCardInfo = res.data as any;
+    async setHouseCardInfo(payload: ApiQuery.QeuryPage) {
+      let { error, data } = await fetchHouseListToCard(payload);
+      if (!error) {
+        
+        this.HouseCardInfo = data;
+      }
     },
     setHouseInfoList(payload: PageTion) {
       this.houseInfoList = this.getHouseInfoPage(payload);
     },
   },
   getters: {
-
     //获取地图找房的标志
     getHouseMap(state) {
-      return state.showMapFlag
+      return state.showMapFlag;
     },
     getHouseNums(): number {
       return this.HouseInfo.length;

@@ -115,40 +115,33 @@ function getActiveKeyPathsOfMenu(
 function hideInMenu(route: any) {
 	return Boolean(route?.isShow);
 }
-
 /** 给菜单添加可选属性 */
 function addPartialProps(config: {
-	menu: App.GlobalMenuOption;
-	icon?: string;
-	localIcon?: string;
-	children?: App.GlobalMenuOption[];
+  menu: App.GlobalMenuOption;
+  icon?: string;
+  localIcon?: string;
+  children?: App.GlobalMenuOption[];
 }) {
-	const { elIconRender } = useIconRender();
+  const { iconRender } = useIconRender();
 
-	const item = { ...config.menu };
+  const item = { ...config.menu };
 
-	const { icon, children } = config;
+  const { icon, localIcon, children } = config;
 
-	// if (localIcon) {
-	// 	Object.assign(item, { icon: iconRender({ localIcon }) });
-	// }
-	// console.log(iconRender({ icon }));
-	// console.log(elIconRender(icon as string));
-	if (icon) {
-		Object.assign(item, { icon: elIconRender(getIcon(icon)) });
-		// Object.assign(item, { icon: iconRender({ icon }) });
-	}
-	// if (icon?.startsWith("el-icon") ) {
-	// 	Object.assign(item, { icon: () => h(myIcon, { icon: icon }) });
-	// } else if (icon) {
-	// 	Object.assign(item, { icon: iconRender({ icon }) });
-	// }
+  if (localIcon) {
+    Object.assign(item, { icon: iconRender({ localIcon }) });
+  }
 
-	if (children) {
-		Object.assign(item, { children });
-	}
-	return item;
+  if (icon) {
+    Object.assign(item, { icon: iconRender({ icon }) });
+  }
+
+  if (children) {
+    Object.assign(item, { children });
+  }
+  return item;
 }
+
 
 function getIcon(str: string) {
 	const arr = str.split("-");

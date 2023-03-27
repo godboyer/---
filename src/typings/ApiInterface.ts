@@ -1,3 +1,5 @@
+
+
 export interface IhouseInfo {
   _id: string | number | symbol | undefined;
   house_id: Number;

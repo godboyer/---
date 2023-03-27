@@ -7,15 +7,15 @@ export const navItem = [
  ]
 export const loginItem =  [
   {
-    label: "登录",
+    label: "登录/注册",
     key: "login",
-  },
-  {
-    label: "注册",
-    key: "register",
   },
   {
     label: "发布房源",
     key: "publish",
   },
+  {
+    label: "后台管理",
+    key: "admin",  
+  }
 ]

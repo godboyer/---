@@ -1,5 +1,5 @@
 <template>
-  <div ref="bsWrap" class="h-full text-left horizontal-container">
+  <div ref="bsWrap" class="h-full text-left ">
     <div ref="bsContent" class="inline-block" :class="{ 'h-full': !isScrollY }">
       <slot></slot>
     </div>

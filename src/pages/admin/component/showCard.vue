@@ -49,7 +49,6 @@
 </template>
 
 <script setup lang="ts">
-import { IhouseInfo } from "@/typings/ApiInterface";
 import { TableTh } from "@/store/modules/admin/tableData";
 import * as _ from "lodash";
 import { keysOf } from "naive-ui/es/_utils";
@@ -66,7 +65,7 @@ const tableTitle = _.filter(TableTh, (item: any) => {
 });
 
 const { houseDataOne } = defineProps<{
-  houseDataOne: IhouseInfo;
+  houseDataOne: HouseManagement.HouseInfo;
 }>();
 
 console.log(houseDataOne);

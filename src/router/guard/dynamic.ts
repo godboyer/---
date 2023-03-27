@@ -3,8 +3,8 @@ import { routeName } from '@/router';
 import { useRouteStore } from '@/store';
 import { localStg } from '@/utils';
 
-/**
- * 动态路由
+/**刷新佛也会触发
+ * 创建动态路由
  */
 export async function createDynamicRouteGuard(
   to: RouteLocationNormalized,

@@ -1,19 +1,18 @@
 <template>
   <n-layout>
     <n-layout-header :bordered="true">
-      <headerComp>
+      <header-comp>
         <template v-if="$route.path === '/website/home'" #nav>
           <Nav></Nav>
         </template>
-        <template v-if="$route.path !== '/website/home'" #search="{ changeBgAfter }">
-          <Search @changeBgAfter="changeBgAfter">
-            <template #city>wqewqe</template>
-          </Search>
-        </template>
-      </headerComp></n-layout-header
-    >
+        <template
+          v-if="$route.path !== '/website/home'"
+          #search="{ changeBgAfter }"
+        >
+          <search-box @change-After="changeBgAfter" />
+        </template> </header-comp
+    ></n-layout-header>
     <n-layout-content
-   
       :content-style="$route.path !== '/home' ? contentStyle : ''"
     >
       <n-config-provider :breakpoints="breakpoints">
@@ -30,7 +29,7 @@
         </RouterView>
       </n-config-provider>
     </n-layout-content>
-    <n-layout-footer  v-popup > <footer-comp />  </n-layout-footer>
+    <n-layout-footer v-popup> <footer-comp /> </n-layout-footer>
   </n-layout>
 </template>
 
@@ -38,12 +37,14 @@
 import { onMounted, ref, Ref } from "vue";
 import { RouterView } from "vue-router";
 import headerComp from "@/components/headerComp.vue";
-import Search from "@/components/search.vue";
+import searchBox from "@/components/search/index.vue";
 import Nav from "@/components/nav.vue";
 import LoadingCardCom from "@/pages/website/component/LoadingCardCom.vue";
 import anime from "animejs/lib/anime.es.js";
 import footerComp from "@/components/footer/index.vue";
-defineOptions({ name: 'WebsiteLayout' });
+import cityTab from "@/components/search/component/cityTab.vue";
+
+defineOptions({ name: "WebsiteLayout" });
 
 const breakpoints = { xs: 515, s: 744, m: 1128, l: 1440, xl: 1536, xxl: 1920 };
 anime({
@@ -69,7 +70,7 @@ const handleScroll = function (event: any) {
 
 const contentStyle = {
   padding: "24px",
-  paddingTop:"0px"
+  paddingTop: "0px",
 };
 
 const handClickSearch = () => {

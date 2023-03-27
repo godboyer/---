@@ -23,7 +23,6 @@ export const appRoutes: AuthRoute.Route[] = [
         component: "self",
         meta: {
           title: "主页",
-          requiresAuth: false,
         },
       },
       {
@@ -41,7 +40,6 @@ export const appRoutes: AuthRoute.Route[] = [
             component: "self",
             meta: {
               title: "租房首页",
-              requiresAuth: false,
             },
           },
           {
@@ -50,7 +48,6 @@ export const appRoutes: AuthRoute.Route[] = [
             component: "self",
             meta: {
               title: "地图找房",
-              requiresAuth: false,
             },
           },
         ],
@@ -64,8 +61,7 @@ export const appRoutes: AuthRoute.Route[] = [
     component: "self",
     meta: {
       title: "服务",
-      requiresAuth: false,
-      // singleLayout: "blank",
+      singleLayout: "blank",
     },
   },
   {
@@ -102,14 +98,5 @@ export const appRoutes: AuthRoute.Route[] = [
 
     },
   },
-  // 匹配无效路径的路由
-  {
-    name: "not-found",
-    path: "/:pathMatch(.*)*",
-    component: "blank",
-    meta: {
-      title: "未找到",
-      singleLayout: "blank",
-    },
-  },
+ 
 ];
