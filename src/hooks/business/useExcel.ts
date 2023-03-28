@@ -2,8 +2,11 @@ import { isArray } from "@/utils";
 import { type WorkBook, read, utils, writeFile, write, readFile } from "xlsx";
 import { reactive, ref, unref } from "vue";
 import { useBoolean } from "../common";
+import { DataTableRowKey } from "naive-ui";
 
 export default function useExcelTool() {
+  
+
   //创建是否预览的标志
   const {
     bool: isPreview,
@@ -77,8 +80,7 @@ export default function useExcelTool() {
   /**
    * 预览表格
    */
-  function previewExcel(tableData: any,sheetName: string) {
- 
+  function previewExcel(tableData: any, sheetName: string) {
     wbook.value = jsonToWorkbook(tableData, sheetName);
 
     excelSrc.value = workbookToDataURL(unref(wbook) as WorkBook);

@@ -1,6 +1,10 @@
 <template>
   <div class="h-full overflow-hidden">
-    <n-card title="房源评价管理" :bordered="false" class="rounded-16px shadow-sm">
+    <n-card
+      title="房源评价管理"
+      :bordered="false"
+      class="rounded-16px shadow-sm"
+    >
       <n-space class="pb-12px" justify="space-between">
         <n-space>
           <n-button type="primary" @click="handleAddTable">
@@ -11,10 +15,11 @@
             <icon-ic-round-delete class="mr-4px text-20px" />
             删除
           </n-button>
-          <n-button type="success">
-            <icon-uil:export class="mr-4px text-20px" />
-            导出Excel
-          </n-button>
+          <export-excel
+            :table-data="tableData"
+            :columns="columns"
+            :checked-row-keys="checkedRowKeysRef"
+          />
         </n-space>
         <n-space align="center" :size="18">
           <n-button size="small" type="primary" @click="getTableData">
@@ -24,7 +29,7 @@
             />
             刷新表格
           </n-button>
-          <column-setting v-model:columns="columns" />
+          <column-setting v-model:columns="columns"  />
         </n-space>
       </n-space>
       <n-data-table
@@ -33,6 +38,7 @@
         :loading="loading"
         :pagination="pagination"
         :max-height="800"
+        @update:checked-row-keys="handleCheck"
       />
       <table-action-modal
         v-model:visible="visible"
@@ -47,36 +53,37 @@
 <script setup lang="tsx">
 import { reactive, ref } from "vue";
 import type { Ref } from "vue";
-import { NButton, NPopconfirm, NSpace, NTag } from "naive-ui";
+import { DataTableColumn, DataTableRowKey, NButton, NPopconfirm, NSpace, NTag } from "naive-ui";
 import type { DataTableColumns, PaginationProps } from "naive-ui";
-import { commentStatusLabels, genderLabels, userStatusLabels } from "@/constants";
+import {
+  commentStatusLabels,
+  genderLabels,
+  userStatusLabels,
+} from "@/constants";
 import { fetchCommentDel, fetchCommentList } from "@/service";
-import { useBoolean, useLoading,useTable } from "@/hooks";
+import { useBoolean, useLoading, useTable } from "@/hooks";
 import TableActionModal from "./components/table-action-modal.vue";
 import type { ModalType } from "./components/table-action-modal.vue";
-import ColumnSetting from "./components/column-setting.vue";
+import ColumnSetting from "@/pages/admin/component/column-setting.vue";
 import dayjs from "dayjs";
-
-const {} = useTable()
-
-const { loading, startLoading, endLoading } = useLoading(false);
-const { bool: visible, setTrue: openModal } = useBoolean();
-
-const tableData = ref<CommentManagement.Comment[]>([]);
-function setTableData(data: CommentManagement.Comment[]) {
-  tableData.value = data;
+import ExportExcel from "@/pages/admin/component/exportExcel.vue";
+const { tableData, pagination, getTableData, loading, visible, openModal } =
+  useTable<CommentManagement.Comment>(fetchCommentList);
+//被选中行的key值
+const checkedRowKeysRef = ref<DataTableRowKey[]>([]);
+/**选中行事件 */
+const handleCheck = (rowKeys: DataTableRowKey[]) => {
+  //选中的key值数组,可以进行多选操作比如删除,等等
+  checkedRowKeysRef.value = rowKeys;
+  window.$message?.info(`你选择中了 ${rowKeys}` as any);
+};
+function handleColumnsUpdate(columns: DataTableColumn[]) {
+  // 处理更新后的列数据
+  console.log(columns);
 }
 
-async function getTableData() {
-  startLoading();
-  const { data } = await fetchCommentList();
-  if (data) {
-    setTimeout(() => {
-      setTableData(data);
-      endLoading();
-    }, 1000);
-  }
-}
+
+
 
 const columns: Ref<DataTableColumns<CommentManagement.Comment>> = ref([
   {
@@ -93,7 +100,7 @@ const columns: Ref<DataTableColumns<CommentManagement.Comment>> = ref([
     title: "评论ID",
     align: "center",
   },
-   {
+  {
     key: "house_title",
     title: "房屋名称",
     align: "center",
@@ -102,8 +109,8 @@ const columns: Ref<DataTableColumns<CommentManagement.Comment>> = ref([
     key: "username",
     title: "用户名称",
     align: "center",
-  }, 
-   {
+  },
+  {
     key: "role_permission",
     title: "用户类型",
     align: "center",
@@ -113,21 +120,20 @@ const columns: Ref<DataTableColumns<CommentManagement.Comment>> = ref([
     title: "评论内容",
     align: "center",
   },
-   {
+  {
     key: "create_time",
     title: "评论时间",
-     align: "center",
-     render:  ({ create_time }) => {
-       if (create_time) {
-     
-          
-          return  (<span>{dayjs(create_time).format("YY年MM月DD日 HH:mm:ss")}</span>)
-       }
-       return ( <span> </span>  )
-       
+    align: "center",
+    render: ({ create_time }) => {
+      if (create_time) {
+        return (
+          <span>{dayjs(create_time).format("YY年MM月DD日 HH:mm:ss")}</span>
+        );
       }
+      return <span> </span>;
+    },
   },
- 
+
   {
     key: "deleted_state",
     title: "状态",
@@ -160,10 +166,15 @@ const columns: Ref<DataTableColumns<CommentManagement.Comment>> = ref([
     render: (row) => {
       return (
         <NSpace justify={"center"}>
-          <NButton size={"small"} onClick={() => handleEditTable(row.comment_id)}>
+          <NButton
+            size={"small"}
+            onClick={() => handleEditTable(row.comment_id)}
+          >
             编辑
           </NButton>
-          <NPopconfirm onPositiveClick={() => handleDeleteTable(row.comment_id)}>
+          <NPopconfirm
+            onPositiveClick={() => handleDeleteTable(row.comment_id)}
+          >
             {{
               default: () => "确认删除",
               trigger: () => <NButton size={"small"}>删除</NButton>,
@@ -188,16 +199,15 @@ function createDefaultEditData(): CommentManagement.Comment {
     index: null,
     key: null,
     /** 用户id */
-    user_id: '',
+    user_id: "",
     /**用户状态 */
-    house_id: '',
+    house_id: "",
     /** 用户名 */
     comment_id: "",
     content: "",
     create_time: "",
     /**手机号 */
     deleted_state: "",
-  
   };
 }
 /**
@@ -206,7 +216,6 @@ function createDefaultEditData(): CommentManagement.Comment {
  */
 function setEditData(data: CommentManagement.Comment | null) {
   Object.assign(editData, createDefaultEditData(), data);
-  // console.log('editData: ', editData);
 }
 
 /**
@@ -221,10 +230,7 @@ function handleAddTable() {
  * @param rowId 当前列的key值即user_id的值
  */
 function handleEditTable(rowId: string | null) {
-  // console.log("rowId: ", rowId);
-  //可能存在没有的变量的值
   const findItem = tableData.value.find((item) => item.comment_id === rowId);
-  // console.log("findItem: ", findItem);
 
   if (findItem) {
     setEditData(findItem);
@@ -234,27 +240,12 @@ function handleEditTable(rowId: string | null) {
 }
 
 async function handleDeleteTable(rowId: string | null) {
-
-  let {error,data} = await  fetchCommentDel(rowId as string);
+  let { error, data } = await fetchCommentDel(rowId as string);
   if (!error) {
-    getTableData()
+    getTableData();
     window.$message?.info("删除成功");
   }
 }
-
-const pagination: PaginationProps = reactive({
-  page: 1,
-  pageSize: 10,
-  showSizePicker: true,
-  pageSizes: [10, 15, 20, 25, 30],
-  onChange: (page: number) => {
-    pagination.page = page;
-  },
-  onUpdatePageSize: (pageSize: number) => {
-    pagination.pageSize = pageSize;
-    pagination.page = 1;
-  },
-});
 
 function init() {
   getTableData();

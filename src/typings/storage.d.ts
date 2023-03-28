@@ -18,5 +18,7 @@ declare namespace StorageInterface {
     themeSettings: Theme.Setting;
     /** 多页签路由信息 */
     multiTabRoutes: App.GlobalTabRoute[];
+    /**搜索初始数据 */
+    originalData: any[];
   }
 }

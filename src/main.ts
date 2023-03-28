@@ -9,6 +9,7 @@ import "./styles/index.scss";
 import "normalize.css";
 import "uno.css";
 import Logo from "./components/Logo.vue";
+import VueOfficeExcel from '@vue-office/excel'
 
 async function setupApp() {
   // 网站页面加载
@@ -28,6 +29,7 @@ async function setupApp() {
 
   //安装全局组件
   app.component("Logo", Logo);
+  app.component('vue-office-excel',VueOfficeExcel)
   //挂载mount app
   app.mount("#app");
 }

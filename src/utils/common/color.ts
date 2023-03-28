@@ -1,6 +1,7 @@
+import type { HsvColor } from 'colord';
 import { colord, extend } from 'colord';
 import mixPlugin from 'colord/plugins/mix';
-import type { HsvColor } from 'colord';
+
 
 extend([mixPlugin]);
 
@@ -13,6 +14,8 @@ const brightnessStep1 = 5;
 const brightnessStep2 = 15;
 const lightColorCount = 5;
 const darkColorCount = 4;
+
+//p: 你能帮我写一个快速排序吗
 
 /**
  * 根据颜色获取调色板颜色(从左至右颜色从浅到深，6为主色号)
@@ -35,6 +38,7 @@ export function getColorPalette(color: string, index: ColorIndex) {
 
   return colord(newHsv).toHex();
 }
+
 
 /**
  * 根据颜色获取调色板颜色所有颜色

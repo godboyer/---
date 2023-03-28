@@ -15,19 +15,55 @@
             <icon-uil:export class="mr-4px text-20px" />
             导出Excel
           </n-button>
+
+<!-- ----------------------------------搜索房源------------------------------- -->
+          <search-box
+            v-model:search="searchModel.searchQuery"
+            @click:search="handleOnSearch"
+            @update:search = "handleUpdateQuery"
+            
+          >
+            <template v-slot:sel_ect>
+              <n-select
+                default-value="0"
+                :fallback-option="fallbackOption"
+                v-model:value="searchModel.selectValue"
+                placeholder="Select"
+                :options="leaseStatusOptions"
+                style="width: 120px"
+                @update:value="handleSelectChange"
+              />
+            </template>
+          </search-box>
+
+
         </n-space>
         <n-space align="center" :size="18">
           <n-button size="small" type="primary" @click="getTableData">
-            <icon-mdi-refresh class="mr-4px text-16px" :class="{ 'animate-spin': loading }" />
+            <icon-mdi-refresh
+              class="mr-4px text-16px"
+              :class="{ 'animate-spin': loading }"
+            />
             刷新表格
           </n-button>
           <column-setting v-model:columns="columns" />
         </n-space>
       </n-space>
-      <n-data-table :columns="columns" :data="tableData" :loading="loading" :pagination="pagination"
-        @update:sorter="handleSorterChange" @update:page="handlePageChange" @update:checked-row-keys="handleCheck" />
-      <table-action-modal v-model:visible="visible" :type="modalType" :edit-data="editData"
-        @update-action="getTableData" />
+      <n-data-table
+        :columns="columns"
+        :data="tableData"
+        :loading="loading"
+        :pagination="pagination"
+        @update:sorter="handleSorterChange"
+        @update:page="handlePageChange"
+        @update:checked-row-keys="handleCheck"
+      />
+      <table-action-modal
+        v-model:visible="visible"
+        :type="modalType"
+        :edit-data="editData"
+        @update-action="getTableData"
+      />
     </n-card>
     <n-modal v-model:show="showModal" size="huge" :bordered="false">
       <div>
@@ -40,13 +76,14 @@
             </n-button>
           </template>
         </n-thing>
-        <show-card :house-data-one="(housedataone as unknown as HouseManagement.HouseInfo)" />
+        <show-card
+          :house-data-one="(housedataone as unknown as HouseManagement.HouseInfo)"
+        />
       </div>
     </n-modal>
     <n-modal v-model:show="isPreview" size="huge">
-      <vue-office-excel :src="excelSrc" style="width: 80vw; height:860px;" />
+      <vue-office-excel :src="excelSrc" style="width: 80vw; height: 860px" />
     </n-modal>
-
   </div>
 </template>
 
@@ -55,18 +92,24 @@ import { computed, reactive, ref, unref } from "vue";
 import type { Ref } from "vue";
 import { DataTableRowKey, NButton, NPopconfirm, NSpace, NTag } from "naive-ui";
 import type { DataTableColumns, PaginationProps } from "naive-ui";
-import { leaseStatusLabels, examStatusLabels,defaultStatusLabels } from "@/constants";
+import {
+  leaseStatusLabels,
+  examStatusLabels,
+  defaultStatusLabels,
+} from "@/constants";
 import { useBoolean, useLoading } from "@/hooks";
 import showCard from "@/pages/admin/component/showCard.vue";
 import TableActionModal from "./components/table-action-modal.vue";
 import type { ModalType } from "./components/table-action-modal.vue";
-import ColumnSetting from "./components/column-setting.vue";
+import { columnSetting, searchBox } from "@/pages/admin/component/index";
 import { useHouseInfoStore } from "@/store";
 import HouseFetch from "@/service/api/house";
 import dayjs from "dayjs";
-import { useExcelTool } from "@/hooks";
-import VueOfficeExcel from '@vue-office/excel'
-import '@vue-office/excel/lib/index.css'
+import { useExcelTool, useSearchTable } from "@/hooks";
+import { defaultStatusOptions, leaseStatusOptions, examStatusOptions } from "@/constants";
+import {SearchSelectOption} from '@/hooks/business/useTable'
+import "@vue-office/excel/lib/index.css";
+import { SelectBaseOption } from "naive-ui/es/select/src/interface";
 const { exportExcelFile, previewExcel, excelSrc, isPreview } = useExcelTool();
 
 const { fetchHouseListToAdmin, fetchHouseDeleteToAdmin } = new HouseFetch();
@@ -82,6 +125,64 @@ function setTableData(data: HouseManagement.House[]) {
   tableData.value = data;
 }
 
+//查询的参数
+
+const searchModel = reactive({
+  searchQuery: ref(""),
+  selectValue:'--出租状态--',
+  status: "",
+  examStatus: "",
+  defaultStatus: "",
+});
+function handleUpdateQuery(value: string) {
+  searchModel.searchQuery = value;
+  console.log('searchModel.searchQuery: ', searchModel.searchQuery);
+
+}
+
+
+function handleSelectChange(value: string,option:SearchSelectOption ) {
+  console.log('selectValue: ', value, option);
+  searchModel.selectValue = value;
+  let data = onSearchSelect(option)
+  console.log('data: ', data);
+
+  setTableData(data);
+}
+
+
+function fallbackOption(value: string ):SearchSelectOption {
+  console.log('value: ', value);
+  return {
+    label: value,
+    value: "",
+    field:''
+  };
+}
+
+
+
+
+const { creatSearchData, filteredData, onSearch ,onSearchSelect} =
+  useSearchTable<HouseManagement.House>(searchModel.searchQuery);
+
+/**
+ * 点击搜索事件
+ */
+async function handleOnSearch(value: string) {
+      searchModel.searchQuery =   value 
+  console.log(searchModel.searchQuery,value);
+
+  startLoading();
+  let data = await onSearch<HouseManagement.House>(searchModel.searchQuery);
+  setTimeout(() => {
+    setTableData(data);
+
+    endLoading();
+  }, 1000);
+}
+
+console.log("filteredData.value ", filteredData.value);
 async function getTableData() {
   startLoading();
   const { data } = await fetchHouseListToAdmin({
@@ -90,10 +191,9 @@ async function getTableData() {
     pageCount: 1,
   });
   if (data) {
-    setTimeout(() => {
-      setTableData(data);
-      endLoading();
-    }, 1000);
+    setTableData(data);
+    creatSearchData(data);
+    endLoading();
   }
 }
 
@@ -107,9 +207,7 @@ const handleCheck = (rowKeys: DataTableRowKey[]) => {
 };
 
 function handleDeleteTableData() {
-
-  // previewExcel(tableData,'房源详情列表')
-
+  previewExcel(tableData, "房源详情列表");
 }
 
 /**
@@ -228,7 +326,7 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     render: ({ exam_status }) => {
       if (exam_status) {
         const tagTypes: Record<
-          UserManagement.UserStatusKey,
+          HouseManagement.examStatusKey,
           NaiveUI.ThemeColor
         > = {
           "1": "success",
