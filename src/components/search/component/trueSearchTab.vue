@@ -10,7 +10,7 @@
       label="城市"
       @click="handleShowSearchPanel('city')"
     >
-      <input type="text" placeholder="你想去哪个城市" />
+      <input type="text" placeholder="你想去哪个城市" :value="search.getCityName"/>
     </n-form-item>
     <n-form-item
       class="item-form"
@@ -18,7 +18,7 @@
       label="日期"
       @click="handleShowSearchPanel('date')"
     >
-      <input type="text" placeholder="请在日历中选择" />
+      <input type="text" placeholder="请在日历中选择" :value="search.getDateTime" />
     </n-form-item>
     <div
       class="item-form flex items-center"
@@ -29,7 +29,7 @@
         label="关键字"
         @click="handleShowSearchPanel('keywords')"
       >
-        <input type="text" placeholder="景点/地点/房源名" />
+        <input type="text" placeholder="景点/地点/房源名"  :value="search.getDateTime" />
       </n-form-item>
       <button
         @click="flag = true"
@@ -44,10 +44,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { useSearchStore } from "@/store";
+const search = useSearchStore();
 interface Emits {
   (e: "show-search-panel", key: string): void;
 }
+
 
 const emit = defineEmits<Emits>();
 const flag = ref(false);

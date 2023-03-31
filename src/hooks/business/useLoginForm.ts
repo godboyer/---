@@ -1,4 +1,4 @@
-import { ref, defineEmits } from "vue";
+import { ref } from "vue";
 import { useAuthStore } from "@/store";
 import type { FormInst } from "naive-ui";
 import { Emits } from "@/pages/login/component";

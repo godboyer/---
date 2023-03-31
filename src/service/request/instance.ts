@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import type { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
-import { REFRESH_TOKEN_CODE } from "@/config";
+import { REFRESH_TOKEN_CODE,AUTH_TOKEN } from "@/config";
 import {
   localStg,
   handleAxiosError,
@@ -10,6 +10,8 @@ import {
   transformRequestData,
 } from "@/utils";
 import { handleRefreshToken } from "./helpers";
+
+
 
 /**
  * 封装axios请求类
@@ -36,6 +38,8 @@ export default class CustomAxiosInstance {
   ) {
     this.backendConfig = backendConfig;
     this.instance = axios.create(axiosConfig);
+    // 创建实例后修改默认值  这里是设置token
+    this.instance.defaults.headers.common["Authorization"] = AUTH_TOKEN;
     this.setInterceptor();
   }
 
@@ -45,16 +49,17 @@ export default class CustomAxiosInstance {
       async (config) => {
         const handleConfig = { ...config, timeout: 100000 };
         if (handleConfig.headers) {
+
+        
           // 数据转换matcher
-          const contentType = handleConfig.headers['Content-Type'] as UnionKey.ContentType;
+          const contentType = handleConfig.headers[
+            "setContentType"
+          ] as UnionKey.ContentType;
+
           handleConfig.data = await transformRequestData(
             handleConfig.data,
             contentType
           );
-          // 设置token
-          // handleConfig.headers.Authorization = localStg.get('token') || '';
-          handleConfig.headers.Authorization =
-            "Bearer" + " " + localStg.get("token") || "";
         }
         return handleConfig;
       },
@@ -68,12 +73,15 @@ export default class CustomAxiosInstance {
     this.instance.interceptors.response.use(
       async (response) => {
         const { status } = response;
+        /**-----------------------请求成功处理  -------------------------- */
         if (status === 200 || status < 300 || status === 304) {
           const backend = response.data;
           const { codeKey, dataKey, successCode } = this.backendConfig;
           // 请求成功
           if (backend[codeKey] === successCode) {
-            return handleServiceResult(null, backend) as unknown as Promise<AxiosResponse<any, any>> ;
+            return handleServiceResult(null, backend) as unknown as Promise<
+              AxiosResponse<any, any>
+            >;
           }
 
           // // token失效, 刷新token
@@ -85,12 +93,21 @@ export default class CustomAxiosInstance {
           // }
 
           const error = handleBackendError(backend, this.backendConfig);
-          return handleServiceResult(error, null) as unknown as Promise<AxiosResponse<any, any>>;
+          return handleServiceResult(error, null) as unknown as Promise<
+            AxiosResponse<any, any>
+          >;
         }
+
+        // 请求失败
         const error = handleResponseError(response);
-        return handleServiceResult(error, null) as unknown as Promise<AxiosResponse<any, any>>;
+        return handleServiceResult(error, null) as unknown as Promise<
+          AxiosResponse<any, any>
+        >;
       },
       (axiosError: AxiosError) => {
+        /**
+         * aioxs请求错误处理
+         */
         const error = handleAxiosError(axiosError);
         return handleServiceResult(error, null);
       }

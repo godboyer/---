@@ -26,8 +26,9 @@ import { useRouterPush } from '@/composables';
 import { useCaptcha } from '@/hooks';
 import { formRules } from '@/utils';
 
+defineOptions({name: 'BindWechat'})
 const { toLoginModule } = useRouterPush();
-const { label, isCounting, loading: smsLoading, getSmsCode } = useCaptcha();
+const { label, isCounting, loading: smsLoading, getCaptcha } = useCaptcha();
 
 const formRef = ref<HTMLElement & FormInst>();
 
@@ -43,7 +44,7 @@ const rules = {
 };
 
 function handleSmsCode() {
-  getSmsCode(model.phone);
+  getCaptcha(model.phone);
 }
 
 async function handleSubmit() {

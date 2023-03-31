@@ -1,4 +1,4 @@
-// 后端接口返回的数据类型
+
 
 /** 后端返回的用户权益相关类型 */
 declare namespace ApiAuth {
@@ -234,12 +234,62 @@ declare namespace ApiHouseManagement {
     user_id: string;
     video?: string;
   }
+
+  interface ApiData{
+    houseCardList: House[];
+    houseStatus: HouseStatus;
+  }
+
+  interface HouseStatus{
+    city_id: string;
+    house_total: string | number;
+    city_name: string;
+  }
+
+
 }
 
 declare namespace ApiQuery {
   interface QeuryPage {
     page: number;
     pageSize: number;
-    pageCount: number;
+    pageCount?: number;
+  }
+
+  interface QueryCityId {
+    city_id: string;
+    page: number;
+    pageSize: number;
+  }
+}
+
+declare namespace ApiTableManagement {
+  interface Table {
+    /**文档id */
+    _id: string | null;
+    /**
+     * 表格编号
+     */
+    table_id: string;
+    /**
+     * 表格名称
+     */
+    table_name: string;
+    /**
+     * 表格内容
+     */
+    table_content: string;
+    /**
+     * 删除状态
+     */
+    deleted_state: string;
+    /**
+     * 创建时间
+     */
+    create_time?: string;
+    /**
+     * 更新时间
+     */
+    updated_time?: string;
   }
 }

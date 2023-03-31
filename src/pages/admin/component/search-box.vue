@@ -1,14 +1,10 @@
 <template>
   <div class="search-box">
     <n-space>
-      <slot name="sel_ect">
-
-      </slot>
-
+      <slot :slotHandler="handleSlotOption"> </slot>
       <input
         type="text"
-        v-model="searchText"
-        @input="onInput"
+        v-model="searchQuery"
         @keydown.enter="onSearch"
         placeholder="搜索"
         class="search-input"
@@ -20,31 +16,43 @@
 </template>
 
 <script setup lang="ts">
-import { MaybeRef } from "@vueuse/shared";
-import { Ref, ref, watch } from "vue";
+import { reactive, Ref, ref, useSlots, watch } from "vue";
 import { useSearchTable } from "@/hooks";
+import { SearchSelectOption } from "@/hooks/business/useTable";
 defineOptions({ name: "SearchBox" });
-const props = defineProps<{ search: string }>();
+// const props = defineProps<{ originalData: any[] }>();
 const emit = defineEmits([
-  "search",
-  "update:search",
-  "onInput:search",
+  "originalData",
+  "update:originalData",
+  "onInput:originalData",
   "click:search",
+  "search:end",
 ]);
 
-const searchText: Ref<string> = ref(props.search);
-// const {search} = props
-function onSearch() {
-  emit("click:search", searchText.value);
-}
-function onInput(event: Event) {
-  searchText.value = (event.target as HTMLInputElement).value;
-  emit("onInput:search", searchText.value);
-  emit("update:search", searchText.value);
-}
-watch(searchText, (newValue) => {
-  emit("update:search", newValue);
+//查询的参数
+const Model = reactive({
+  selectValue: "--出租状态--",
+  status: "",
+  examStatus: "",
+  defaultStatus: "",
 });
+const {  filteredData, onSearch, onSearchSelect, searchQuery } =
+  useSearchTable();
+
+
+function handleSlotOption(value: string, option: SearchSelectOption) {
+  onSearchSelect(option);
+  emit("search:end", filteredData.value);
+}
+watch(
+  () => filteredData.value,
+  (val) => {
+    emit("search:end", val);
+  }
+);
+
+const slot = useSlots();
+
 </script>
 
 <style scoped>

@@ -8,12 +8,12 @@
 import { ElIcon } from "element-plus";
 
 defineOptions({ name: 'myIcon' });
-interface Props {
+interface MyIconProps {
 	/** 图标名称 */
 	icon?: string;
 }
 
-defineProps<Props>();
+defineProps<MyIconProps>();
 </script>
 
 <style scoped></style>

@@ -15,7 +15,7 @@ async function setupApp() {
   // 网站页面加载
   const appLoading = createApp(AppLoading)
   appLoading.mount("#appLoading")
-
+  
   //创建app
   const app = createApp(App);
 

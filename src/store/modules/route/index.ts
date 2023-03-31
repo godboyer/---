@@ -3,7 +3,7 @@ import {
 	ROOT_ROUTE,
 	constantRoutes,
 	router,
-	routes as staticRoutes,
+	
 	
 } from "@/router";
 

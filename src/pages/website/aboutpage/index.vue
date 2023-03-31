@@ -15,7 +15,7 @@
   </div> -->
   <div class="h-50px"></div>
   <n-space :size="25" :vertical="true" align="center">
-    <div class="box" v-for="(item, index) in itemData" :key="item.title">
+    <div  v-resize-observer:params="handleReszie"  class="box" v-for="(item, index) in itemData" :key="item.title">
       <p class="box-title">
         <b>{{ index + 1 }}</b
         >. <strong>{{ item.title }}</strong>
@@ -42,6 +42,9 @@
 // defineProps<{
 //     itemData:any[]
 // }>()
+function handleReszie(size: any) {
+    console.log("监听元素大小",size);
+}
 
 const itemData = [
   {

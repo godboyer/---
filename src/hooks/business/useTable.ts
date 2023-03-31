@@ -1,12 +1,38 @@
-import { onUnmounted, shallowRef, toRefs, unref } from "vue";
+import { onMounted, onUnmounted, shallowRef, toRaw, toRefs, unref } from "vue";
 import { ref, reactive, watch, Ref, UnwrapRef } from "vue";
 import { MaybeRef } from "@vueuse/shared";
-import { DataTableColumns, DataTableRowKey, elementDark } from "naive-ui";
+import {
+  DataTableColumns,
+  DataTableRowKey,
+  elementDark,
+  NSpace,
+} from "naive-ui";
 import { useBoolean, useLoading } from "../common";
-import { isString, localStg } from "@/utils";
+import {
+  createColumn,
+  extractFields,
+  isArray,
+  isString,
+  localStg,
+  queryAllFields,
+  querySpecifiedFields,
+  renderBaseAction,
+} from "@/utils";
 import localforage from "localforage";
 import { SelectBaseOption } from "naive-ui/es/select/src/interface";
+import { fetchCityDel, fetchTableList } from "@/service";
 
+export interface Props {
+  /** 弹窗可见性 */
+  visible: boolean;
+  /**
+   * 弹窗类型
+   * add: 新增
+   * edit: 编辑
+   */
+  type?: "add" | "edit";
+}
+export type ModalType = NonNullable<Props["type"]>;
 type TableData<T> = Ref<T[]>;
 type PaginationProps = {
   page: number;
@@ -16,39 +42,123 @@ type PaginationProps = {
   onChange: (page: number) => void;
   onUpdatePageSize: (pageSize: number) => void;
 };
-interface UseTableOptions<T> {
-  columns: DataTableColumns<T>;
-  fetchData: () => Promise<MaybeRef<T[]>>;
+
+interface TableTitles {
+  [label: string]: string;
+  path: string;
 }
 
-interface UseTableReturn<T> {
-  tableData: TableData<T>;
-  pagination: PaginationProps;
-  getTableData: () => Promise<void>;
+export interface SearchSelectOption extends SelectBaseOption {
+  field: string; //字段名
 }
 
-export interface SearchSelectOption extends SelectBaseOption  {
-    field: string;//字段名
-}
-
-
-
-export function useTable<T>(
-  fetchData: () => Promise<Service.RequestResult<T[]>>
-) {
+export function useTable<T>(tableName: MaybeRef<string>) {
   const { loading, startLoading, endLoading } = useLoading(false);
   const { bool: visible, setTrue: openModal } = useBoolean();
+
+  const tableData: TableData<T> = ref([]);
+
+  /**
+   * 表格编辑类数据
+   */
+  const modalType = ref<ModalType>("add");
+  let editData = ref<any>({}); //编辑的数据
+  const modelFormItems = ref<TableTitles[]>([]);
+  function setModalType(type: ModalType) {
+    modalType.value = type;
+  }
+ 
+
+
+  /**
+   * 创建默认表格数据
+   * @param tableName 表名
+   * @returns
+   */
+  async function createTable() {
+  
+    startLoading();
+    const { error, data } = await fetchTableList(unref(tableName), {
+      page: 1,
+      pageSize: -1,
+    });
+    if (!error) {
+      const { tableName, tableDatas, tableColumns } = data;
+      setTimeout(() => {
+        setTableData(tableDatas);
+         localforage.setItem("originalData", tableDatas)
+        endLoading();
+      }, 1000);
+      return tableColumns;
+    }
+  }
+
+  /**
+   * 打开添加表格
+   */
+  function handleAddTable() {
+    openModal();
+    setModalType("add");
+  }
+  /**
+   * 打开编辑表格
+   * @param rowId 当前列的key值即user_id的值
+   */
+  function handleEditTable(row: any) {
+    console.log("rowId: ", row);
+    if (!row) {
+      resetEditData(editData);
+    }
+    setEditData(row);
+    setModalType("edit");
+    openModal();
+  }
+
+  /**
+   * 创建默认编辑数据
+   * @param data 需要编辑的数据
+   * @returns
+   */
+  function createDefaultEditData(data: any) {
+    editData.value = data;
+    console.log("editData: ", editData);
+  }
+
+  /**
+   * 设置需要操作的数据的函数
+   * @param   data  需要操作的数据
+   */
+  function setEditData(data: T | null) {
+    console.log("editData: ", editData, data);
+    Object.assign(editData.value, data);
+  }
+
+  /**
+   * 重置编辑数据
+   * @param data 需要重置的数据
+   */
+  function resetEditData<T extends Record<string, unknown>>(
+    data: Ref<T>
+  ): void {
+    const _rawData = toRaw(unref(data));
+    const keys = Object.entries(_rawData).reduce((obj, [key, value]) => {
+      obj[key] = null;
+      return obj;
+    }, {} as Record<string, null>);
+
+    Object.assign(data, keys);
+  }
 
   //被选中行的key值
   const checkedRowKeysRef = ref<DataTableRowKey[]>([]);
   /**选中行事件 */
-  const handleCheck = (rowKeys: DataTableRowKey[]) => {
+  const handleCheckRowKeys = (rowKeys: DataTableRowKey[]) => {
     //选中的key值数组,可以进行多选操作比如删除,等等
     checkedRowKeysRef.value = rowKeys;
     window.$message?.info(`你选择中了 ${rowKeys}` as any);
   };
 
-  const tableData: TableData<T> = ref([]);
+  /**分页 */
   const pagination: PaginationProps = reactive({
     page: 1,
     pageSize: 10,
@@ -56,47 +166,57 @@ export function useTable<T>(
     pageSizes: [10, 15, 20, 25, 30],
     onChange: (page: number) => {
       pagination.page = page;
-      getTableData();
+      createTable();
+      console.log("我触发了");
     },
     onUpdatePageSize: (pageSize: number) => {
       pagination.pageSize = pageSize;
       pagination.page = 1;
-      getTableData();
+      createTable();
     },
   });
 
-  async function getTableData() {
-    startLoading();
-    const { data } = await fetchData();
-    if (data) {
-      setTimeout(() => {
-        setTableData(data);
-        endLoading();
-      }, 1000);
-    }
-  }
-
+  /**设置表格数据 */
   function setTableData(data: T[]) {
     tableData.value = data;
   }
 
-  return { tableData, pagination, getTableData, loading, visible, openModal };
+  return {
+    modalType,
+    setEditData,
+    editData,
+    createDefaultEditData,
+    handleCheckRowKeys,
+    tableData,
+    pagination,
+    loading,
+    visible,
+    openModal,
+    modelFormItems,
+    checkedRowKeysRef,
+    handleEditTable,
+    handleAddTable,
+    createTable,
+    resetEditData
+  };
 }
 
-export function useSearchTable<T>(searchQuery?: MaybeRef<string>) {
-  console.log("searchQuery: ", searchQuery);
+export function useSearchTable<T>() {
+  const searchQuery = ref<string>(""); //搜索框的值
   const searchData: Ref<T[]> = ref([]); //搜索的数据源
   const filteredData: Ref<T[]> = ref([]); //搜索后的数据
 
   /**
-   * 创建搜索数据
+   * 创建当前搜索的数据
    * @param Data 传入的数据
    */
-  async function creatSearchData<U extends T>(Data: MaybeRef<U[]>) {
+  async function creatSearchData(Data: MaybeRef<any[]>) {
+    const _rawData = toRaw(unref(Data));
     const originalData = await localforage.getItem("originalData");
-    if (!originalData) {
+
+    if (!originalData || (isArray(originalData) && originalData.length === 0)) {
       //数据持久化
-      localforage.setItem("originalData", unref(Data)).then((value) => {
+      localforage.setItem("originalData", _rawData).then((value) => {
         searchData.value = value;
       });
     } else {
@@ -105,7 +225,12 @@ export function useSearchTable<T>(searchQuery?: MaybeRef<string>) {
   }
 
   /** 点击搜索模糊搜索*/
-  async function onSearch<U extends T>(searchQuery: MaybeRef<string>) {
+  async function onSearch() {
+    const originalData = await localforage.getItem("originalData");
+    searchData.value = originalData as T[];
+    console.log('searchQuery: ', searchQuery);
+    console.log('searchData: ', searchData);
+
     filteredData.value = queryAllFields(searchQuery, searchData);
     return unref(filteredData);
   }
@@ -114,7 +239,7 @@ export function useSearchTable<T>(searchQuery?: MaybeRef<string>) {
 
   /** select选项搜索*/
 
-  function onSearchSelect<U extends T>(queryOption: SearchSelectOption) {
+  function onSearchSelect(queryOption: SearchSelectOption) {
     const { label, value: searchQuery, field: searchFields } = queryOption;
     filteredData.value = querySpecifiedFields(
       unref(searchQuery) as string,
@@ -128,86 +253,12 @@ export function useSearchTable<T>(searchQuery?: MaybeRef<string>) {
     localforage.removeItem("originalData");
   });
 
-  return { creatSearchData, filteredData, onSearch, watchSearch,onSearchSelect };
-}
-
-/**
- * 无指定字段搜索(全局搜索 模糊搜索)
-  这个函数将会搜索所有对象的所有字段，并将包含搜索关键词的对象返回。
- * @param searchQuery 搜索的参数
- * @param originalData 搜索的数据来源
- * @returns 
- */
-function queryAllFields<T>(
-  searchQuery: MaybeRef<string>,
-  originalData: Ref<T[]>
-): T[] {
-  let toRefsOriginalData = toRefs(unref(originalData));
-  const _originalData: any[] = [
-    ...unref(originalData).map((item, index) => {
-      return {
-        ...item,
-        queryId: String(index + 10),
-      };
-    }),
-  ];
-  console.log("searchQuery: ", searchQuery);
-
-  const searchQueryValue = unref(searchQuery).trim();
-  console.log("searchQueryValue: ", searchQueryValue);
-  if (!searchQueryValue) {
-    return [...unref(originalData)];
-  }
-
-  const searchFieldsArray = getKeys(toRefsOriginalData[0]);
-  console.log("searchFieldsArray: ", searchFieldsArray);
-
-  const matchedKeys = new Set<string>();
-  const reg = new RegExp(searchQueryValue, "i");
-  for (const item of _originalData) {
-    for (const field of searchFieldsArray) {
-      if (isString(item[field]) && reg.test(item[field])) {
-        matchedKeys.add(item["queryId"]);
-      }
-    }
-  }
-
-  return _originalData.filter((item) => matchedKeys.has(item["queryId"]));
-}
-
-/**
- * 指定一个字段或者数组搜索
- * @param searchQuery 搜索关键词字符串的 Ref 对象
- * @param originalData 原始数据数组的 MaybeRef 对象
- * @param searchFields 可选的搜索字段数组，每个元素应该是原始数据对象的一个键名，如果不传则默认为原始数据对象的所有键名数组。
- * @returns 过滤后的数据数组的 Ref 对象
- */
-function querySpecifiedFields<T>(
-  searchQuery: MaybeRef<string>,
-  originalData: MaybeRef<T[]>,
-  searchFields: MaybeRef<string> | MaybeRef<string[]>
-): T[] {
-  let filteredData: any[] = [];
-  const searchFieldsArray = Array.isArray(searchFields)
-    ? searchFields
-    : [searchFields];
-
-  const newQuery = unref(searchQuery).toLowerCase().trim();
-
-  if (!newQuery) {
-    return [...unref(originalData)];
-  }
-  // p: 你好
-
-  filteredData = unref(originalData).filter((item) =>
-    searchFieldsArray
-      .map((field) => String(item[field]).toLowerCase())
-      .some((value) => value.includes(newQuery.toLowerCase()))
-  );
-
-  return filteredData;
-}
-
-function getKeys<T extends {}>(o: T): (keyof T)[] {
-  return Object.keys(unref(o)) as (keyof T)[];
+  return {
+    creatSearchData,
+    filteredData,
+    onSearch,
+    watchSearch,
+    onSearchSelect,
+    searchQuery,
+  };
 }

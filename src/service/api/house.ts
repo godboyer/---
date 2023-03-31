@@ -24,7 +24,9 @@ export type HouseFormModel = Pick<
  * @function fetchHouseListToAdmin --获取房源信息列表的接口
  * @function fetchHouseUpdateToAdmin --更新房源信息的接口
  * @function fetchHouseDeleteToAdmin --删除房源信息的接口
+ *  @function fetchHouseListToCard --获取房源信息卡片的接口
  *
+ * 
  */
 class HouseFetch {
   async fetchHouseAddToAdmin(data: any) {
@@ -61,9 +63,19 @@ class HouseFetch {
 
   async fetchHouseListToCard(params: ApiQuery.QeuryPage) {
     const { page, pageSize, pageCount } = params;
-    const data = await request.get<HousePage.Card[] | null>(
+    const data = await request.get<ApiHouseManagement.ApiData | null>(
       `/house/card-list`,
       { params: { page, pageSize, pageCount } }
+    );
+    return adapter(HouseCardAdapter, data);
+  }
+
+  
+  async fetchHouseListToCardByCity(params: ApiQuery.QueryCityId) {
+    const { page, pageSize, city_id } = params;
+    const data = await request.get<ApiHouseManagement.ApiData | null>(
+      `/house/card-list/${city_id}`,
+      { params: { page, pageSize } }
     );
     return adapter(HouseCardAdapter, data);
   }

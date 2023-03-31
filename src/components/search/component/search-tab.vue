@@ -1,41 +1,16 @@
 <template>
   <div
-    class="w-full h-12 b-t-2 b-b-2 flex justify-between items-center position-relative"
+    class="h-12 flex justify-between items-center position-relative borderStyle"
     ref="filterdomRef"
-    :class="{ 'backdrop-box': visible }"
+    :class="{ 'backdrop-box': search.visibleBackDrop }"
   >
-    <div>
-      <n-button> 区域 </n-button>
-      <n-button> 地铁 </n-button>
-      <n-tag> 类型 </n-tag>
-
-      <n-popover
-        id="dropbox"
-        :overlap="overlap"
-        :show="showPopover"
-        placement="bottom-start"
-        trigger="click"
-        :on-clickoutside="handleOutsideClick"
-        :on-update:show="handlePopoverShow"
-      >
-        <template #trigger>
-          <n-tag
-            class="hover:cursor-pointer hover:bg-#d6d6d6"
-            @click="handleBackDrop"
-          >
-            租金
-          </n-tag>
-        </template>
-        <div class="w-400px h-300px bgshow">
-          <n-slider v-model:value="value" range :step="1" />
-          <n-space align="center">
-            <n-input-number v-model:value="value[0]" size="small" />
-            <n-input-number v-model:value="value[1]" size="small" />
-          </n-space>
-        </div>
-      </n-popover>
-
-      <n-tag> 户型 </n-tag>
+    <n-space>
+      <address-popover />
+      <price-range-popover />
+      <categoryPopover />
+      <area-and-floor-popover />
+      <more-filter-popver />
+      <!-- <n-tag> 户型 </n-tag>
       <n-tag> 房源面积 </n-tag>
       <n-tag> 房源朝向 </n-tag>
       <n-tag> 供暖方式 </n-tag>
@@ -44,33 +19,40 @@
           <n-tag> 特色户型 </n-tag>
         </template>
         <div class="w-400px h-300px">啊！</div>
-      </n-popover>
-    </div>
-    <map-switch />
+      </n-popover> -->
+    </n-space>
+
+    <slot name="switch"></slot>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { useAppStore } from "@/store";
+import { useSearchStore } from "@/store";
 import { onMounted, ref, Ref } from "vue";
-import mapSwitch from "./map-switch.vue";
-
+import {
+  priceRangePopover,
+  categoryPopover,
+  areaAndFloorPopover,
+  addressPopover,
+  moreFilterPopver,
+} from "./popover";
 defineOptions({ name: "searchTab" });
 
+const search = useSearchStore();
 const value = ref([50, 70]);
 const overlap = ref(false);
-const visible = ref(false);
-const app = useAppStore();
 const showPopover = ref(false);
+const visible = ref(false);
+
 const filterdomRef = ref<HTMLElement | null>(null);
 const backdropRef = ref<HTMLElement | null>(null);
 function handleBackDrop(e: Event) {
   console.log("事件", e.target);
   visible.value = true;
   showPopover.value = true;
- 
 }
+
 function handlePopoverShow(value: boolean) {
   console.log("我触发了", value);
 }
@@ -92,5 +74,11 @@ function handleOutsideClick() {
   width: 100% !important;
   height: 100vh !important;
   z-index: 99 !important;
+}
+
+.borderStyle {
+  width: 100%;
+  border-top: 1px solid #d6d6d6;
+  border-bottom: 1px solid #d6d6d6;
 }
 </style>

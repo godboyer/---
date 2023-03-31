@@ -25,8 +25,8 @@
             <!-- <template #suffix>
               <n-button>Suffix</n-button>
             </template> -->
-            <n-thing :title="v.label + ':'" :title-extra="houseDataOne[v.key]">
-            </n-thing>
+            <!-- <n-thing :title="v.label + ':'" :title-extra="houseDataOne[v.key]"> -->
+            <!-- </n-thing> -->
           </n-list-item>
           <n-list-item> </n-list-item> </n-list
       ></n-grid-item>
@@ -49,7 +49,6 @@
 </template>
 
 <script setup lang="ts">
-import { IhouseInfo } from "@/typings/ApiInterface";
 import { TableTh } from "@/store/modules/admin/tableData";
 import * as _ from "lodash";
 import { keysOf } from "naive-ui/es/_utils";

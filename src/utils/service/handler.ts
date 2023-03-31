@@ -18,21 +18,6 @@ export async function handleServiceResult<T = any>(error: Service.RequestError |
   };
   return success;
 }
-/** 统一失败和成功的请求结果的数据类型 */
-// export async function handleServiceResult<T = any>(error: Service.RequestError | null, data: any) {
-//   if (error) {
-//     const fail: Service.FailedResult = {
-//       error,
-//       data: null
-//     };
-//     return Promise.reject(fail); // 返回一个拒绝的 Promise，将错误信息传递给下一个拦截器
-//   }
-//   const success: Service.SuccessResult<T> = {
-//     error: null,
-//     data
-//   };
-//   return Promise.resolve(success); // 返回一个解决的 Promise，将响应数据传递给下一个拦截器
-// }
 
 /** 请求结果的适配器：用于接收适配器函数和请求结果 */
 export function adapter<T extends Service.ServiceAdapter>(

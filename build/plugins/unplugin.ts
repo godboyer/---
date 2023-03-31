@@ -6,7 +6,6 @@ import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
 import { FileSystemIconLoader } from 'unplugin-icons/loaders';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import { getSrcPath } from '../utils';
-
 export default function unplugin(viteEnv: ImportMetaEnv) {
   const { VITE_ICON_PREFFIX, VITE_ICON_LOCAL_PREFFIX } = viteEnv;
 

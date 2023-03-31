@@ -1,8 +1,7 @@
 <template>
   <div
     id="search"
-    v-click-outside="handleSearchOff"
-    ref="search"
+    ref="searchRef"
     class="h-68px relative flex-x-center items-center"
   >
     <Transition name="form">
@@ -36,15 +35,24 @@ import {
   trueSearchTab,
 } from "./component";
 import { useRouter } from "vue-router";
-
+import { useSearchStore } from "@/store";
+import { MaybeElement, onClickOutside } from "@vueuse/core";
 defineOptions({ name: "searchBox" });
 interface Emits {
   (e: "change-After", flag: boolean): void;
 }
+const search = useSearchStore();
+const { openSearchPanel, closeSearchPanel } = useSearchStore();
+
 const router = useRouter();
 const showSearch: Ref<boolean> = ref(false);
 const visibleTitle: Ref<boolean> = ref(false);
-const showSearchPanel: Ref<boolean> = ref(false);
+const searchRef = ref<MaybeElement>(null);
+
+const showSearchPanel = computed(() => {
+  return search.showSearchPanel;
+});
+
 const emit = defineEmits<Emits>();
 const module = ref("");
 const activeModule = computed(() => {
@@ -59,17 +67,17 @@ const activeModule = computed(() => {
 const modules = [
   {
     key: "city",
-    label: "city",
+    label: "选择城市",
     component: cityTab,
   },
   {
     key: "date",
-    label: "date",
+    label: "选择租房时长",
     component: dateTab,
   },
   {
     key: "keywords",
-    label: "keywords",
+    label: "关键字搜索",
     component: keywordTab,
   },
 ];
@@ -82,23 +90,25 @@ watch(showSearch, (newValue) => {
 
 router.beforeEach((to, from, next) => {
   showSearch.value = false;
-  showSearchPanel.value = false;
+  closeSearchPanel();
   next();
 });
 
-const handleSearchOff = function (event: any) {
+onClickOutside(searchRef, handleSearchOff);
+
+function handleSearchOff(event: any) {
   //先检查tabpanel面板是否关闭,然后关闭搜索面板
 
-  if (unref(showSearchPanel)) {
+  if (search.showSearchPanel) {
     if (event.target.nodeName === "HEADER") return;
     if (event.target.closest(".n-form-item")) return;
     if (event.target.closest(".nav-box")) return;
     if (event.target.classList.contains("item")) return;
-    showSearchPanel.value = false;
+    closeSearchPanel();
     return;
   }
 
-  if (!unref(showSearchPanel) && unref(showSearch)) {
+  if (!search.showSearchPanel && unref(showSearch)) {
     if (
       event.target.classList.contains("backdrop") ||
       event.target.nodeName === "IMG"
@@ -109,7 +119,7 @@ const handleSearchOff = function (event: any) {
       }
     }
   }
-};
+}
 
 /**
  * 改变搜索显示
@@ -123,7 +133,8 @@ function transferSearch(show: boolean) {
 
 function handleShowSearchPanel(key: string) {
   module.value = key;
-  showSearchPanel.value = true;
+  openSearchPanel();
+  // debugger
 }
 </script>
 <style lang="scss" scoped>

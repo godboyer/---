@@ -1,20 +1,15 @@
 <template>
   <div class="p-1">
-     
-    <n-card
-    
-      :bordered="false"
-      :content-style="contentstyle"
-      :header-style="headerstyle"
-    >
+
+    <n-card :bordered="false" :content-style="contentstyle" :header-style="headerstyle">
       <template #cover class="cover">
-         <n-skeleton v-if="loading"  height="100%" width="100%"  size="medium"/>
-        <swiperpic   v-else :cardData="cardDate" />
+        <n-skeleton v-if="loading" height="100%" width="100%" size="medium" />
+        <swiperpic v-else :cardData="cardDate" />
       </template>
 
       <div>
         <div class="card_p">
-           <n-skeleton v-if="loading"  height="100%" width="80%"  size="medium"/>
+          <n-skeleton v-if="loading" height="100%" width="80%" size="medium" />
           <div v-else>
             <n-icon>
               <LocationSharp />
@@ -25,74 +20,64 @@
           </div>
         </div>
         <div class="card_p">
-           <n-skeleton v-if="loading" height="22px" width="40%"  size="medium"/>
+          <n-skeleton v-if="loading" height="22px" width="40%" size="medium" />
           <div v-else class="items-center flex">
-            
-              <span >
-                <icon-local-area class="text-20px" />
 
-                {{ cardDate.area }}
-              </span>
-             
-              <span >
-                <icon-local-storey class="text-20px" />
-                {{ cardDate.des.split("|")[1] }}
-              </span>
+            <span>
+              <icon-local-area class="text-20px" />
+
+              {{ cardDate.area }}
+            </span>
+
+            <span>
+              <icon-local-storey class="text-20px" />
+              {{ cardDate.des.split("|")[1] }}
+            </span>
           </div>
-           <n-skeleton v-if="loading" height="22px" width="20%"  size="medium"/>
+          <n-skeleton v-if="loading" height="22px" width="20%" size="medium" />
           <div v-else class="price">
             {{ cardDate.price.split("/").join("元/") }}
           </div>
         </div>
       </div>
       <template #header>
-         <n-skeleton v-if="loading"  height="29px" width="60%"  size="medium"/>
+        <n-skeleton v-if="loading" height="29px" width="60%" size="medium" />
         <n-ellipsis v-else style="max-width: 200px,height:25px">
           {{ cardDate?.title ?? "无标题" }}
         </n-ellipsis>
       </template>
       <template #header-extra>
-         <n-skeleton v-if="loading"  :round="true" height="38px" width="38px"  size="medium"/>
-          <n-avatar
-            v-else
-            round
-            :size="38"
-            :src="
-              cardDate?.Homeowner_info.pic ??
-              'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
-            "
-          />
+        <n-skeleton v-if="loading" :round="true" height="38px" width="38px" size="medium" />
+        <n-avatar v-else round :size="38" :src="
+          cardDate?.Homeowner_info.pic ??
+          'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
+        " />
       </template>
 
       <template #footer>
         <div class="tag h-22px w-full">
-          <n-skeleton v-if="loading"  v-for="(v, idx) in cardDate?.tags" :key="v" height="22px" width="20%"  size="medium"/>
-   
-          <template  v-else>
-              <n-tag
-            v-for="(v, idx) in cardDate?.tags"
-            ize="small"
-            :color="{
+          <n-skeleton v-if="loading" v-for="(v, idx) in cardDate?.tags" :key="v" height="22px" width="20%"
+            size="medium" />
+
+          <template v-else>
+            <n-tag v-for="(v, idx) in cardDate?.tags" ize="small" :color="{
               color: '#42B2B6',
               textColor: '#fff',
               borderColor: '#42B2B6',
-            }"
-            :key="idx"
-            >{{ v }}</n-tag
-          >
+            }" :key="idx">{{ v }}</n-tag>
           </template>
-          
-        
+
+
         </div>
       </template>
     </n-card>
-   
+
   </div>
 </template>
 
 <script setup lang="ts">
 import swiperpic from "@/components/swiper/index.vue";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { LocationSharp } from "@vicons/ionicons5";
 
 defineOptions({ name: "cardone" });
@@ -115,11 +100,21 @@ const headerstyle = reactive({
 });
 
 onMounted(() => {
-    setTimeout(() => {
-       loading.value = false 
-    }, 1000);
-  
+  setTimeout(() => {
+    loading.value = false
+  }, 1000);
+
 })
+
+watch(
+  () => props.cardDate,
+  (val) => {
+    loading.value = true
+    setTimeout(() => {
+      loading.value = false
+    }, 1000);
+  })
+
 
 </script>
 
@@ -127,12 +122,14 @@ onMounted(() => {
 .con-card {
   padding: 0;
 }
+
 :deep(.n-card__footer) {
   display: flex;
   align-items: center;
   column-gap: 12px;
   padding: 0;
   padding: 10px 12px 12px;
+
   .n-tag {
     height: 22px;
     color: #fff;
@@ -141,6 +138,7 @@ onMounted(() => {
     font-weight: 600;
   }
 }
+
 .card_p {
   margin: 0;
   line-height: 22px;
@@ -151,12 +149,14 @@ onMounted(() => {
   column-gap: 12px;
   align-items: center;
   justify-content: space-between;
+
   .price {
     font-size: 18px;
     color: #222;
     font-weight: 700;
   }
 }
+
 .n-card {
   // max-width: 280px;
   width: 100%;
@@ -164,14 +164,17 @@ onMounted(() => {
   // margin: 5px;
   transition: width 5s ease-in-out;
 }
+
 .n-card-header {
   padding: 12px !important;
 }
+
 :deep(.n-card-cover) {
   position: relative;
   object-fit: cover;
   aspect-ratio: 350/235; //容器的宽高比例
   cursor: pointer;
+
   img {
     width: 100%;
 
@@ -179,6 +182,7 @@ onMounted(() => {
     // height: 220px;
     cursor: pointer;
   }
+
   button {
     position: absolute;
     top: 12px;
@@ -190,10 +194,12 @@ onMounted(() => {
     border: 0px !important;
     z-index: 1;
     cursor: pointer;
+
     img {
       width: 24px;
       height: 24px;
     }
+
     background: transparent !important;
   }
 }

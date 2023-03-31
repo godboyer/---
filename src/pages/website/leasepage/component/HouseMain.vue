@@ -1,29 +1,13 @@
 <template>
-  <n-grid
-    cols="1 xs:2 s:2 m:3 l:5"
-    x-gap="12"
-    y-gap="20"
-    class="mt-20"
-    item-responsive
-    responsive="screen"
-  >
+  <n-grid cols="1 xs:2 s:2 m:3 l:5" x-gap="12" y-gap="20" class="mt-20" item-responsive responsive="screen">
     <n-grid-item v-for="item in CardList" :key="item.key" span="1">
-      <cardone
-      
-        @click.stop.prevent="GoToHouseDetail(item.house_id)" :card-date="item"
-      >
+      <cardone @click.stop.prevent="GoToHouseDetail(item.house_id)" :card-date="item">
       </cardone>
     </n-grid-item>
   </n-grid>
   <div class="rent_foot">
-    <n-pagination
-      :show-size-picker="true"
-      :on-update:page="updatePage"
-      @update:page-size="handlerPageSizeUpdate"
-      :page-count="pageCount"
-      :page-sizes="[10, 20, 30]"
-      v-model:page-size="pageSize"
-    />
+    <n-pagination :show-size-picker="true" :on-update:page="updatePage" @update:page-size="handlerPageSizeUpdate"
+      :page-count="pageCount" :page-sizes="[10, 20, 30]" v-model:page-size="pageSize" />
     <p class="rent_foot-title">
       离家不再远，相顾如寓有。精选房源等你，找到适合你。
     </p>
@@ -31,13 +15,16 @@
 </template>
 
 <script setup lang="ts">
-import { useHouseStore } from "@/store";
+import { useHouseStore, useSearchStore } from "@/store";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import Cardone from "@/components/cardone.vue";
 
-defineOptions({name:"houseMain"})
 
-const store = useHouseStore();
+defineOptions({ name: "houseMain" })
+
+const house = useHouseStore();
+const search = useSearchStore()
 const router = useRouter();
 
 const pageSize = ref(30);
@@ -55,25 +42,23 @@ const GoToHouseDetail = function (id: string) {
 };
 
 const updatePage = async function (page: number) {
-  window.$message?.info(`当前的页数是${page}`);
   let payload = {
     page,
     pageSize: pageSize.value,
-    pageCount: pageCount.value,
+    city_id: search.filter.city_id,
   };
-  await store.GetHouseCardInfo(payload);
-  setCardList(store.HouseCardList);
+  await house.GetHouseCardInfoByCity(payload);
+  setCardList(house.HouseCardList);
 };
 
 async function handlerPageSizeUpdate(pageSize: number) {
-  window.$message?.info(`当前的页数大小是${pageSize}`);
   let payload = {
     page: page.value,
     pageSize,
-    pageCount: pageCount.value,
+    city_id: search.filter.city_id,
   };
-  await store.GetHouseCardInfo(payload);
-  setCardList(store.HouseCardList);
+   await house.GetHouseCardInfoByCity(payload);
+  setCardList(house.HouseCardList);
 }
 
 function setCardList(data: HousePage.CardList[]) {
@@ -82,13 +67,16 @@ function setCardList(data: HousePage.CardList[]) {
 
 async function InitalData() {
   let payload = {
+    city_id: search.filter.city_id,
     page: page.value,
     pageSize: pageSize.value,
-    pageCount: pageCount.value,
   };
-  await store.GetHouseCardInfo(payload);
-  setCardList(store.HouseCardList);
-  pageCount.value = Math.ceil(store.itemTotal / pageSize.value);
+
+
+
+  await house.GetHouseCardInfoByCity(payload);
+  setCardList(house.HouseCardList);
+  pageCount.value = Math.ceil(Number(house.houseTotal) / pageSize.value);
 }
 
 onMounted(() => {
@@ -103,6 +91,7 @@ onMounted(() => {
   align-items: center;
   margin: 32px;
   text-align: center;
+
   .n-pagination {
     align-self: center;
   }

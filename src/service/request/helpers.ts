@@ -1,4 +1,4 @@
-import type { AxiosRequestConfig } from 'axios';
+import type { AxiosHeaders, AxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/store';
 import { localStg } from '@/utils';
 import { fetchUpdateToken } from '../api';
@@ -17,7 +17,8 @@ export async function handleRefreshToken(axiosConfig: AxiosRequestConfig) {
 
     const config = { ...axiosConfig };
     if (config.headers) {
-      config.headers.Authorization = data.token ? "Bearer " + data.token : "";
+      const headers = config.headers as { [key: string]: string };
+         headers['Authorization'] = data.token ? `Bearer ${data.token}` : '';
     }
     return config;
   }

@@ -46,4 +46,3 @@ export const routeName = (key: AuthRoute.AllRouteKey) => key;
 /** 路由路径 */
 export const routePath = (key: Exclude<AuthRoute.AllRouteKey, 'not-found'>) => transformRouteNameToRoutePath(key);
 export * from './routes';
-export * from './modules';

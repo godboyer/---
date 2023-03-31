@@ -4,3 +4,4 @@ export * from './service';
 export * from './router';
 export * from './common';
 export * from './form';
+export * from './table';

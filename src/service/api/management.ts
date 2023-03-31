@@ -6,7 +6,8 @@ import {
   cityAdapter,
   CommentAdapter,
   NoticeAdapter,
-  LeavewordAdapter
+  LeavewordAdapter,
+  TableAdapter
 } from "./management.adapter";
 
 /** 获取用户列表 */
@@ -219,3 +220,21 @@ export const fetchLeavewordDel = async (_id: string) => {
   );
   return data;
 };
+
+
+/** ----获取后台表格数据的接口------ */
+interface TableQeury { 
+  page: number;
+  pageSize: number | string;
+
+}
+
+
+export const fetchTableList = async (tableName:string,qeury:TableQeury) => { 
+  const data = await request.get<ApiTableManagement.Table[] | null>(
+    `/admin/${tableName}`,{params:qeury}
+  );
+  return adapter(TableAdapter, data as any);
+}
+
+

@@ -13,23 +13,26 @@
       :rules="rules"
     >
       <n-grid :cols="24" :x-gap="18">
-        <n-form-item-grid-item :span="12" label="公告ID" path="notice_id">
-          <n-input disabled v-model:value="formModel.notice_id" />
-        </n-form-item-grid-item>
+        <!-- <n-form-item-grid-item :span="12" label="公告ID" path="notice_id">
+          <n-input v-model:value="formModel.notice_id" />
+        </n-form-item-grid-item> -->
         <n-form-item-grid-item :span="12" label="公告标题" path="notice_title">
           <n-input v-model:value="formModel.notice_title" clearable />
         </n-form-item-grid-item>
-      
-        <n-form-item-grid-item :span="12" label="公告内容" path="notice_content">
-          <n-input v-model:value="formModel.notice_content" />
+
+        <n-form-item-grid-item
+          :span="12"
+          label="公告内容"
+          path="notice_content"
+        >
+          <n-input type="textarea" v-model:value="formModel.notice_content" />
         </n-form-item-grid-item>
         <n-form-item-grid-item :span="12" label="状态" path="deleted_state">
           <n-select
             v-model:value="formModel.deleted_state"
-            :options="userStatusOptions"
+            :options="noticeOptions"
           />
         </n-form-item-grid-item>
-     
       </n-grid>
       <n-space class="w-full pt-16px" :size="24" justify="end">
         <n-button class="w-72px" @click="closeModal">取消</n-button>
@@ -44,7 +47,7 @@
 <script setup lang="ts">
 import { ref, computed, reactive, watch } from "vue";
 import type { FormInst, FormItemRule } from "naive-ui";
-import { genderOptions, userStatusOptions, userRoleOptions } from "@/constants";
+import {  noticeOptions } from "@/constants";
 import { formRules, createRequiredFormRule } from "@/utils";
 import { fetchNoticeAdd, fetchNoticeUpdate, NoticeFormModel } from "@/service";
 
@@ -107,7 +110,7 @@ type FormModel = Pick<
 const formModel = reactive<NoticeFormModel>(createDefaultFormModel());
 
 const rules: Record<keyof NoticeFormModel, FormItemRule | FormItemRule[]> = {
-  notice_id:createRequiredFormRule("请输入公告id"),
+  notice_id: { required: false },
   notice_title: createRequiredFormRule("请输入公告标题"),
   notice_content: createRequiredFormRule("请输入公告内容"),
   deleted_state: createRequiredFormRule("请选择状态"),
@@ -115,12 +118,10 @@ const rules: Record<keyof NoticeFormModel, FormItemRule | FormItemRule[]> = {
 
 function createDefaultFormModel(): NoticeFormModel {
   return {
-    notice_id:'',
+    notice_id: "",
     notice_title: "",
     notice_content: "",
     deleted_state: "1",
-
-    
   };
 }
 /**将从props获取的数据填入formModel */
@@ -181,7 +182,6 @@ watch(
   () => props.visible,
   (newValue) => {
     if (newValue) {
-
       handleUpdateFormModelByModalType();
     }
   }

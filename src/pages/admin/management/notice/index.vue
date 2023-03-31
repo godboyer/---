@@ -11,13 +11,18 @@
             <icon-ic-round-delete class="mr-4px text-20px" />
             删除
           </n-button>
-          <n-button type="success">
+          <n-button type="success" @click="handleTableToExcel">
             <icon-uil:export class="mr-4px text-20px" />
             导出Excel
           </n-button>
+          <search-box
+            v-model:original-data="originalData"
+            @search:end="handleSearchEnd"
+          >
+          </search-box>
         </n-space>
         <n-space align="center" :size="18">
-          <n-button size="small" type="primary" @click="getTableData">
+          <n-button size="small" type="primary" @click="createTable">
             <icon-mdi-refresh
               class="mr-4px text-16px"
               :class="{ 'animate-spin': loading }"
@@ -32,56 +37,51 @@
         :data="tableData"
         :loading="loading"
         :pagination="pagination"
+        @update:checked-row-keys="handleCheckRowKeys"
       />
       <table-action-modal
         v-model:visible="visible"
         :type="modalType"
         :edit-data="editData"
-        @update-action="getTableData"
+        @update-action="createTable"
       />
     </n-card>
   </div>
 </template>
 
 <script setup lang="tsx">
-import { reactive, ref } from "vue";
+import { computed, ref, unref } from "vue";
 import type { Ref } from "vue";
 import { NButton, NPopconfirm, NSpace, NTag } from "naive-ui";
 import type { DataTableColumns, PaginationProps } from "naive-ui";
-import {
-  genderLabels,
-  noticeStatusLabels,
-  userStatusLabels,
-} from "@/constants";
-import {
-  fetchNoticeDel,
-  fetchNoticeList,
-  fetchUserDEL,
-  fetchUserList,
-} from "@/service";
-import { useBoolean, useLoading } from "@/hooks";
+import { noticeStatusLabels } from "@/constants";
+import { fetchNoticeDel, fetchNoticeList } from "@/service";
+import { useExcelTool, useTable } from "@/hooks";
 import TableActionModal from "./components/table-action-modal.vue";
-import type { ModalType } from "./components/table-action-modal.vue";
-import ColumnSetting from "./components/column-setting.vue";
+import {
+  createColumn,
+  extractKeysAndTitles,
+  renderBaseAction,
+  renderTag,
+} from "@/utils";
+import { columnSetting, searchBox } from "@/pages/admin/component/index";
+const { exportExcelFile, previewExcel, excelSrc, isPreview } = useExcelTool();
+const tableName = ref("notice");
 
-const { loading, startLoading, endLoading } = useLoading(false);
-const { bool: visible, setTrue: openModal } = useBoolean();
-
-const tableData = ref<NoticeManagement.Notice[]>([]);
-function setTableData(data: NoticeManagement.Notice[]) {
-  tableData.value = data;
-}
-
-async function getTableData() {
-  startLoading();
-  const { data } = await fetchNoticeList();
-  if (data) {
-    setTimeout(() => {
-      setTableData(data);
-      endLoading();
-    }, 1000);
-  }
-}
+const {
+  tableData,
+  pagination,
+  handleAddTable,
+  checkedRowKeysRef,
+  handleCheckRowKeys,
+  loading,
+  createTable,
+  handleEditTable,
+  modalType,
+  visible,
+  editData,
+  createDefaultEditData,
+} = useTable<NoticeManagement.Notice>(tableName);
 
 const columns: Ref<DataTableColumns<NoticeManagement.Notice>> = ref([
   {
@@ -114,137 +114,85 @@ const columns: Ref<DataTableColumns<NoticeManagement.Notice>> = ref([
     title: "状态",
     align: "center",
     render: (row) => {
-      if (row.deleted_state) {
-        const tagTypes: Record<
-          NoticeManagement.NoticeStatusKey,
-          NaiveUI.ThemeColor
-        > = {
-          "1": "success",
-          "2": "error",
-          "3": "warning",
-          "4": "default",
-        };
-
-        return (
-          <NTag type={tagTypes[row.deleted_state]}>
-            {noticeStatusLabels[row.deleted_state]}
-          </NTag>
-        );
-      }
-      return <span></span>;
+      return renderTag(row.deleted_state, noticeStatusLabels);
     },
   },
-  {
-    key: "actions",
-    title: "操作",
-    align: "center",
-    render: (row) => {
-      return (
-        <NSpace justify={"center"}>
-          <NButton size={"small"} onClick={() => handleEditTable(row.notice_id)}>
-            编辑
-          </NButton>
-          <NPopconfirm onPositiveClick={() => handleDeleteTable(row.notice_id)}>
-            {{
-              default: () => "确认删除",
-              trigger: () => <NButton size={"small"}>删除</NButton>,
-            }}
-          </NPopconfirm>
-        </NSpace>
-      );
-    },
-  },
+  createColumn("actions", "操作", (row) => {
+    return renderBaseAction(row, handleEditTable, handleDeleteTable);
+  }),
 ]) as Ref<DataTableColumns<NoticeManagement.Notice>>;
 
-const modalType = ref<ModalType>("add");
+createDefaultEditData({
+  _id: null,
+  index: null,
+  key: null,
+  /**
+   * 公告编号
+   */
+  notice_id: "",
+  /**
+   * 创建时间
+   */
+  create_time: "",
+  /**
+   * 状态
+   */
+  deleted_state: "",
+  /**
+   * 公告内容
+   */
+  notice_content: "",
 
-function setModalType(type: ModalType) {
-  modalType.value = type;
+  /**
+   * 公告标题
+   */
+  notice_title: "",
+});
+const originalData = computed(() => {
+  return unref(tableData);
+});
+function handleSearchEnd(data: any) {
+  console.log("data: ", data);
+  setTableData(data);
 }
-
-let editData = reactive<NoticeManagement.Notice>(createDefaultEditData());
-function createDefaultEditData(): NoticeManagement.Notice {
-  return {
-    _id: null,
-    index: null,
-    key: null,
-    /**
-     * 公告编号
-     */
-    notice_id: "",
-    /**
-     * 创建时间
-     */
-    create_time: "",
-    /**
-     * 状态
-     */
-    deleted_state: "",
-    /**
-     * 公告内容
-     */
-    notice_content: "",
-
-    /**
-     * 公告标题
-     */
-    notice_title: "",
-  };
-}
-/**
- * 设置需要操作的数据的函数
- * @param   data  需要操作的数据
- */
-function setEditData(data: NoticeManagement.Notice | null) {
-  Object.assign(editData, createDefaultEditData(), data);
+function setTableData(data: any[]) {
+  tableData.value = data;
 }
 
 /**
- * 打开添加表格
+ * 将表格数据转化为excel
  */
-function handleAddTable() {
-  openModal();
-  setModalType("add");
-}
-/**
- * 打开编辑表格
- * @param rowId 当前列的key值即user_id的值
- */
-function handleEditTable(rowId: string | null) {
-  //可能存在没有的变量的值
-  const findItem = tableData.value.find((item) => item._id === rowId);
+function handleTableToExcel() {
+  let excelData;
+  if (unref(checkedRowKeysRef).length == 0) {
+    window.$dialog?.warning({
+      title: "警告",
+      content: "是否导出选择的数据,还是导出全部数据?",
+      positiveText: "确定",
+      negativeText: "导出全部",
+      onNegativeClick: () => {
+        exportExcelFile(unref(tableData), "全部公告信息", columns);
+      },
+    });
+  } else {
+    excelData = unref(tableData).filter((item) =>
+      unref(checkedRowKeysRef).includes(item.key as string)
+    );
 
-  if (findItem) {
-    setEditData(findItem);
+    exportExcelFile(excelData, "部分公告信息", columns);
   }
-  setModalType("edit");
-  openModal();
 }
 
 async function handleDeleteTable(rowId: string | null) {
   let { error, data } = await fetchNoticeDel(rowId as string);
   if (!error) {
-    getTableData();
+    createTable();
     window.$message?.info("删除成功");
   }
 }
 
-const pagination: PaginationProps = reactive({
-  page: 1,
-  pageSize: 10,
-  showSizePicker: true,
-  pageSizes: [10, 15, 20, 25, 30],
-  onChange: (page: number) => {
-    pagination.page = page;
-  },
-  onUpdatePageSize: (pageSize: number) => {
-    pagination.pageSize = pageSize;
-    pagination.page = 1;
-  },
-});
-
 function init() {
-  getTableData();
+  createTable();
 }
 
 // 初始化

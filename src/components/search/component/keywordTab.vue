@@ -1,21 +1,24 @@
 <template>
-     <n-card :bordered="false"  title="选择城市" class="wh-full">
-    <n-space>
-      <n-button
-      v-for="item in cityList"
-      :key="item.city_id"
-      class="h-54px b-rd-12px"
-      @click="handleClickCity(item.city_name)"
-    >
-      {{ item.city_name }}
-    </n-button>
+  <div  title="选择城市" class="wh-full">
+    关键字搜索
+     <n-space justify="end">
+      <button class="push-button btn-active" @click="handleSearch">确定</button>
     </n-space>
-  </n-card>
-
+  </div>
+  
 </template>
 
 <script setup lang='ts'>
+import { ref, watch } from 'vue'
+import { useSearchStore } from '@/store'
+const { closeSearchPanel, setKeywords } = useSearchStore()
+const search = useSearchStore()
 
+function handleSearch() {
+
+
+  closeSearchPanel()
+}
 </script>
 
 <style lang='scss' scoped>

@@ -22,14 +22,14 @@
           />
         </n-space>
         <n-space align="center" :size="18">
-          <n-button size="small" type="primary" @click="getTableData">
+          <n-button size="small" type="primary" @click="createTable">
             <icon-mdi-refresh
               class="mr-4px text-16px"
               :class="{ 'animate-spin': loading }"
             />
             刷新表格
           </n-button>
-          <column-setting v-model:columns="columns"  />
+          <column-setting v-model:columns="columns" />
         </n-space>
       </n-space>
       <n-data-table
@@ -38,13 +38,13 @@
         :loading="loading"
         :pagination="pagination"
         :max-height="800"
-        @update:checked-row-keys="handleCheck"
+        @update:checked-row-keys="handleCheckRowKeys"
       />
       <table-action-modal
         v-model:visible="visible"
         :type="modalType"
         :edit-data="editData"
-        @update-action="getTableData"
+        @update-action="createTable"
       />
     </n-card>
   </div>
@@ -53,7 +53,14 @@
 <script setup lang="tsx">
 import { reactive, ref } from "vue";
 import type { Ref } from "vue";
-import { DataTableColumn, DataTableRowKey, NButton, NPopconfirm, NSpace, NTag } from "naive-ui";
+import {
+  DataTableColumn,
+  DataTableRowKey,
+  NButton,
+  NPopconfirm,
+  NSpace,
+  NTag,
+} from "naive-ui";
 import type { DataTableColumns, PaginationProps } from "naive-ui";
 import {
   commentStatusLabels,
@@ -61,28 +68,28 @@ import {
   userStatusLabels,
 } from "@/constants";
 import { fetchCommentDel, fetchCommentList } from "@/service";
-import { useBoolean, useLoading, useTable } from "@/hooks";
+import { useTable } from "@/hooks";
 import TableActionModal from "./components/table-action-modal.vue";
-import type { ModalType } from "./components/table-action-modal.vue";
 import ColumnSetting from "@/pages/admin/component/column-setting.vue";
 import dayjs from "dayjs";
 import ExportExcel from "@/pages/admin/component/exportExcel.vue";
-const { tableData, pagination, getTableData, loading, visible, openModal } =
-  useTable<CommentManagement.Comment>(fetchCommentList);
-//被选中行的key值
-const checkedRowKeysRef = ref<DataTableRowKey[]>([]);
-/**选中行事件 */
-const handleCheck = (rowKeys: DataTableRowKey[]) => {
-  //选中的key值数组,可以进行多选操作比如删除,等等
-  checkedRowKeysRef.value = rowKeys;
-  window.$message?.info(`你选择中了 ${rowKeys}` as any);
-};
-function handleColumnsUpdate(columns: DataTableColumn[]) {
-  // 处理更新后的列数据
-  console.log(columns);
-}
+import { createColumn, renderBaseAction } from "@/utils";
+const tableName = ref("comment");
 
-
+const {
+  tableData,
+  pagination,
+  handleAddTable,
+  checkedRowKeysRef,
+  handleCheckRowKeys,
+  loading,
+  createTable,
+  handleEditTable,
+  modalType,
+  visible,
+  editData,
+  createDefaultEditData,
+} = useTable<CommentManagement.Comment>(tableName);
 
 
 const columns: Ref<DataTableColumns<CommentManagement.Comment>> = ref([
@@ -159,98 +166,47 @@ const columns: Ref<DataTableColumns<CommentManagement.Comment>> = ref([
       return <span></span>;
     },
   },
-  {
-    key: "actions",
-    title: "操作",
-    align: "center",
-    render: (row) => {
-      return (
-        <NSpace justify={"center"}>
-          <NButton
-            size={"small"}
-            onClick={() => handleEditTable(row.comment_id)}
-          >
-            编辑
-          </NButton>
-          <NPopconfirm
-            onPositiveClick={() => handleDeleteTable(row.comment_id)}
-          >
-            {{
-              default: () => "确认删除",
-              trigger: () => <NButton size={"small"}>删除</NButton>,
-            }}
-          </NPopconfirm>
-        </NSpace>
-      );
-    },
-  },
+   createColumn("actions", "操作", (row) => {
+    return renderBaseAction(row, handleEditTable, handleDeleteTable);
+  }),
 ]) as Ref<DataTableColumns<CommentManagement.Comment>>;
 
-const modalType = ref<ModalType>("add");
 
-function setModalType(type: ModalType) {
-  modalType.value = type;
-}
 
-let editData = reactive<CommentManagement.Comment>(createDefaultEditData());
-function createDefaultEditData(): CommentManagement.Comment {
-  return {
-    _id: null,
-    index: null,
-    key: null,
-    /** 用户id */
-    user_id: "",
-    /**用户状态 */
-    house_id: "",
-    /** 用户名 */
-    comment_id: "",
-    content: "",
-    create_time: "",
-    /**手机号 */
-    deleted_state: "",
-  };
-}
-/**
- * 设置需要操作的数据的函数
- * @param   data  需要操作的数据
- */
-function setEditData(data: CommentManagement.Comment | null) {
-  Object.assign(editData, createDefaultEditData(), data);
-}
 
-/**
- * 打开添加表格
- */
-function handleAddTable() {
-  openModal();
-  setModalType("add");
-}
-/**
- * 打开编辑表格
- * @param rowId 当前列的key值即user_id的值
- */
-function handleEditTable(rowId: string | null) {
-  const findItem = tableData.value.find((item) => item.comment_id === rowId);
 
-  if (findItem) {
-    setEditData(findItem);
-  }
-  setModalType("edit");
-  openModal();
-}
+createDefaultEditData({
+  _id: null,
+  index: null,
+  key: null,
+  /** 用户id */
+  user_id: "",
+  /**用户状态 */
+  house_id: "",
+  /** 用户名 */
+  comment_id: "",
+  content: "",
+  create_time: "",
+  /**手机号 */
+  deleted_state: "",
+});
 
+/**删除指定数据 */
 async function handleDeleteTable(rowId: string | null) {
+  // console.log("rowId: ", rowId);
+  window.$message?.info(`你要删除的id是${rowId}`);
   let { error, data } = await fetchCommentDel(rowId as string);
   if (!error) {
-    getTableData();
+    let index = tableData.value.findIndex((item) => item.key == rowId);
+    createTable();
+    tableData.value.splice(index, 1);
     window.$message?.info("删除成功");
   }
 }
 
 function init() {
-  getTableData();
+  createTable();
 }
-
 // 初始化
 init();
 </script>

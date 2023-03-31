@@ -6,14 +6,12 @@ import {
   setupVitePlugins,
   viteDefine,
 } from "./build";
-import { getServiceEnvConfig } from "./.env-config";
+import { getServiceEnvConfig } from "./env-config";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
-import DefineOptions from "unplugin-vue-define-options/vite";
 import {
-  ElementPlusResolver,
   NaiveUiResolver,
 } from "unplugin-vue-components/resolvers";
 import path, { resolve } from "path";
@@ -35,7 +33,6 @@ export default defineConfig(configEnv => {
       ...unplugin(viteEnv),
     vue(),
     vueJsx(),
-    DefineOptions(),
     AutoImport({
       imports: [
         "vue",
@@ -48,11 +45,9 @@ export default defineConfig(configEnv => {
           ],
         },
       ],
-      resolvers: [ElementPlusResolver()],
+    
     }),
-    Components({
-      resolvers: [ElementPlusResolver(), NaiveUiResolver()],
-    }),
+   
     Unocss({
       presets: [presetUno(), presetAttributify(), presetIcons()],
     }),

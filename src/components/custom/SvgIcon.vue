@@ -20,14 +20,14 @@ defineOptions({ name: 'SvgIcon' });
  * - 支持iconify和本地svg图标
  * - 同时传递了icon和localIcon，localIcon会优先渲染
  */
-interface Props {
+interface SvgIconProps {
   /** 图标名称 */
   icon?: string;
   /** 本地svg的文件名 */
   localIcon?: string;
 }
 
-const props = defineProps<Props>();
+const props = defineProps<SvgIconProps>();
 
 const attrs = useAttrs();
 

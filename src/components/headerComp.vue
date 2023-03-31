@@ -96,7 +96,7 @@ watch(
   changeBgAfter,
    (newvalue) => {
     console.log('newvalue: ', newvalue);
-      debugger
+      
     }
 )
 

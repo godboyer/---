@@ -34,28 +34,21 @@ import HouseDetailFoot from "./housepage/HouseDetailFoot.vue";
 import { useMessage } from "naive-ui";
 import { computed, onMounted, reactive, Ref, ref, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { GetHouseInfoOne } from "../../server/api/house";
-import { IapiResponse, IhouseInfo } from "../../typings/ApiInterface";
 import _ from "lodash";
-import { useHouseDetail } from "@/store/index";
+import { useHouseDetailStore } from "@/store";
 import windowResize from "../../utils/resize";
 
 const { screenRef, calcRate, windowDraw, unWindowDraw } = windowResize();
 
 const containerRef = ref<HTMLElement | undefined>(undefined);
 const route = useRoute();
-const store = useHouseDetail();
+const store = useHouseDetailStore();
 const HouseDetail = store.HouseDetail;
 
-let houseDetail: IhouseInfo | object = reactive({});
+let houseDetail: HouseManagement.HouseInfo | object = reactive({});
 
 onMounted(() => {
-  if (route.params.id) {
-    store.setHouseDetail(route.params.id as string);
-  }
-
-  // windowDraw();
-  // calcRate();
+  
 });
 
 const Collection = ref(false);

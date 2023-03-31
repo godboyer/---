@@ -30,7 +30,10 @@ import QRCode from "qrcode";
 
 import { onMounted, ref } from "vue";
 import { Emits } from '../index';
-import { useCaptcha,useLoginForm } from '@/hooks';
+import { useCaptcha, useLoginForm } from '@/hooks';
+
+defineOptions({name: 'BindWechat'})
+
 const emit = defineEmits<Emits>();
 const { auth, login, formRef, changeModule } = useLoginForm(emit);
 const canvas = ref<HTMLCanvasElement | null>(null);

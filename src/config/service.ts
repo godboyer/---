@@ -1,3 +1,5 @@
+import { localStg } from "@/utils";
+
 /** 请求超时时间 */
 export const REQUEST_TIMEOUT = 60 * 1000;
 
@@ -44,3 +46,6 @@ export const NO_ERROR_MSG_CODE: (string | number)[] = [];
 
 /** token失效需要刷新token的code(这里的66666只是个例子，需要将后端表示token过期的code填进来) */
 export const REFRESH_TOKEN_CODE: (string | number)[] = [3001];
+
+/**用户token身份令牌 */
+export const AUTH_TOKEN = localStg.get('token') || '';

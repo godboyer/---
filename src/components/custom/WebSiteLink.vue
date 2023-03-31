@@ -10,14 +10,14 @@
 <script setup lang="ts">
 defineOptions({ name: 'WebSiteLink' });
 
-interface Props {
+interface WebSiteLinkProps {
   /** 网址名称 */
   label: string;
   /** 网址链接 */
   link: string;
 }
 
-defineProps<Props>();
+defineProps<WebSiteLink>();
 </script>
 
 <style scoped></style>

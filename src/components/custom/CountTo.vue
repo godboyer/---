@@ -10,7 +10,7 @@ defineOptions({ name: 'CountTo' });
 
 type TansitionKey = keyof typeof TransitionPresets;
 
-interface Props {
+interface CountToProps {
   /** 初始值 */
   startValue?: number;
   /** 结束值 */
@@ -35,7 +35,7 @@ interface Props {
   transition?: TansitionKey;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<CountToProps>(), {
   startValue: 0,
   endValue: 2021,
   duration: 1500,

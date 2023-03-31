@@ -40,6 +40,9 @@ export default defineConfig({
     'ellipsis-text': 'nowrap-hidden overflow-ellipsis',
     'transition-base': 'transition-all duration-300 ease-in-out',
     'login-button': 'cursor-pointer flex-y-center w-20 h-11 bg-#fff   justify-around b-rd-8',
+    'push-button': 'w-105px h-45px b-rd-5px  bg-#00838a text-16px font-700 color-#222',
+    'common-button': 'w-105px h-45px b-rd-5px  bg-#fff text-16px font-700 color-#222 b-1',
+    'action-button':'w-60px h-45px b-rd-12px inline-block'
   },
   theme: {
     colors: {

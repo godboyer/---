@@ -54,6 +54,7 @@ import { useBoolean, useLoading } from "@/hooks";
 import TableActionModal from "./components/table-action-modal.vue";
 import type { ModalType } from "./components/table-action-modal.vue";
 import ColumnSetting from "./components/column-setting.vue";
+import { extractKeysAndTitles } from "@/utils";
 
 const { loading, startLoading, endLoading } = useLoading(false);
 const { bool: visible, setTrue: openModal } = useBoolean();
@@ -174,7 +175,8 @@ const columns: Ref<DataTableColumns<UserManagement.User>> = ref([
     },
   },
 ]) as Ref<DataTableColumns<UserManagement.User>>;
-
+let _fileds = extractKeysAndTitles(columns) 
+  console.log('tableTitle: ',_fileds);
 const modalType = ref<ModalType>("add");
 
 function setModalType(type: ModalType) {

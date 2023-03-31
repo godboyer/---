@@ -83,7 +83,15 @@ declare namespace CityManagement {
      */
     deleted_state: string;
   }
-   /**
+
+  interface EditInfo extends CityInfo {
+    /**文档id */
+    _id?: string | null;
+    /**表格key */
+    key: string | null;
+  }
+
+  /**
    * 城市状态
    * - 1: 启用
    * - 2: 禁用
@@ -136,7 +144,7 @@ declare namespace CommentManagement {
     create_time?: string;
   }
 
-   /**
+  /**
    * 评论状态
    * - 1: 启用
    * - 2: 禁用
@@ -160,7 +168,7 @@ declare namespace NoticeManagement {
   interface NoticeInfo {
     /**文档id */
     _id: string | null;
-   /**
+    /**
      * 公告编号
      */
     notice_id: string;
@@ -168,7 +176,7 @@ declare namespace NoticeManagement {
      * 创建时间
      */
     create_time: string;
-  
+
     /**
      * 公告内容
      */
@@ -182,13 +190,13 @@ declare namespace NoticeManagement {
      * 更新时间
      */
     updated_time: string;
-      /**
+    /**
      * 状态
      */
     deleted_state: string;
   }
 
-   /**
+  /**
    * 评论状态
    * - 1: 启用
    * - 2: 禁用
@@ -212,7 +220,7 @@ declare namespace LeavewordManagement {
   interface LeavewordInfo {
     /**文档id */
     _id: string | null;
-   /**
+    /**
      * 公告编号
      */
     notice_id: string;
@@ -220,7 +228,7 @@ declare namespace LeavewordManagement {
      * 创建时间
      */
     create_time: string;
-  
+
     /**
      * 公告内容
      */
@@ -234,13 +242,13 @@ declare namespace LeavewordManagement {
      * 更新时间
      */
     updated_time: string;
-      /**
+    /**
      * 状态
      */
     deleted_state: string;
   }
 
-   /**
+  /**
    * 评论状态
    * - 1: 启用
    * - 2: 禁用
@@ -252,7 +260,7 @@ declare namespace LeavewordManagement {
 
 /**房源相关模块 */
 declare namespace HouseManagement {
-   interface House extends ApiHouseManagement.House {
+  interface House extends ApiHouseManagement.House {
     /** 序号 */
     index: number | null;
     /** 表格的key（id） */
@@ -260,25 +268,57 @@ declare namespace HouseManagement {
   }
 
   /**房屋信息 */
-  interface HouseInfo { }
-  
+  interface HouseInfo extends ApiHouseManagement.House {
+      
+
+
+  }
+
   /**
    * 出租状态
    */
   type leaseStatusKey = NonNullable<House["lease_state"]>;
 
-   
   /**
    * 审核状态
    */
   type examStatusKey = NonNullable<House["exam_status"]>;
 
-    /**
+  /**
    * 默认状态
    * 1:new新房
    * 2:"启用"
-   * 
+   *
    */
   type defaultStatusKey = NonNullable<House["deleted_state"]>;
+}
 
+declare namespace TableManagement {
+  interface Table extends ApiTableManagement.Table {
+    /** 序号 */
+    index: number | null;
+    /** 表格的key（id） */
+    key: string | null;
+  }
+
+  interface TableInfo {
+    /**文档id */
+    _id: string | null;
+    /**表格key */
+    key: string | null;
+    /**表格名 */
+    table_name: string;
+    /**表格描述 */
+    table_desc: string;
+    /**表格状态 */
+    deleted_state: string;
+  }
+
+  type TableStatusKey = NonNullable<Table["deleted_state"]>;
+}
+
+
+declare namespace AdminManagement { 
+
+    type StatusKey = '1'|'2'|'3'|'4'|'5'|'0' |string | number | symbol;
 }

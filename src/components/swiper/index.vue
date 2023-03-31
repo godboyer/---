@@ -59,14 +59,13 @@
 </template>
 
 <script  setup lang='ts'>
-import { IcardData } from "@/typings/ApiInterface";
 import {  Ref, ref } from "vue";
 import { useRouter } from "vue-router";
 import { ArrowBack, ArrowForward } from "@vicons/ionicons5";
 
 defineOptions({name:'swiperpic'})
 defineProps<{
-  cardData: IcardData;
+  cardData: HousePage.Card;
 }>();
 const router = useRouter();
 const showarrow: Ref<boolean> = ref(false);

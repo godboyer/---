@@ -86,6 +86,8 @@ export function handleResponseError(response: AxiosResponse) {
 /**
  * 处理后端返回的错误(业务错误)
  * @param backendResult - 后端接口的响应数据
+ * @param config - 后端接口的配置
+ * @returns   
  */
 export function handleBackendError(backendResult: Record<string, any>, config: Service.BackendResultConfig) {
   const { codeKey, msgKey } = config;
@@ -94,7 +96,7 @@ export function handleBackendError(backendResult: Record<string, any>, config: S
     code: backendResult[codeKey],
     msg: backendResult[msgKey]
   };
-
+  /**调用显示错误信息函数 */
   showErrorMsg(error);
 
   return error;

@@ -16,27 +16,27 @@
             导出Excel
           </n-button>
 
-<!-- ----------------------------------搜索房源------------------------------- -->
+          <!-- ----------------------------------搜索房源------------------------------- -->
           <search-box
-            v-model:search="searchModel.searchQuery"
-            @click:search="handleOnSearch"
-            @update:search = "handleUpdateQuery"
-            
+            v-model:original-data="originalData"
+            :slot-list="slotList"
+            @search:end="handleSearchEnd"
           >
-            <template v-slot:sel_ect>
-              <n-select
-                default-value="0"
-                :fallback-option="fallbackOption"
-                v-model:value="searchModel.selectValue"
-                placeholder="Select"
-                :options="leaseStatusOptions"
-                style="width: 120px"
-                @update:value="handleSelectChange"
-              />
+            <template v-slot="slotProps">
+              <div v-for="item in slotList">
+                <n-select
+                  :fallback-option="fallbackOption"
+                  v-model:value="item.value"
+                  placeholder="Select"
+                  :options="item.options"
+                  style="width: 120px"
+                  @update:value="slotProps.slotHandler"
+                />
+              </div>
             </template>
           </search-box>
 
-
+          <!-- ----------------------------------搜索房源------------------------------- -->
         </n-space>
         <n-space align="center" :size="18">
           <n-button size="small" type="primary" @click="getTableData">
@@ -88,9 +88,9 @@
 </template>
 
 <script setup lang="tsx">
-import { computed, reactive, ref, unref } from "vue";
+import { computed, h, reactive, ref, unref } from "vue";
 import type { Ref } from "vue";
-import { DataTableRowKey, NButton, NPopconfirm, NSpace, NTag } from "naive-ui";
+import { DataTableRowKey, NButton, NImage, NPopconfirm, NSpace, NTag } from "naive-ui";
 import type { DataTableColumns, PaginationProps } from "naive-ui";
 import {
   leaseStatusLabels,
@@ -106,14 +106,17 @@ import { useHouseInfoStore } from "@/store";
 import HouseFetch from "@/service/api/house";
 import dayjs from "dayjs";
 import { useExcelTool, useSearchTable } from "@/hooks";
-import { defaultStatusOptions, leaseStatusOptions, examStatusOptions } from "@/constants";
-import {SearchSelectOption} from '@/hooks/business/useTable'
+import {
+  defaultStatusOptions,
+  leaseStatusOptions,
+  examStatusOptions,
+} from "@/constants";
+import { SearchSelectOption } from "@/hooks/business/useTable";
 import "@vue-office/excel/lib/index.css";
-import { SelectBaseOption } from "naive-ui/es/select/src/interface";
+import { extractKeysAndTitles, renderHouseAction, renderDescription, renderFirstPicture, renderFormDate, renderTag } from "@/utils";
 const { exportExcelFile, previewExcel, excelSrc, isPreview } = useExcelTool();
-
 const { fetchHouseListToAdmin, fetchHouseDeleteToAdmin } = new HouseFetch();
-
+const { creatSearchData } = useSearchTable();
 const store = useHouseInfoStore();
 const { loading, startLoading, endLoading } = useLoading(false);
 const { bool: visible, setTrue: openModal } = useBoolean();
@@ -129,60 +132,56 @@ function setTableData(data: HouseManagement.House[]) {
 
 const searchModel = reactive({
   searchQuery: ref(""),
-  selectValue:'--出租状态--',
+  selectValue: "--出租状态--",
   status: "",
   examStatus: "",
   defaultStatus: "",
+  leaseValue: "--出租状态--",
+  examValue: "--审核状态--",
+  defaultValue: "--状态--",
 });
-function handleUpdateQuery(value: string) {
-  searchModel.searchQuery = value;
-  console.log('searchModel.searchQuery: ', searchModel.searchQuery);
 
-}
+const slotList = [
+  {
+    name: "leaseStatus",
+    label: "出租状态",
+    type: "select",
+    value: searchModel.leaseValue,
+    options: leaseStatusOptions,
+  },
+  {
+    name: "examStatus",
+    label: "审核状态",
+    type: "select",
+    value: searchModel.examValue,
+    options: examStatusOptions,
+  },
+  {
+    name: "defaultStatus",
+    label: "默认状态",
+    type: "select",
+    value: searchModel.defaultValue,
+    options: defaultStatusOptions,
+  },
+];
 
-
-function handleSelectChange(value: string,option:SearchSelectOption ) {
-  console.log('selectValue: ', value, option);
-  searchModel.selectValue = value;
-  let data = onSearchSelect(option)
-  console.log('data: ', data);
-
+function handleSearchEnd(data: any) {
+  console.log("data: ", data);
   setTableData(data);
 }
 
-
-function fallbackOption(value: string ):SearchSelectOption {
-  console.log('value: ', value);
+function fallbackOption(value: string): SearchSelectOption {
   return {
     label: value,
     value: "",
-    field:''
+    field: "",
   };
 }
 
+const originalData = computed(() => {
+  return unref(tableData);
+});
 
-
-
-const { creatSearchData, filteredData, onSearch ,onSearchSelect} =
-  useSearchTable<HouseManagement.House>(searchModel.searchQuery);
-
-/**
- * 点击搜索事件
- */
-async function handleOnSearch(value: string) {
-      searchModel.searchQuery =   value 
-  console.log(searchModel.searchQuery,value);
-
-  startLoading();
-  let data = await onSearch<HouseManagement.House>(searchModel.searchQuery);
-  setTimeout(() => {
-    setTableData(data);
-
-    endLoading();
-  }, 1000);
-}
-
-console.log("filteredData.value ", filteredData.value);
 async function getTableData() {
   startLoading();
   const { data } = await fetchHouseListToAdmin({
@@ -234,6 +233,14 @@ function handleTableToExcel() {
   }
 }
 
+const reanderItem = {
+  target: "NTag",
+  props: {
+    type: "exam_status",
+  },
+  children: "exam_status",
+};
+
 const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
   {
     type: "selection",
@@ -254,7 +261,7 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     title: "房屋类别",
     align: "center",
     render: ({ house_category }) => {
-      return <span>{house_category}</span>;
+      return h("span", {}, house_category);
     },
   },
 
@@ -278,16 +285,7 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     title: "房屋图片",
     align: "center",
     render: ({ first_picture }) => {
-      return (
-        <img
-          style={{
-            width: "200px",
-            "aspect-ratio": "1.3 / 1",
-            display: "inline-block",
-          }}
-          src={first_picture}
-        />
-      );
+       return renderFirstPicture(first_picture);
     },
   },
   {
@@ -295,15 +293,7 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     title: "房屋介绍",
     align: "center",
     render: ({ house_description }) => {
-      if (!house_description) {
-        return <span> 暂无房屋信息介绍</span>;
-      }
-
-      return (
-        <n-ellipsis style={{ width: "200px" }} line-clamp={"4"} tooltip={false}>
-          {house_description}
-        </n-ellipsis>
-      );
+       return  renderDescription(house_description)
     },
   },
   {
@@ -324,24 +314,7 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     align: "center",
 
     render: ({ exam_status }) => {
-      if (exam_status) {
-        const tagTypes: Record<
-          HouseManagement.examStatusKey,
-          NaiveUI.ThemeColor
-        > = {
-          "1": "success",
-          "2": "error",
-          "3": "warning",
-          "4": "default",
-        };
-
-        return (
-          <NTag type={tagTypes[exam_status]}>
-            {examStatusLabels[exam_status]}
-          </NTag>
-        );
-      }
-      return <span></span>;
+      return renderTag(exam_status, examStatusLabels);
     },
   },
   {
@@ -349,7 +322,7 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     title: "出租状态",
     align: "center",
     render: ({ lease_state }) => {
-      return <span>{lease_state}</span>;
+      return renderTag(lease_state, leaseStatusLabels);
     },
   },
   {
@@ -357,7 +330,7 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     title: "状态",
     align: "center",
     render: ({ deleted_state }) => {
-      return <span>{deleted_state}</span>;
+      return renderTag(deleted_state, defaultStatusLabels);
     },
   },
   {
@@ -365,12 +338,7 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     title: "发布时间",
     align: "center",
     render: ({ create_time }) => {
-      if (create_time) {
-        return (
-          <span>{dayjs(create_time).format("YY年MM月DD日 HH:mm:ss")}</span>
-        );
-      }
-      return <span> </span>;
+       return  renderFormDate(create_time);
     },
   },
 
@@ -379,33 +347,15 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     title: "操作",
     align: "center",
     render: (row) => {
-      return (
-        <NSpace justify={"center"}>
-          <NButton size={"small"} onClick={() => handleEditTable(row.house_id)}>
-            编辑
-          </NButton>
-          <NButton size={"small"} onClick={() => handleShowTable(row.house_id)}>
-            查看
-          </NButton>
-          <NPopconfirm onPositiveClick={() => handleDeleteTable(row.house_id)}>
-            {{
-              default: () => "确认删除",
-              trigger: () => <NButton size={"small"}>删除</NButton>,
-            }}
-          </NPopconfirm>
-        </NSpace>
-      );
+
+        return renderHouseAction(row.house_id,handleEditTable,handleShowTable,handleDeleteTable)
     },
   },
 ]) as Ref<DataTableColumns<HouseManagement.House>>;
 
-const modalType = ref<ModalType>("add");
+let tableTitle = extractKeysAndTitles(columns);
+console.log("tableTitle: ", tableTitle);
 
-function setModalType(type: ModalType) {
-  modalType.value = type;
-}
-
-let editData = reactive<HouseManagement.House>(createDefaultEditData());
 function createDefaultEditData(): HouseManagement.House {
   return {
     _id: null,
@@ -444,13 +394,20 @@ function createDefaultEditData(): HouseManagement.House {
     create_time: null,
   };
 }
+const modalType = ref<ModalType>("add");
+
+function setModalType(type: ModalType) {
+  modalType.value = type;
+}
+
+let editData = reactive<HouseManagement.House>(createDefaultEditData());
+
 /**
  * 设置需要操作的数据的函数
  * @param   data  需要操作的数据
  */
 function setEditData(data: HouseManagement.House | null) {
   Object.assign(editData, createDefaultEditData(), data);
-  // console.log("editData: ", editData);
 }
 
 /**
@@ -465,6 +422,7 @@ function handleAddTable() {
  * @param rowId 当前列的key值即user_id的值
  */
 function handleEditTable(rowId: string | null) {
+  console.log('rowId: ', rowId);
   // console.log("rowId: ", rowId);
   //可能存在没有的变量的值
   const findItem = tableData.value.find((item) => item.house_id === rowId);
