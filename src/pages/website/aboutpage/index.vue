@@ -15,10 +15,9 @@
   </div> -->
   <div class="h-50px"></div>
   <n-space :size="25" :vertical="true" align="center">
-    <div  v-resize-observer:params="handleReszie"  class="box" v-for="(item, index) in itemData" :key="item.title">
+    <div v-resize-observer:params="handleReszie" class="box" v-for="(item, index) in itemData" :key="item.title">
       <p class="box-title">
-        <b>{{ index + 1 }}</b
-        >. <strong>{{ item.title }}</strong>
+        <b>{{ index + 1 }}</b>. <strong>{{ item.title }}</strong>
       </p>
 
       <template v-if="item.children">
@@ -43,7 +42,7 @@
 //     itemData:any[]
 // }>()
 function handleReszie(size: any) {
-    console.log("监听元素大小",size);
+  console.log("监听元素大小", size);
 }
 
 const itemData = [
@@ -68,23 +67,68 @@ const itemData = [
         title: "技术可行性分析",
       },
       {
+        title: "用户分析",
+        children: [
+          {
+            title: "系统角色描述",
+          },
+          {
+            title: "用户需求分析",
+          },
+        ]
+      },
+      {
         title: "功能需求分析",
         children: [
           {
-            title: "房源搜索与筛选",
+            title: "前台功能分析",
+            children: [
+              {
+                title: "用户功能模块",
+              },
+              {
+                title: "房源详情展示模块",
+              },
+
+              {
+                title: "二手房租赁模块",
+              },
+              {
+                title: "房源搜索与筛选",
+              },
+              {
+                title: "房源发布模块",
+              },
+            ]
           },
           {
-            title: "房源详情展示",
+            title: "后台功能分析",
+            children: [
+              {
+                title: "房源信息管理模块",
+              },
+              {
+                title: "用户与权限管理模块",
+              },
+              {
+                title: "房源评价管理模块",
+              },
+
+              {
+                title: "用户反馈管理模块",
+              },
+              {
+                title: "系统公告管理模块",
+              },
+              {
+                title: "城市管理模块",
+              },
+              {
+                title: "数据统计管理模块",
+              },
+            ]
           },
-          {
-            title: "用户注册与登录",
-          },
-          {
-            title: "发布房源",
-          },
-          {
-            title: "用户评价",
-          },
+
         ],
       },
       {
@@ -93,9 +137,7 @@ const itemData = [
       {
         title: "安全需求分析",
       },
-      {
-        title: "用户体验需求分析",
-      },
+
     ],
   },
   {
@@ -114,25 +156,27 @@ const itemData = [
         ],
       },
       {
-        title: "前端设计",
+        title: "前端架构设计",
         children: [
+           {
+            title: "前端框架概述",
+          },
           {
             title: "组件化设计",
           },
           {
-            title: "用户界面设计",
+            title: "模块化设计",
           },
           {
-            title: "状态管理设计",
+            title: "响应式设计",
           },
-          {
-            title: "路由权限设计",
-          },
+         
         ],
       },
       {
-        title: "后端设计",
+        title: "后端架构设计",
         children: [
+          {title: "MVC设计"},
           {
             title: "RESTful API 设计",
           },
@@ -251,6 +295,7 @@ const itemData = [
     border-left: 7px solid transparent;
     border-right: 7px solid transparent;
   }
+
   .box-2 {
     padding: 10px;
     display: flex;
@@ -258,6 +303,7 @@ const itemData = [
     gap: 20px;
     align-items: baseline;
   }
+
   .box-item {
     border: 2px solid black;
     border-radius: 5px;
@@ -266,6 +312,7 @@ const itemData = [
     place-content: center;
     padding: 6px 8px !important;
     white-space: nowrap;
+
     .item-li {
       text-indent: 12px;
     }

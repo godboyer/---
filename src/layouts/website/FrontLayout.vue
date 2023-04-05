@@ -29,7 +29,7 @@
         </RouterView>
       </n-config-provider>
     </n-layout-content>
-    <n-layout-footer v-popup> <footer-comp /> </n-layout-footer>
+    <n-layout-footer > <footer-comp /> </n-layout-footer>
   </n-layout>
 </template>
 

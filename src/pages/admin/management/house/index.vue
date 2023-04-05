@@ -76,9 +76,9 @@
             </n-button>
           </template>
         </n-thing>
-        <show-card
+        <!-- <show-card
           :house-data-one="(housedataone as unknown as HouseManagement.HouseInfo)"
-        />
+        /> -->
       </div>
     </n-modal>
     <n-modal v-model:show="isPreview" size="huge">
@@ -102,7 +102,6 @@ import showCard from "@/pages/admin/component/showCard.vue";
 import TableActionModal from "./components/table-action-modal.vue";
 import type { ModalType } from "./components/table-action-modal.vue";
 import { columnSetting, searchBox } from "@/pages/admin/component/index";
-import { useHouseInfoStore } from "@/store";
 import HouseFetch from "@/service/api/house";
 import dayjs from "dayjs";
 import { useExcelTool, useSearchTable } from "@/hooks";
@@ -117,7 +116,6 @@ import { extractKeysAndTitles, renderHouseAction, renderDescription, renderFirst
 const { exportExcelFile, previewExcel, excelSrc, isPreview } = useExcelTool();
 const { fetchHouseListToAdmin, fetchHouseDeleteToAdmin } = new HouseFetch();
 const { creatSearchData } = useSearchTable();
-const store = useHouseInfoStore();
 const { loading, startLoading, endLoading } = useLoading(false);
 const { bool: visible, setTrue: openModal } = useBoolean();
 const showModal = ref(false);
@@ -436,9 +434,10 @@ function handleEditTable(rowId: string | null) {
 }
 
 function handleShowTable(rowId: string | null) {
-  housedataone.value = computed(() => {
-    return tableData.value.find((item) => item.house_id == rowId);
-  });
+  //明显错误
+  // housedataone.value = computed(() => {
+  //   return tableData.value.find((item) => item.house_id == rowId);
+  // });
 }
 
 /**删除指定数据 */

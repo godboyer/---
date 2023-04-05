@@ -83,8 +83,7 @@ export const appRoutes: AuthRoute.Route[] = [
     meta: {
       title: "发布房源",
       requiresAuth: false,
-      // singleLayout: "blank",
-
+      singleLayout: "blank",
     },
   },
   {
@@ -94,7 +93,7 @@ export const appRoutes: AuthRoute.Route[] = [
     meta: {
       title: "房源详情",
       requiresAuth: false,
-      // singleLayout: "blank",
+      singleLayout: "blank",
 
     },
   },

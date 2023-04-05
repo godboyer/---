@@ -43,11 +43,14 @@ import { useMessage } from "naive-ui";
 import { onBeforeUnmount, onMounted, reactive, Ref, ref } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import { navItem,loginItem } from "../data/index";
-
+import { useRouterPush } from "@/composables";
 import logoSrc from "../assets/logo_7.svg";
 import logoSrcIn from "../assets/logo_8.svg";
 
 import anime from "animejs/lib/anime.es.js";
+const { routerPush, toWebsiteHome } = useRouterPush();
+
+
 const handleSelect = function (key: string | number) {
   if (key === "publish") {
     router.push("/publish");

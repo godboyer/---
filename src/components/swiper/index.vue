@@ -22,7 +22,7 @@
         <template #arrow="{ prev, next }">
           <div class="custom-arrow">
             <button type="button" class="custom-arrow--left" @click.stop="prev">
-              <n-icon><ArrowBack /></n-icon>
+              <icon-ion:chevron-back-outline>
             </button>
             <button
               type="button"

@@ -21,7 +21,7 @@ export function useAppInfo(): AppInfo {
     desc
   };
 }
-
+//composables \system.ts
 /** 获取设备信息 */
 export function useDeviceInfo() {
   const parser = new UAParser();
@@ -34,15 +34,15 @@ export function usePermission() {
   const auth = useAuthStore();
 
   function hasPermission(permission: Auth.RoleType | Auth.RoleType[]) {
-    const { userRole } = auth.userInfo;
+    const { role_permission } = auth.userInfo;
 
-    let has = userRole === 'super';
+    let has = role_permission === 'super';
     if (!has) {
       if (isArray(permission)) {
-        has = (permission as Auth.RoleType[]).includes(userRole);
+        has = (permission as Auth.RoleType[]).includes(role_permission);
       }
       if (isString(permission)) {
-        has = (permission as Auth.RoleType) === userRole;
+        has = (permission as Auth.RoleType) === role_permission;
       }
     }
     return has;

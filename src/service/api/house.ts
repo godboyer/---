@@ -89,6 +89,14 @@ class HouseFetch {
     return data;
   }
 
+     async fetchHouseInfo(houseId: string) {
+    const data = await request.get<HousePage.HouseState >(
+      `/house/${houseId}`,
+    );
+    return data;
+  }
+
+
 }
 
 export default HouseFetch;

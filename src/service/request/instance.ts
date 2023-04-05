@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import type { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
-import { REFRESH_TOKEN_CODE,AUTH_TOKEN } from "@/config";
+import { REFRESH_TOKEN_CODE } from "@/config";
 import {
   localStg,
   handleAxiosError,
@@ -10,8 +10,6 @@ import {
   transformRequestData,
 } from "@/utils";
 import { handleRefreshToken } from "./helpers";
-
-
 
 /**
  * 封装axios请求类
@@ -38,8 +36,7 @@ export default class CustomAxiosInstance {
   ) {
     this.backendConfig = backendConfig;
     this.instance = axios.create(axiosConfig);
-    // 创建实例后修改默认值  这里是设置token
-    this.instance.defaults.headers.common["Authorization"] = AUTH_TOKEN;
+
     this.setInterceptor();
   }
 
@@ -49,12 +46,15 @@ export default class CustomAxiosInstance {
       async (config) => {
         const handleConfig = { ...config, timeout: 100000 };
         if (handleConfig.headers) {
-
-        
           // 数据转换matcher
           const contentType = handleConfig.headers[
             "setContentType"
-          ] as UnionKey.ContentType;
+          ] as unknown as UnionKey.ContentType;
+          // 设置token
+          const headers = handleConfig.headers as { [key: string]: string };
+          const AUTH_TOKEN = localStg.get("token") || "";
+          // 创建实例后修改默认值  这里是设置token
+          headers["Authorization"] = AUTH_TOKEN ? `Bearer ${AUTH_TOKEN}` : "";
 
           handleConfig.data = await transformRequestData(
             handleConfig.data,

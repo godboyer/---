@@ -233,6 +233,7 @@ declare namespace ApiHouseManagement {
     title?: string;
     user_id: string;
     video?: string;
+    owner_id?: Record<string, any>;
   }
 
   interface ApiData{

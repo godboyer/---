@@ -2,25 +2,15 @@
   <div class="house-detail" ref="containerRef">
     <!-- <headercomp></headercomp> -->
     <div class="house-head">
-      <n-page-header subtitle="让你的听觉更懂视觉" @back="handleBack">
-        <template #title> </template>
-        <template #header> </template>
-        <template #avatar> </template>
-        <template #extra> </template>
-        <template #footer> </template>
+      <n-page-header :subtitle="housetitle" @back="handleBack">
       </n-page-header>
     </div>
 
     <section class="house-content">
       <HouseDetailmain />
-
-      <n-divider />
-      <HouseDetailFoot />
+      <HouseDetailFoot  />
     </section>
 
-    <footer>
-      <img class="foot-img" src="@/assets/footbg.png" alt="" />
-    </footer>
   </div>
   <n-back-top :right="100" />
 </template>
@@ -30,40 +20,66 @@ import headercomp from "@/components/headerComp.vue";
 import cardtwo from "@/components/cardtwo.vue";
 import HouseDetailmain from "./HouseDetailMain.vue";
 import HouseDetailFoot from "./HouseDetailFoot.vue";
-
 import { useMessage } from "naive-ui";
 import { computed, onMounted, reactive, Ref, ref, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { GetHouseInfoOne } from "@/server/api/house";
-import { IapiResponse, IhouseInfo } from "@/typings/ApiInterface";
-import _ from "lodash";
-import { useHouseDetail } from "@/store/index";
+import _ from "lodash-es";
+import { useHouseDetailStore } from "@/store";
 import windowResize from "@/utils/resize";
+import { useRouterPush } from '@/composables';
+import { useWindowScroll,useEventListener } from '@vueuse/core'
+const { x, y } = useWindowScroll()
+console.log('x, y: ', x, y);
 
+
+const {routerBack} = useRouterPush();
 const { screenRef, calcRate, windowDraw, unWindowDraw } = windowResize();
-
 const containerRef = ref<HTMLElement | undefined>(undefined);
 const route = useRoute();
-const store = useHouseDetail();
-const HouseDetail = store.HouseDetail;
 
-let houseDetail: IhouseInfo | object = reactive({});
+
+
+
+const store = useHouseDetailStore();
+const HouseDetail =  store.HouseDetail;
+
+
+
+const housetitle = computed(() => {
+  return HouseDetail?.title;
+});
+let houseDetail  = reactive<HouseManagement.HouseInfo>({
+_id: null,
+address: "",
+city_id: "",
+create_time: null,
+decoration_condition: "",
+deleted_state: "",
+exam_status: "",
+house_category: "",
+house_description: "",
+house_id: "",
+lease_state: "",
+price: "",
+rental_category: "",
+user_id: ""
+});
 
 onMounted(() => {
   if (route.query) {
     const { house_id} = route.query
-    store.setHouseDetail(house_id as string);
+    console.log('house_id: ', house_id);
+    store.getHouseDetail(house_id as string);
   }
+  
 
-  // windowDraw();
-  // calcRate();
 });
 
 const Collection = ref(false);
 
 const message = useMessage();
 function handleBack() {
-  message.info("[onBack]");
+ routerBack()
 }
 </script>
 

@@ -25,8 +25,8 @@
             <!-- <template #suffix>
               <n-button>Suffix</n-button>
             </template> -->
-            <n-thing :title="v.label + ':'" :title-extra="houseDataOne[v.key]">
-            </n-thing>
+            <!-- <n-thing :title="v.label + ':'" :title-extra="houseDataOne[v.key]"> -->
+            <!-- </n-thing> -->
           </n-list-item>
           <n-list-item> </n-list-item> </n-list
       ></n-grid-item>

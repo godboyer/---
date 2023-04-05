@@ -25,8 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "@vue/reactivity";
-import { type Ref, ref, unref, watch } from "vue";
+import { type Ref, ref, unref, watch,computed } from "vue";
 import {
   cityTab,
   dateTab,

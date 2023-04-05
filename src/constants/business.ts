@@ -78,10 +78,10 @@ export const noticeStatusLabels: Record<
   NoticeManagement.NoticeStatusKey,
   string
 > = {
-  1: "启用",
-  2: "禁用",
-  3: "冻结",
-  4: "软删除",
+  1: "发布",
+  2: "下架",
+  3: "草稿",
+  4: "删除",
 };
 export const noticeOptions =  generateOptions(noticeStatusLabels,'notice_status')
 

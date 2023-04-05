@@ -6,7 +6,7 @@ import {
   setupVitePlugins,
   viteDefine,
 } from "./build";
-import { getServiceEnvConfig } from "./env-config";
+import { getServiceEnvConfig } from "./src/service/config/index";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import AutoImport from "unplugin-auto-import/vite";

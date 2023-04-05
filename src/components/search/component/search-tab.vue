@@ -71,7 +71,7 @@ function handleOutsideClick() {
   position: absolute !important;
   left: 0px !important;
   top: 3rem !important;
-  width: 100% !important;
+  width: 100vw !important;
   height: 100vh !important;
   z-index: 99 !important;
 }
