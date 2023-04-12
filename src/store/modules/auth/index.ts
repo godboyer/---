@@ -4,6 +4,7 @@ import { router } from "@/router";
 import {
   fetchAccountLogin,
   fetchCaptchaLogin,
+  fetchCollectList,
   fetchLogin,
   fetchUserInfo,
 } from "@/service";
@@ -11,15 +12,22 @@ import { useRouterPush } from "@/composables";
 import { localStg } from "@/utils";
 import { useTabStore } from "../tab";
 import { useRouteStore } from "../route";
-import { getToken, getUserInfo, clearAuthStorage } from "./helpers";
+import { getToken, getUserInfo, clearAuthStorage, menuItem } from "./helpers";
+import { DropdownOption } from "naive-ui";
 
 interface AuthState {
   /** 用户信息 */
-  userInfo: Auth.UserInfo;
+  userInfo: ApiUserManagement.User;
   /** 用户token */
   token: string;
   /** 登录的加载状态 */
   loginLoading: boolean;
+  /**导航菜单 */
+  menuList: DropdownOption[];
+  /**登录控制 */
+  showLoginModel: boolean;
+  /**收藏列表 */
+  collectList: ApiUserManagement.CollectLsit[];
 }
 
 export const useAuthStore = defineStore("auth-store", {
@@ -27,6 +35,9 @@ export const useAuthStore = defineStore("auth-store", {
     userInfo: getUserInfo(),
     token: getToken(),
     loginLoading: false,
+    showLoginModel: false,
+    collectList: [],
+    menuList: [],
   }),
   getters: {
     /** 是否登录 */
@@ -54,6 +65,39 @@ export const useAuthStore = defineStore("auth-store", {
         resetRouteStore();
       });
     },
+    /** 获取菜单信息 */
+    getMenuList() {
+      let newMenu: any[] = menuItem
+        .sort((a, b) => a?.order - b?.order)
+        .map((item) => {
+          if (this.isLogin) {
+            if (
+              (item.isLogin == "1" || item.isLogin == "2") &&
+              item.permission.includes(this.userInfo.role_permission as string)
+            ) {
+              return {
+                label: item.label,
+                key: item.key,
+                path: item.path,
+                name: item.name,
+              };
+            }
+          } else {
+            return (
+              (item.isLogin == "0" || item.isLogin == "2") && {
+                label: item.label,
+                key: item.key,
+                path: item.path,
+                name: item.name,
+              }
+            );
+          }
+        })
+        .filter((item) => item);
+
+      return newMenu;
+    },
+
     /**
      * 处理登录后成功或失败的逻辑
      * @param backendToken - 返回的token
@@ -105,7 +149,8 @@ export const useAuthStore = defineStore("auth-store", {
         // 成功后把用户信息存储到缓存中
 
         localStg.set("userInfo", data);
-
+        //获取收藏列表
+        await this.getCollectList()
         // 更新状态
         this.userInfo = data;
         this.token = token;
@@ -114,6 +159,18 @@ export const useAuthStore = defineStore("auth-store", {
       }
 
       return successFlag;
+    },
+
+    /** 退出登录 */
+    logout() {
+      const { resetRouteStore } = useRouteStore();
+      const route = unref(router.currentRoute);
+      console.log("退出登录", route);
+      clearAuthStorage();
+      this.$reset();
+      nextTick(() => {
+        resetRouteStore();
+      });
     },
     /**
      * 后台登录
@@ -128,7 +185,6 @@ export const useAuthStore = defineStore("auth-store", {
       }
       this.loginLoading = false;
     },
-   
 
     /**手机号登录 */
     async captchaLogin(phone: number | string, captcha: number | string) {
@@ -178,5 +234,25 @@ export const useAuthStore = defineStore("auth-store", {
         initAuthRoute();
       }
     },
+
+    /**获取收藏列表 */
+    async getCollectList() {
+      let userId = this.userInfo.user_id || "";
+      const { error, data } = await fetchCollectList(userId);
+      if (!error) {
+        this.collectList = data;
+      }
+    },
+
+    /**打开登录弹窗 */
+    openLoginModel() { 
+      this.showLoginModel = true;
+    },
+    /**关闭登录弹窗 */
+    closeLoginModel() {
+      this.showLoginModel = false;
+    }
+    
+
   },
 });

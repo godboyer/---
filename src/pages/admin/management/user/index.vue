@@ -48,7 +48,7 @@ import { reactive, ref } from "vue";
 import type { Ref } from "vue";
 import { NButton, NPopconfirm, NSpace, NTag } from "naive-ui";
 import type { DataTableColumns, PaginationProps } from "naive-ui";
-import { genderLabels, userStatusLabels } from "@/constants";
+import { genderLabels, userStatusLabels,userRoleLabels } from "@/constants";
 import { fetchUserDEL, fetchUserList } from "@/service";
 import { useBoolean, useLoading } from "@/hooks";
 import TableActionModal from "./components/table-action-modal.vue";
@@ -128,6 +128,12 @@ const columns: Ref<DataTableColumns<UserManagement.User>> = ref([
     key: "role_permission",
     title: "用户类型",
     align: "center",
+    render: ({role_permission}) => {
+
+      return (
+        <NTag type={"success"}>{userRoleLabels[role_permission]}</NTag>
+      );
+    }
   },
   {
     key: "user_status",
@@ -203,7 +209,7 @@ function createDefaultEditData(): UserManagement.User {
     /** 用户头像 */
     avatar: null,
     /** 用户角色类型 */
-    role_permission: null,
+    role_permission: 'user',
     createtime: null,
   };
 }

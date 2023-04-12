@@ -78,7 +78,6 @@ export const useRouteStore = defineStore("route-store", {
 		 */
 		isConstantRoute(name: AuthRoute.AllRouteKey) {
 			const constantRouteNames = getConstantRouteNames(constantRoutes);
-			// console.log('固定路由的名称constantRouteNames: ', constantRouteNames);
 			return constantRouteNames.includes(name);
 		},
 		/**
@@ -104,8 +103,7 @@ export const useRouteStore = defineStore("route-store", {
 			// console.log('this.searchMenus: ', this.searchMenus);
 
 			const vueRoutes = transformAuthRouteToVueRoutes(routes);
-			// console.log('vueRoutes: ', vueRoutes);
-				// debugger
+		
 			vueRoutes.forEach((route) => {
 				router.addRoute(route);
 			});
@@ -132,7 +130,6 @@ export const useRouteStore = defineStore("route-store", {
 			const { initHomeTab } = useTabStore();
 
 			const { user_id } = localStg.get("userInfo") || {};
-			// debugger
 
 			if (!user_id) {
 				throw new Error("userId 不能为空!");
@@ -142,8 +139,7 @@ export const useRouteStore = defineStore("route-store", {
 			const { error, data } = await fetchUserRoutesMock(user_id);
 
 			if (!error) {
-				this.routeHomeName = data.home; //dashboard_analysis
-				// this.routeHomeName = "dashboard_analysis";
+				this.routeHomeName = data.home; 
 				// 动态路由模式下：更新根路由的重定向
 				this.handleUpdateRootRedirect(data.home);
 

@@ -1,6 +1,6 @@
 <template>
   <div class="house-detail" ref="containerRef">
-    <!-- <headercomp></headercomp> -->
+    <system-header/>
     <div class="house-head">
       <n-page-header :subtitle="housetitle" @back="handleBack">
       </n-page-header>
@@ -16,16 +16,13 @@
 </template>
 
 <script setup lang="ts">
-import headercomp from "@/components/headerComp.vue";
-import cardtwo from "@/components/cardtwo.vue";
 import HouseDetailmain from "./HouseDetailMain.vue";
 import HouseDetailFoot from "./HouseDetailFoot.vue";
 import { useMessage } from "naive-ui";
 import { computed, onMounted, reactive, Ref, ref, toRefs } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import _ from "lodash-es";
-import { useHouseDetailStore } from "@/store";
-import windowResize from "@/utils/resize";
+import { useHouseDetailStore,useHouseStore } from "@/store";
 import { useRouterPush } from '@/composables';
 import { useWindowScroll,useEventListener } from '@vueuse/core'
 const { x, y } = useWindowScroll()
@@ -33,7 +30,6 @@ console.log('x, y: ', x, y);
 
 
 const {routerBack} = useRouterPush();
-const { screenRef, calcRate, windowDraw, unWindowDraw } = windowResize();
 const containerRef = ref<HTMLElement | undefined>(undefined);
 const route = useRoute();
 
@@ -42,7 +38,7 @@ const route = useRoute();
 
 const store = useHouseDetailStore();
 const HouseDetail =  store.HouseDetail;
-
+const house = useHouseStore();
 
 
 const housetitle = computed(() => {
@@ -70,6 +66,7 @@ onMounted(() => {
     const { house_id} = route.query
     console.log('house_id: ', house_id);
     store.getHouseDetail(house_id as string);
+    house.getOneHouseDetail(house_id as string);
   }
   
 
@@ -86,6 +83,7 @@ function handleBack() {
 <style lang="scss" scoped>
 .house-detail {
   position: relative;
+  padding-top: 90px !important;
 }
 
 .house-title {

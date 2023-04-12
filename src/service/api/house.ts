@@ -1,6 +1,6 @@
 import { request } from "../request";
 import { adapter } from "@/utils";
-import { HouseAdapter, HouseCardAdapter } from "./management.adapter";
+import { HouseAdapter, HouseCardAdapter, HouseNewCardAdapter } from "./management.adapter";
 
 export type HouseFormModel = Pick<
   HouseManagement.House,
@@ -100,3 +100,45 @@ class HouseFetch {
 }
 
 export default HouseFetch;
+
+
+
+export async function fetchHouseInfo(houseId: string) {
+  const data = await request.get<HouseManagement.HouseInfo>(
+    `/house/${houseId}`,
+  );
+  return data;
+}
+
+export async function fetchNewHouseInfo() {
+  const data = await request.get<HousePage.Card[]>(
+    `/house/new`,
+  );
+  return adapter(HouseNewCardAdapter, data);
+}
+
+export async function fetchHouseListToCardByCity(params: ApiQuery.QueryCityId) {
+  const { page, pageSize, city_id } = params;
+  const data = await request.get<ApiHouseManagement.ApiData | null>(
+    `/house/card-list/${city_id}`,
+    { params: { page, pageSize } }
+  );
+  return adapter(HouseCardAdapter, data);
+}
+
+export  async function fetchHouseState(params?: ApiQuery.QeuryPage) {
+  const data = await request.get<HousePage.HouseState>(
+    `/house/count`,
+    { params }
+  );
+  return data;
+}
+
+export   async   function  fetchHouseListToCard(params: ApiQuery.QeuryPage) {
+  const { page, pageSize, pageCount } = params;
+  const data = await request.get<ApiHouseManagement.ApiData | null>(
+    `/house/card-list`,
+    { params: { page, pageSize, pageCount } }
+  );
+  return adapter(HouseCardAdapter, data);
+}

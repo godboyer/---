@@ -3,7 +3,7 @@
     <hr color="#e5e5e5" ref="dividerRef" />
     <n-grid cols="7" x-gap="12">
       <n-grid-item span="5">
-        <n-tabs  :on-update:value="handleClickTab" type="line" animated>
+        <n-tabs :on-update:value="handleClickTab" type="line" animated>
           <n-tab-pane name="description" tab="房源简介">
             <n-space :vertical="true" :size="25">
               <ul class="description-ul">
@@ -33,7 +33,11 @@
               </ul>
             </n-space>
           </n-tab-pane>
-          <n-tab-pane name="comment" tab="评价"> Hey Jude </n-tab-pane>
+          <n-tab-pane name="comment" tab="评价"> 
+            
+            暂无评价
+
+          </n-tab-pane>
 
           <n-tab-pane name="Facilities" :tab="Facilities?.title">
             <n-h3>{{ Facilities?.title }}</n-h3>
@@ -54,13 +58,11 @@
       <n-grid-item span="2">
         <n-card class="w-full mt-50px">
           <template #header>
-            <div class="mt-10px p-15px ">
-
-              <n-h3 class="text-center">{{ owner?.own_house_name }}</n-h3>
+            <div class="mt-10px p-15px">
+              <n-h3 class="text-center">{{ ownerInfo.houseName }}</n-h3>
             </div>
           </template>
           <div class="owner-info">
-
             <n-avatar round :size="80" :src="ownerAvatar" />
             <div class="owner-info-item">
               <span class="name">{{ owner?.username }}</span>
@@ -76,11 +78,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, ref } from "vue";
 import { useHouseDetailStore } from "@/store/index";
-import BaiduMap from "@/components/map/components/baidu-map.vue";
+import { BaiduMap } from "@/components/map/components";
 const store = useHouseDetailStore();
-const containerRef = ref<HTMLElement | undefined>(undefined);
 const dividerRef = ref<HTMLElement | undefined>(undefined);
 const Facilities = computed(() => {
   return store.HouseDetail?.facilities;
@@ -95,6 +96,19 @@ const houseDetail = computed(() => {
   return store.HouseDetail?.houseDetail;
 });
 
+const ownerInfo = computed(() => {
+  return {
+    houseName: store.HouseDetail?.owner_id?.own_house_name.replace(
+      "自如友家·",
+      ""),
+    owner: store.HouseDetail?.owner_id,
+    ownerAvatar: store.HouseDetail?.owner_id?.avatar,
+    houseDetail: store.HouseDetail?.houseDetail,
+    HouseDescription: store.HouseDetail?.house_description,
+    Facilities: store.HouseDetail?.facilities,
+  };
+});
+
 const owner = computed(() => {
   return store.HouseDetail?.owner_id;
 });
@@ -104,15 +118,8 @@ const ownerAvatar = computed(() => {
 
 const showTop = ref(false);
 const handleClickTab = (name: string) => {
-  console.log(name);
-  // dividerRef.value?.scrollIntoView();
-  console.log(' dividerRef.value?.scrollIntoView();: ',  dividerRef.value.offsetTop);
   showTop.value = true;
-  window.scrollBy(
-    0,
-    dividerRef.value?.offsetTop  - window.scrollY
-  );
- 
+  window.scrollBy(0, (dividerRef.value?.offsetTop as number) - window.scrollY);
 };
 </script>
 
@@ -124,7 +131,6 @@ const handleClickTab = (name: string) => {
   z-index: 999 !important;
   background: #cb2c2c !important;
   transition: all 0.3s !important;
-
 }
 
 .owner-info {
@@ -143,7 +149,6 @@ const handleClickTab = (name: string) => {
     .name {
       font-size: 18px;
       font-weight: 600;
-
     }
 
     .phone {

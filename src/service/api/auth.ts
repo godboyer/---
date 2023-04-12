@@ -1,4 +1,6 @@
+import { EnumContentType } from "@/enum";
 import { mockRequest, request } from "../request";
+import { localStg } from "@/utils";
 
 /**
  * 获取验证码
@@ -104,15 +106,33 @@ export function fetchUpdateToken(refreshToken: string) {
   return request.post<ApiAuth.Token>("/token/update", { refreshToken });
 }
 
+interface UpdateAvater{
+    path:string;
+    user:ApiAuth.UserInfo;
+}
 /**上传用户图像 */
 export function fetchUploadAvatar(data: any) {
-  return request.post<ApiAuth.Token>("/user/avatar", { ...data });
+  return request.post<UpdateAvater>("/user/avatar", data,{
+    headers: {
+      "Content-Type": EnumContentType.formData,
+    },
+  });
 }
 
 /**获取手机区号 */
 export function fetchPhonePrefix() {
   return request.get<ApiAuth.PhonePrefix[]>("/phone/prefix");
 }
+interface ICollect{
+   house_id:string;
+}
 
-
-
+/**收藏接口 */
+export function fetchCollect(data: ICollect) {
+  let userId = localStg.get("userInfo") ? localStg.get("userInfo")?.user_id : "";
+  return request.post<ApiAuth.Collect>(`/user/${userId}/favorite`, data);
+}
+/**获取用户收藏列表 */
+export function fetchCollectList(userId:string) {
+  return request.get<ApiUserManagement.CollectLsit[]>(`/user/${userId}/favorite`);
+}

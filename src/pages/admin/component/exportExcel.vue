@@ -1,8 +1,13 @@
 <template>
-  <n-button type="success"  @click="handleTableToExcel">
-    <icon-uil:export class="mr-4px text-20px" />
-    导出Excel
-  </n-button>
+  <n-popconfirm @positive-click="handleTableToExcel">
+    <template #trigger>
+      <n-button type="success" >
+        <icon-uil:export class="mr-4px text-20px" />
+        导出Excel
+      </n-button>
+    </template>
+    确认导出以选中的数据吗？
+  </n-popconfirm>
 </template>
 
 <script setup lang="ts">
@@ -16,9 +21,10 @@ interface Props {
   tableData: any[];
   columns: any;
   checkedRowKeys: any;
+  tableTitle: string
 }
-defineOptions({name: 'ExportExcel'})
-const props = defineProps<Props>() ;
+defineOptions({ name: 'ExportExcel' })
+const props = defineProps<Props>();
 
 /**
  * 将表格数据转化为excel
@@ -28,11 +34,11 @@ function handleTableToExcel() {
   if (unref(props.checkedRowKeys).length == 0) {
     window.$dialog?.warning({
       title: "警告",
-      content: "是否导出选择的数据,还是导出全部数据?",
-      positiveText: "确定",
+      content: "未选择任何数据，是否导出全部数据?",
+      positiveText: "取消",
       negativeText: "导出全部",
       onNegativeClick: () => {
-        exportExcelFile(unref(props.tableData), "全部房源信息", props.columns);
+        exportExcelFile(unref(props.tableData), `全部${props.tableTitle}信息`, props.columns);
       },
     });
   } else {
@@ -40,7 +46,7 @@ function handleTableToExcel() {
       unref(props.checkedRowKeys).includes(item.key as string)
     );
 
-    exportExcelFile(excelData, "部分房源信息", props.columns);
+    exportExcelFile(excelData, `部分${props.tableTitle}信息`, props.columns);
   }
 }
 </script>

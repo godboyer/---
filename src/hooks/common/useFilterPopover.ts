@@ -1,4 +1,4 @@
-import { ref, computed, unref, watch } from "vue";
+import { ref } from "vue";
 import { useSearchStore } from "@/store";
 
 interface Callback {
@@ -6,7 +6,7 @@ interface Callback {
 }
 
 export default function useFilterPopover() {
-  const { openBackDrop, closeBackDrop } = useSearchStore();
+  const { openFilterBackDrop, closeFilterBackDrop } = useSearchStore();
   const showPopover = ref(false);
 
   function handlePopoverShow(value: boolean) {
@@ -16,7 +16,7 @@ export default function useFilterPopover() {
   function handleSubmit(cb?: Callback) {
     cb && cb();
     showPopover.value = false;
-    closeBackDrop();
+    closeFilterBackDrop();
   }
   function handleReset(cb?: Callback) {
     cb && cb();
@@ -24,10 +24,10 @@ export default function useFilterPopover() {
 
   function handleBackDrop(e: Event) {
     showPopover.value = true;
-    openBackDrop();
+    openFilterBackDrop();
   }
   function handleOutsideClick() {
-    closeBackDrop();
+    closeFilterBackDrop();
     showPopover.value = false;
   }
 

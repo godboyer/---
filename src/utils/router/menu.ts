@@ -26,12 +26,15 @@ export function transformAuthRouteToMenu(
 			localIcon: meta.localIcon,
 			children: menuChildren,
 		});
-
+		   if (menuItem.key =='notice') {
+     		console.log(menuItem);
+    		}
 		if (!hideInMenu(route)) {
 			globalMenu.push(menuItem);
 		}
 	});
 
+	console.log('globalMenu: ', globalMenu);
 	return globalMenu;
 }
 
@@ -48,9 +51,7 @@ export async function convertToNaiveUiMenuData(data: any): Promise<any[]> {
 			menuChildren = await convertToNaiveUiMenuData(child.children);
 		}
 		let icon = menuIcon as string;
-		// if (menuIcon.startsWith("el-icon")) {
-		// 	icon = getIcon(menuIcon);
-		// }
+		
 		const menuItem: App.GlobalMenuOption = addPartialProps({
 			menu: {
 				key: paths,

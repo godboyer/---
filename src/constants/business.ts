@@ -15,7 +15,7 @@ export const WebsiteloginModuleLabels: Record<UnionKey.LoginModule, string> = {
 
 export const userRoleLabels: Record<Auth.RoleType, string> = {
   super: "超级管理员",
-  admin: "管理员",
+  admin: "房东/中介",
   user: "普通用户",
 };
 
@@ -72,6 +72,20 @@ export const leavewordStatusLabels: Record<
   4: "软删除",
 };
 export const leavewordOptions =  generateOptions(leavewordStatusLabels,'leaveword_status')
+
+/** 反馈状态 */
+export const FeedbackStatusLabels: Record<
+  FeedbackManagement.StatusKey,
+  string
+> = {
+  1: "已回复",
+  2: "未处理",
+  0: "删除",
+};
+export const FeedbackOptions =  generateOptions(FeedbackStatusLabels,'Feedback_status')
+
+
+
 
 /** 公告状态 */
 export const noticeStatusLabels: Record<

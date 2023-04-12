@@ -15,7 +15,6 @@
 import { ref, watch } from "vue";
 import { useSearchStore } from '@/store';
 const { closeSearchPanel, setleaseLong } = useSearchStore();
-const search = useSearchStore();
 defineOptions({ name: "dateTab" })
 
 const start = ref<number>(Date.now());

@@ -13,7 +13,7 @@ declare namespace StorageInterface {
     /** 用户刷新token */
     refreshToken: string;
     /** 用户信息 */
-    userInfo: Auth.UserInfo;
+    userInfo:  ApiUserManagement.User;
     /** 主题配置 */
     themeSettings: Theme.Setting;
     /** 多页签路由信息 */

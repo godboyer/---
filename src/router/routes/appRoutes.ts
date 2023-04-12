@@ -1,3 +1,5 @@
+import { getPersonalModuleRegExp } from "@/utils";
+
 //website网站主题页面路由
 export const appRoutes: AuthRoute.Route[] = [
   {
@@ -12,7 +14,7 @@ export const appRoutes: AuthRoute.Route[] = [
     name: "website",
     path: "/website",
     redirect: "/website/home",
-    component: "website",//路由框架
+    component: "website", //路由框架
     meta: {
       title: "website",
     },
@@ -73,7 +75,6 @@ export const appRoutes: AuthRoute.Route[] = [
       title: "关于",
       requiresAuth: false,
       // singleLayout: "blank",
-
     },
   },
   {
@@ -87,6 +88,16 @@ export const appRoutes: AuthRoute.Route[] = [
     },
   },
   {
+    path: "/feedback",
+    name: "feedback",
+    component: "self",
+    meta: {
+      title: "网站反馈",
+      requiresAuth: false,
+      singleLayout: "blank",
+    },
+  },
+  {
     path: "/house/detail",
     name: "house_detail",
     component: "self",
@@ -94,8 +105,35 @@ export const appRoutes: AuthRoute.Route[] = [
       title: "房源详情",
       requiresAuth: false,
       singleLayout: "blank",
-
     },
   },
- 
+  {
+    path: "/test",
+    name: "test",
+    component: "self",
+    meta: {
+      title: "作图测试",
+      requiresAuth: false,
+      singleLayout: "blank",
+    },
+  },
+  {
+    path: "/personal",
+    name: "personal",
+    component: "self",
+    props: (route: any) => {
+      console.log("路由", route.params.module);
+      const moduleType =
+        (route.params.module as EnumType.PersonalModuleKey) || "userinfo";
+      return {
+        module: moduleType,
+      };
+    },
+    meta: {
+      title: "个人中心",
+      permissions: ["super", "admin", "user"],
+      dynamicPath: `/personal/:module(${getPersonalModuleRegExp()})?`,
+      singleLayout: "blank",
+    },
+  },
 ];

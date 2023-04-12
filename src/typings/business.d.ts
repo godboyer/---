@@ -293,6 +293,42 @@ declare namespace HouseManagement {
   type defaultStatusKey = NonNullable<House["deleted_state"]>;
 }
 
+/**房源相关模块 */
+declare namespace LeaseManagement {
+  interface House extends ApiHouseManagement.House {
+    /** 序号 */
+    index: number | null;
+    /** 表格的key（id） */
+    key: string | null;
+  }
+
+  /**房屋信息 */
+  interface HouseInfo extends ApiHouseManagement.House {
+      
+
+
+  }
+
+  // /**
+  //  * 出租状态
+  //  */
+  // type leaseStatusKey = NonNullable<House["lease_state"]>;
+
+  // /**
+  //  * 审核状态
+  //  */
+  // type examStatusKey = NonNullable<House["exam_status"]>;
+
+  // /**
+  //  * 默认状态
+  //  * 1:new新房
+  //  * 2:"启用"
+  //  *
+  //  */
+  // type defaultStatusKey = NonNullable<House["deleted_state"]>;
+}
+
+
 declare namespace TableManagement {
   interface Table extends ApiTableManagement.Table {
     /** 序号 */
@@ -321,4 +357,18 @@ declare namespace TableManagement {
 declare namespace AdminManagement { 
 
     type StatusKey = '1'|'2'|'3'|'4'|'5'|'0' |string | number | symbol;
+}
+
+declare namespace FeedbackManagement { 
+
+  interface Feedback extends ApiFeedbackManagement.Feedback{
+        /** 序号 */
+    index: number;
+    /** 表格的key（id） */
+    key?: string;
+
+  }
+
+
+    type StatusKey = '1'|'2'|'0' |string | number | symbol;
 }

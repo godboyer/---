@@ -1,8 +1,9 @@
 <template>
-  <n-grid cols="1 xs:2 s:2 m:3 l:5" x-gap="12" y-gap="20" class="mt-20" item-responsive responsive="screen">
+  <div class="wh-full">
+    <n-grid cols="1 xs:2 s:2 m:3 l:5" x-gap="12" y-gap="20" class="mt-20" item-responsive responsive="screen">
     <n-grid-item v-for="item in CardList" :key="item.key" span="1">
-      <cardone @click.stop.prevent="GoToHouseDetail(item.house_id)" :card-date="item">
-      </cardone>
+      <house-info-card @click.stop.prevent="GoToHouseDetail(item.house_id)" :card-date="item">
+      </house-info-card>
     </n-grid-item>
   </n-grid>
   <div class="rent_foot">
@@ -12,14 +13,15 @@
       离家不再远，相顾如寓有。精选房源等你，找到适合你。
     </p>
   </div>
+  </div>
+  
 </template>
 
 <script setup lang="ts">
 import { useHouseStore, useSearchStore } from "@/store";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import Cardone from "@/components/cardone.vue";
-
+import houseInfoCard from '@/components/card/houseInfoCard.vue'
 
 defineOptions({ name: "houseMain" })
 

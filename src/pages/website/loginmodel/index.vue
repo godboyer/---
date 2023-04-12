@@ -1,6 +1,6 @@
 <template>
   <n-modal
-    v-model:show="modalVisible"
+    v-model:show="auth.showLoginModel"
     preset="card"
     :title="activeModule.label"
     :mask-closable="false"
@@ -13,38 +13,27 @@
     <transition name="fade-slide" mode="out-in" appear>
       <component
         @update-action="changeActiveModule"
-        @close-modal="closeModal"
+        @close-modal="closeLoginModel()"
         :is="activeModule.component"
       />
     </transition>
     <!-- <template #action>
-      <n-popover placement="top-start" trigger="focus">
-        <template #trigger>
-            <div ref="agrementRef">
-
-              <Login-agreement  v-model:value="agreement" />
-            </div>
-        </template>
-
-        请先阅读隐私政策!
-      </n-popover>
-    </template> -->
+        <n-popover placement="top-start" trigger="focus">
+          <template #trigger>
+              <div ref="agrementRef">
+  
+                <Login-agreement  v-model:value="agreement" />
+              </div>
+          </template>
+  
+          请先阅读隐私政策!
+        </n-popover>
+      </template> -->
   </n-modal>
 </template>
 
 <script setup lang="ts">
-import {
-  type Component,
-  computed,
-  ref,
-  onMounted,
-  markRaw,
-  reactive,
-  shallowRef,
-  onUpdated,
-  unref,
-toRefs,
-} from "vue";
+import { type Component, computed, ref, shallowRef, watch } from "vue";
 import { WebsiteloginModuleLabels } from "@/constants";
 import {
   CodeLogin,
@@ -52,15 +41,15 @@ import {
   Register,
   ResetPwd,
   BindWechat,
-} from "@/pages/login/component/index";
+} from "./components";
+import {useAuthStore} from "@/store";
+import { useBoolean } from "@/hooks";
 
-export interface Props {
-  /** 弹窗可见性 */
-  visible: boolean;
-
-  /** 登录模块分类 */
-  module: UnionKey.LoginModule;
-}
+// export interface Props {
+//   /** 弹窗可见性 */
+//   // moduleValue: boolean;
+//   visible: boolean;
+// }
 defineOptions({ name: "LoginActionModal" });
 interface Emits {
   (e: "update:visible", visible: boolean): void;
@@ -70,28 +59,14 @@ interface LoginModule {
   label: string;
   component: Component;
 }
-const agreement = ref(false);
 const emit = defineEmits<Emits>();
-const props = withDefaults(defineProps<Props>(), {
-  module: "code-login",
-});
-const agrementRef = ref<HTMLInputElement | null>(null)
-
-
-const modalVisible = computed({
-  get() {
-    return props.visible;
-  },
-  set(visible) {
-    emit("update:visible", visible);
-  },
-});
+const auth = useAuthStore();
+const {closeLoginModel} = auth;
+const agrementRef = ref<HTMLInputElement | null>(null);
 
 const module = ref<UnionKey.LoginModule>();
 
-const closeModal = () => {
-  modalVisible.value = false;
-};
+
 
 const modules: LoginModule[] = [
   {
@@ -129,9 +104,8 @@ function creatActiveModule(key?: UnionKey.LoginModule) {
       active,
       modules.find((item) => item.key === key) as LoginModule
     );
-  } else {
-    active = modules.find((item) => item.key === props.module) as LoginModule;
-  }
+  } 
+ 
   return active;
 }
 
@@ -140,7 +114,7 @@ function changeActiveModule(key: UnionKey.LoginModule) {
   module.value = key;
   activeModule.value = creatActiveModule(key);
   console.log(agrementRef.value);
-  agrementRef.value?.focus()
+  agrementRef.value?.focus();
 }
 </script>
 

@@ -1,268 +1,321 @@
 <template>
-
-
-  <uploadFile class="grid  center-box">
-      <template  v-slot="{avatarUrl}" >
-              <button type="submit" @click="dynamicSlotName = '1'">上传文件{{avatarUrl}}</button>
-      </template>
-
-        <template  v-slot:[dynamicSlotName] >
-           <button type="submit">动态插槽名{{dynamicSlotName}}</button>
-      </template>
-  </uploadFile>
+    <n-carousel class="swiper-show" autoplay draggable>
+        <n-carousel-item v-for="item in swiperItem" :key="item.key">
+            <img :src="item.src" class="w-full h-350px" :alt="item.src">
+        </n-carousel-item>
+    </n-carousel>
+    <MiddleLayout>
 
 
 
+        <n-card title="最新房源" :bordered="false">
+            <div class="newhouse">
+                <n-carousel :slides-per-view="3" :space-between="20" autoplay draggable>
+                    <n-carousel-item v-for="item in newHouseList" :key="item.key">
+                        <house-info-card class="new-card" @click="toHouseDetail(item.house_id)" :card-date="item">
+                        </house-info-card>
+                    </n-carousel-item>
+                </n-carousel>
+
+            </div>
 
 
 
 
-  <Transition
-    @before-enter="onBeforeEnter"
-    @enter="onEnter"
-    @after-enter="onAfterEnter"
-    @enter-cancelled="onEnterCancelled"
-    @before-leave="onBeforeLeave"
-    @leave="onLeave"
-    @after-leave="onAfterLeave"
-    @leave-cancelled="onLeaveCancelled"
-  >
-    <footer
-      ref="FootRef"
-      v-if="show"
-      class="fixed left-0 bottom-0 w-full h-66 bg-#fff mestyle1 p-6"
-    >
-      <p>
-        <i
-          @click="show = false"
-          class="i-ci-close-big inline-block color-black"
-          style="font-size: 25px"
-        ></i>
-      </p>
-      <n-grid x-gap="12" offset="1" :cols="itemData.length">
-        <n-grid-item class="gridbox" v-for="item in itemData" :key="item.title">
+        </n-card>
+        <n-card title="城市攻略" :bordered="false">
+            <n-carousel slides-per-view="auto" :space-between="20" :loop="false" draggable>
+                <n-carousel-item class="city-box" v-for="item in imges" :key="item.title" style="width:265px">
+                    <div class="city-item">
+                        <img :src="item.pic" :alt="item.title">
+                        <div class="info">
+                            <h2>{{ item.title }}</h2>
+                            <p>{{ item.subtitle }}</p>
+                        </div>
+                    </div>
 
-          <div>
-              <h3 class="text-18px font-700 ">{{ item.title }}</h3>
-          <template v-if="item?.children.length !== 0">
-            <ul class="text-14px color-#b0b0b0 p-t-4!">
-              <li  v-for="v in item.children" :key="v.labeL" >
-                <router-link class="hover:b-b-1" :to="v.to">{{ v.labeL }}</router-link>
-              </li>
-            </ul>
-          </template>
-          </div>
-        
-        </n-grid-item>
-      </n-grid>
-    </footer>
-  </Transition>
-  <Transition
-    appear
-    enter-active-class="animate__animated animate__fadeIn"
-    leave-active-class="animate__animated animate__fadeOut"
-  >
-    <footer
-      v-show="!show"
-      class="mestyle2 fixed left-0 bottom-0 h-20 p-l-10 p-r-10 bg-#fff w-full"
-    >
-      <div class="w-100 h-5 flex-y-center gap-6">
-        <span>
-          <icon-fa-brands:weibo class="text-20px cursor color-black" />
-        </span>
-        <span>
-          <icon-uiw:weixin class="text-20px cursor color-black"></icon-uiw:weixin>
-        </span>
-        <span
-          @click="show = !show"
-          class="text-center hover:b-b-1 cursor text-14px color-black"
-        >
-          支持与政策
-          <icon-ion:ios-arrow-up class="text-24px"></icon-ion:ios-arrow-up>
-        </span>
-      </div>
-      <div class="h-10 text-12px color-#b0b0b0">
-        <p>
-          京ICP备16017121号京ICP证 160773号·京公网安备
-          11010502032345号·安彼迎网络（北京）有限公司·营业执照
-        </p>
-        <p class="text-right">
-          <span> © 2023 Airbnb, Inc.All rights reserved.</span>
+                </n-carousel-item>
+                <template #arrow="{ prev, next }">
+                    <div class="custom-arrow">
+                        <button type="button" class="custom-arrow--left" @click="prev">
+                            <icon-ion:chevron-left class="text-64px color-#fff" />
+                        </button>
+                        <button type="button" class="custom-arrow--right" @click="next">
+                            <icon-ion:chevron-right class="text-64px color-#fff" />
+                        </button>
+                    </div>
+                </template>
+                <template #dots="{ total, currentIndex, to }">
+                    <ul class="custom-dots">
+                        <li v-for="index of total" :key="index" :class="{ ['is-active']: currentIndex === index - 1 }"
+                            @click="to(index - 1)" />
+                    </ul>
+                </template>
 
-          <span>·</span>
-          <span>条款</span>
-          <span>·</span>
-          <span>隐私政策</span>
-          <span>·</span>
-          <span>网站地图</span>
-          <span>·</span>
-          <span>全国旅游投诉渠道</span>
-          <span>·</span>
-          <span>12301</span>
-        </p>
-      </div>
-    </footer>
-  </Transition>
+            </n-carousel>
+
+
+        </n-card>
+
+
+
+
+
+    </MiddleLayout>
 </template>
-
 <script setup lang="ts">
-import { ref } from "vue";
-import { gsap } from "gsap";
-import uploadFile from "@/components/common/uploadAvater.vue"
+import MiddleLayout from "@/layouts/MiddleLayout/index.vue";
+import { fetchNewHouseInfo } from '@/service/api/house'
+import houseInfoCard from "@/components/card/houseInfoCard.vue";
+import { useRouterPush } from "@/composables";
+import { useHouseStore, useAppStore } from '@/store'
+import { onMounted, reactive, ref } from "vue";
+
+const { routerPush, toHouseDetail } = useRouterPush();
+const house = useHouseStore();
+const app = useAppStore();
 
 
-//  gsap.registerPlugin(window.ScrollTrigger);
-const show = ref<boolean>(false);
-const dynamicSlotName =ref("avatar")  
-const FootRef = ref<HTMLElement | null>(null);
-// 在元素被插入到 DOM 之前被调用
-// 用这个来设置元素的 "enter-from" 状态
-function onBeforeEnter(el: any) {
-  gsap.to(FootRef, {
-    y: 0,
-    duration: 0.5,
-    ease: "power3.out",
-  });
-}
+onMounted(() => {
+    init()
+ 
+})
+ 
 
-const itemData = [
-  {
-    title: "随心所寓",
-    children: [
-      { labeL: "工作机会", to: "" },
-      { labeL: "随心所寓新闻", to: "" },
-      { labeL: "政策", to: "" },
-      { labeL: "无障碍设施", to: "" },
-    ],
-  },
-  {
-    title: "客服支持",
-    children: [
-      { labeL: "帮助", to: "" },
-      { labeL: "邻里支持", to: "" },
-    ],
-  },
-  {
-    title: "发现",
-    children: [
-      { labeL: "信任与安全", to: "" },
-      { labeL: "旅行基金", to: "" },
-      { labeL: "商务差旅", to: "" },
-      { labeL: "爱彼迎杂志", to: "" },
-    ],
-  },
-  {
-    title: "发现",
-    children: [
-      { labeL: "为什么要出租?", to: "" },
-      { labeL: "房东义务", to: "" },
-      { labeL: "开展体验", to: "" },
-      { labeL: "资源中心新推出", to: "" },
-    ],
-  },
-];
 
-// 在元素被插入到 DOM 之后的下一帧被调用
-// 用这个来开始进入动画
-function onEnter(el: any, done: () => void) {
-  // 调用回调函数 done 表示过渡结束
-  // 如果与 CSS 结合使用，则这个回调是可选参数
-  gsap.to(FootRef, {
-    y: "100%",
-    duration: 0.5,
-    ease: "power3.in",
-    onComplete: () => {
-      done();
+
+
+const imges = [
+    {
+        title: '上海',
+        subtitle: '在繁华的浦东，与世界接轨，享受不一样的上海生活。',
+        pic: '/src/assets/images/shanghai.jpg'
     },
-  });
+    {
+        title: '北京',
+        subtitle: '让天安门广场成为您的邻居，来一场真正的京城生活',
+
+        pic: '/src/assets/images/beijing-new.jpeg'
+    },
+    {
+        title: '杭州',
+        subtitle: '在西湖畔，领略江南水乡的美景，感受杭州的文化底蕴。',
+
+        pic: '/src/assets/images/hangzhou.jpeg'
+    },
+    {
+        title: '南京',
+        subtitle: '在历史与现代的交汇处，寻找你的家的感觉。',
+
+        pic: '/src/assets/images/nanjing.jpeg'
+    },
+    {
+        title: '深圳',
+        subtitle: '在科技之城，与创新同行，开启前所未有的深圳之旅。',
+
+        pic: '/src/assets/images/shenzhen-new.jpeg'
+    },
+    {
+        title: '武汉',
+        subtitle: '在黄鹤楼，俯瞰长江，领略武汉的江城风光。',
+
+        pic: '/src/assets/images/wuhan.jpg'
+    },
+
+]
+const swiperItem = reactive([
+    {
+        key: '1',
+        src: '/src/assets/images/swiper-bg1.jpg'
+    },
+    {
+        key: '2',
+        src: '/src/assets/images/swiper-bg2.jpg'
+    },
+    {
+        key: '3',
+        src: '/src/assets/images/swiper-bg3.jpg'
+    },
+    {
+        key: '4',
+        src: '/src/assets/images/swiper-bg4.jpg'
+    },
+    {
+        key: '5',
+        src: '/src/assets/images/swiper-bg5.jpeg'
+    },
+    {
+        key: '6',
+        src: '/src/assets/images/swiper-bg5.jpg'
+    },
+])
+
+const newHouseList = ref<HousePage.CardList[]>([])
+
+
+
+
+
+
+
+async function init() {
+    let { error, data } = await fetchNewHouseInfo()
+    if (error) return
+    newHouseList.value = data as HousePage.CardList[]
 }
 
-// 当进入过渡完成时调用。
-function onAfterEnter(el: any) {}
-function onEnterCancelled(el: any) {}
-
-// 在 leave 钩子之前调用
-// 大多数时候，你应该只会用到 leave 钩子
-function onBeforeLeave(el: any) {}
-
-// 在离开过渡开始时调用
-// 用这个来开始离开动画
-function onLeave(el: any, done: () => void) {
-  // 调用回调函数 done 表示过渡结束
-  // 如果与 CSS 结合使用，则这个回调是可选参数
-  done();
-}
-
-// 在离开过渡完成、
-// 且元素已从 DOM 中移除时调用
-function onAfterLeave(el: any) {}
-
-// 仅在 v-show 过渡中可用
-function onLeaveCancelled(el: any) {}
+init()
 </script>
 
 <style lang="scss" scoped>
-.mestyle1 {
-  box-shadow: rgba(0, 0, 0, 0.28) 0px 8px 28px !important;
-  border-top-left-radius: 12px !important;
-  border-top-right-radius: 12px !important;
-  &::backdrop {
-    background-color: rgba(0, 0, 0, 0.822);
-  }
+.city-box {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    .city-item,
+    li {
+        // width: 25%;
+        margin-bottom: 10px;
+        position: relative;
+
+        &:hover {
+            div {
+                opacity: 0.8;
+            }
+        }
+
+        img {
+            width: 100%;
+            height: 310px;
+            object-fit: cover;
+
+            // 使用css：：before图片遮罩
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100% !important;
+                height: 100% !important;
+                background-color: #000 !important;
+                opacity: 0.3 !important;
+            }
+        }
+
+        .info,
+        div {
+            position: absolute;
+            top: 62px;
+            left: 24px;
+            padding: 10px;
+            width: 80%;
+
+            h2 {
+                font-size: 32px;
+                line-height: 35px;
+                color: #fff;
+                font-weight: 700;
+                margin-bottom: 10px;
+            }
+
+            p {
+                font-size: 16px;
+                line-height: 26px;
+                color: #fff;
+                font-weight: 600;
+            }
+        }
+    }
+
 }
 
-.mestyle2 {
-  box-shadow: rgba(0, 0, 0, 0.28) 0px 8px 28px !important;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  &::backdrop {
-    background-color: rgba(0, 0, 0, 0.822);
-  }
+.swiper-showP {
+    height: 400px;
+    width: 100vw !important;
+    background-color: #fff;
+    padding-top: 80px;
 }
 
-.cursor {
-  cursor: pointer;
-}
-.animate__animated {
-  animation-duration: 250ms;
-  animation-fill-mode: both;
-}
-.animate__fadeIn {
-  animation-name: fadeIn;
-}
-.animate__fadeOut {
-  animation-name: fadeOut;
+.newhouse {
+    height: auto;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: hidden;
+
+    .new-card::before {
+        content: '';
+        position: absolute;
+        top: -4px !important;
+        left: 9px !important;
+        z-index: 99 !important;
+        width: 85px;
+        height: 85px;
+        transform: rotateZ(30deg);
+        background: url('@/assets/images/new-solid.png') no-repeat;
+        pointer-events: none;
+    }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.custom-arrow {
+    width: 100vw;
+    height: 100vh;
+    background-color: red;
+    pointer-events: none;
+    position: relative;
+    z-index: 999;
 }
 
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+.custom-arrow--left {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 10%;
+    height: 100%;
+    pointer-events: auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    //渐变
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0) 100%);
 }
 
-.gridbox{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  // justify-content: center;
+.custom-arrow--right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 10%;
+    height: 100%;
+    pointer-events: auto;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0) 100%);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
 
+.custom-dots {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
 }
-.center-box{
-  margin-top: 200px;
-  display: grid;
-  place-content: center;
+
+.custom-dots li {
+    display: inline-block;
+    width: 12px;
+    height: 4px;
+    margin: 0 3px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.4);
+    transition: width 0.3s, background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
 }
-</style>
+
+.custom-dots li.is-active {
+    width: 40px;
+    background: #fff;
+}</style>

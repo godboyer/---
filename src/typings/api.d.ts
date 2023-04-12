@@ -1,5 +1,3 @@
-
-
 /** 后端返回的用户权益相关类型 */
 declare namespace ApiAuth {
   /** 返回的token和刷新token */
@@ -18,8 +16,17 @@ declare namespace ApiAuth {
     createAt: String;
   }
 
+    /**收藏参数 */
+  interface Collect {
+    /**用户id */
+    user_id: string;
+    house_id: string;
+    is_collect:'1'|'0';
+
+  }
+
   /** 返回的用户信息 */
-  type UserInfo = Auth.UserInfo;
+  type UserInfo = ApiUserManagement.User;
 }
 
 /** 后端返回的路由相关类型 */
@@ -70,9 +77,18 @@ declare namespace ApiUserManagement {
      */
     user_status: "1" | "2" | "3" | "4" | null;
     /**用户权限 */
-    role_permission: string | null;
+    role_permission: "super" | "admin" | "user";
     /**创建时间 */
     createtime: string | null;
+  }
+
+   interface CollectLsit{
+        user_id: string;
+        house_id: string;
+        title: string;
+        price: string;
+        first_picture: string;
+        address: string;
   }
 }
 /**城市管理接口 */
@@ -236,18 +252,16 @@ declare namespace ApiHouseManagement {
     owner_id?: Record<string, any>;
   }
 
-  interface ApiData{
+  interface ApiData {
     houseCardList: House[];
     houseStatus: HouseStatus;
   }
 
-  interface HouseStatus{
+  interface HouseStatus {
     city_id: string;
     house_total: string | number;
     city_name: string;
   }
-
-
 }
 
 declare namespace ApiQuery {
@@ -292,5 +306,25 @@ declare namespace ApiTableManagement {
      * 更新时间
      */
     updated_time?: string;
+  }
+}
+declare namespace ApiFeedbackManagement {
+  interface Feedback {
+    _id?:string
+    /**
+     * 内容
+     */
+    content: string;
+    /**
+     * 标题
+     */
+    title: string;
+    /**
+     * 用户
+     */
+    user_id: null | string;
+
+    status: "0" | "1" | "2";
+    create_time: string;
   }
 }

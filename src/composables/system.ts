@@ -1,7 +1,7 @@
 import UAParser from 'ua-parser-js';
 import { useAuthStore } from '@/store';
 import { isArray, isString } from '@/utils';
-
+// composables
 interface AppInfo {
   /** 项目名称 */
   name: string;

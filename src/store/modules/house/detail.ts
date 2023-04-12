@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
-import HouseFetch from "@/service/api/house";
-const {fetchHouseInfo} = new HouseFetch();
+import {fetchHouseInfo} from "@/service/api/house";
 
 
 export const useHouseDetailStore = defineStore("houseDetailStore", {
@@ -24,6 +23,16 @@ export const useHouseDetailStore = defineStore("houseDetailStore", {
       }
 
     },
+    /**
+     *  设置房源详情信息
+     * @param id 房源id
+     */
+     setHouseDetail(id: string) { 
+      
+
+    }
+
+
   },
   getters: {
     // getHouseDetail: (state) => state.HouseDetail,

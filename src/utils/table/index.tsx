@@ -114,7 +114,7 @@ export function renderHouseAction(
 ): VNode {
   return (
     <NSpace justify={"center"}>
-      <NButton size={"small"} onClick={() => handleEditTable(row)}>
+      <NButton size={"small"} onClick={() => handleEditTable(row.key)}>
         编辑
       </NButton>
       <NButton size={"small"} onClick={() => handleShowTable(row.key)}>

@@ -63,10 +63,20 @@ export const LeavewordAdapter = createAdapter<ApiLeavewordManagement.Leaveword, 
 });
 
 
-/**房源管理接口适配--LeavewordAdapter */
+/**房源管理接口适配--r */
 export const HouseAdapter = createAdapter<ApiHouseManagement.House, HouseManagement.House>((item, index) => {
  
   const House: HouseManagement.House = {
+    index: index+1,
+    key: item['_id'],
+    ...item
+  };
+  return House;
+});
+
+export const FeedbackAdapter = createAdapter<ApiFeedbackManagement.Feedback, FeedbackManagement.Feedback>((item, index) => {
+ 
+  const House:FeedbackManagement.Feedback = {
     index: index+1,
     key: item['_id'],
     ...item
@@ -92,6 +102,19 @@ export const HouseCardAdapter = function (fetchData: ApiHouseManagement.ApiData 
   return fetchData
   
 };
+
+export const HouseNewCardAdapter = createAdapter<HousePage.Card, HousePage.CardList>((item, index) => {
+ 
+  const House: HousePage.CardList = {
+    index: index+1,
+    key: item['_id'],
+    ...item
+  };
+  return House;
+});
+
+
+
 
 interface FetchTableData {
   tableName: string;

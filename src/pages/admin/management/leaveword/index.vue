@@ -49,16 +49,11 @@ import type { Ref } from "vue";
 import { NButton, NPopconfirm, NSpace, NTag } from "naive-ui";
 import type { DataTableColumns, PaginationProps } from "naive-ui";
 import {
-  genderLabels,
-  leavewordStatusLabels,
-  noticeStatusLabels,
-  userStatusLabels,
+  FeedbackStatusLabels,
 } from "@/constants";
 import {
-  fetchLeavewordDel,
-  fetchLeavewordList,
-  fetchNoticeDel,
-  fetchNoticeList,
+  fetchFeedbackDel,
+  fetchFeedbackList,
 } from "@/service";
 import { useBoolean, useLoading } from "@/hooks";
 import TableActionModal from "./components/table-action-modal.vue";
@@ -70,14 +65,14 @@ import { extractKeysAndTitles } from "@/utils";
 const { loading, startLoading, endLoading } = useLoading(false);
 const { bool: visible, setTrue: openModal } = useBoolean();
 
-const tableData = ref<LeavewordManagement.Leaveword[]>([]);
-function setTableData(data: LeavewordManagement.Leaveword[]) {
+const tableData = ref<FeedbackManagement.Feedback[]>([]);
+function setTableData(data: FeedbackManagement.Feedback[]) {
   tableData.value = data;
 }
 
 async function getTableData() {
   startLoading();
-  const { data } = await fetchLeavewordList();
+  const { data } = await fetchFeedbackList();
   if (data) {
     setTimeout(() => {
       setTableData(data);
@@ -86,7 +81,7 @@ async function getTableData() {
   }
 }
 
-const columns: Ref<DataTableColumns<LeavewordManagement.Leaveword>> = ref([
+const columns: Ref<DataTableColumns<FeedbackManagement.Feedback>> = ref([
   {
     type: "selection",
     align: "center",
@@ -97,43 +92,18 @@ const columns: Ref<DataTableColumns<LeavewordManagement.Leaveword>> = ref([
     align: "center",
   },
   {
-    key: "city_name",
-    title: "所在城市",
+    key: "title",
+    title: "标题",
     align: "center",
   },
   {
-    key: "house_category",
-    title: "房屋类别",
+    key: "content",
+    title: "反馈内容",
     align: "center",
   },
   {
-    key: "address",
-    title: "地址",
-    align: "center",
-  },
-  {
-    key: "price",
-    title: "月租费(元/月)",
-    align: "center",
-  },
-  {
-    key: "des",
-    title: "面积/楼层",
-    align: "center",
-  },
-  {
-    key: "first_picture",
-    title: "房屋图片",
-    align: "center",
-  },
-  {
-    key: "house_description",
-    title: "房屋介绍",
-    align: "center",
-  },
-  {
-    key: "Homeowner_info",
-    title: "房东",
+    key: "user_id",
+    title: "用户",
     align: "center",
   },
 
@@ -148,13 +118,13 @@ const columns: Ref<DataTableColumns<LeavewordManagement.Leaveword>> = ref([
     },
   },
   {
-    key: "exam_status",
-    title: "审核状态",
+    key: "status",
+    title: "状态",
     align: "center",
     render: (row) => {
-      if (row.recovery_state) {
+      if (row.status) {
         const tagTypes: Record<
-          LeavewordManagement.LeavewordStatusKey,
+          FeedbackManagement.StatusKey,
           NaiveUI.ThemeColor
         > = {
           "1": "success",
@@ -164,8 +134,8 @@ const columns: Ref<DataTableColumns<LeavewordManagement.Leaveword>> = ref([
         };
 
         return (
-          <NTag type={tagTypes[row.recovery_state]}>
-            {leavewordStatusLabels[row.recovery_state]}
+          <NTag type={tagTypes[row.status]}>
+            {FeedbackStatusLabels[row.status]}
           </NTag>
         );
       }
@@ -181,12 +151,12 @@ const columns: Ref<DataTableColumns<LeavewordManagement.Leaveword>> = ref([
         <NSpace justify={"center"}>
           <NButton
             size={"small"}
-            onClick={() => handleEditTable(row.leaveword_id)}
+            onClick={() => handleEditTable(row.key)}
           >
             编辑
           </NButton>
           <NPopconfirm
-            onPositiveClick={() => handleDeleteTable(row.leaveword_id)}
+            onPositiveClick={() => handleDeleteTable(row.key)}
           >
             {{
               default: () => "确认删除",
@@ -197,7 +167,7 @@ const columns: Ref<DataTableColumns<LeavewordManagement.Leaveword>> = ref([
       );
     },
   },
-]) as Ref<DataTableColumns<LeavewordManagement.Leaveword>>;
+]) as Ref<DataTableColumns<FeedbackManagement.Feedback>>;
 let _fileds = extractKeysAndTitles(columns) 
   console.log('tableTitle: ',_fileds);
 const modalType = ref<ModalType>("add");
@@ -206,12 +176,12 @@ function setModalType(type: ModalType) {
   modalType.value = type;
 }
 
-let editData = reactive<LeavewordManagement.Leaveword>(createDefaultEditData());
-function createDefaultEditData(): LeavewordManagement.Leaveword {
+let editData = reactive<FeedbackManagement.Feedback>(createDefaultEditData());
+function createDefaultEditData(): FeedbackManagement.Feedback {
   return {
-    _id: null,
-    index: null,
-    key: null,
+    _id: '',
+    index: 0,
+    key: '',
     /**
      * 内容，留言内容
      */
@@ -220,18 +190,9 @@ function createDefaultEditData(): LeavewordManagement.Leaveword {
      * 留言时间
      */
     create_time: "",
-    /**
-     * 留言ID，留言数据的标识
-     */
-    leaveword_id: "",
-    /**
-     * 回复状态，回复状态
-     */
-    recovery_state: "",
-    /**
-     * 更新时间
-     */
-    updated_time: "",
+    status: '2',
+    title:'',
+ 
     /**
      * 用户ID或者编号，用户的留言
      */
@@ -242,7 +203,7 @@ function createDefaultEditData(): LeavewordManagement.Leaveword {
  * 设置需要操作的数据的函数
  * @param   data  需要操作的数据
  */
-function setEditData(data: LeavewordManagement.Leaveword | null) {
+function setEditData(data: FeedbackManagement.Feedback | null) {
   Object.assign(editData, createDefaultEditData(), data);
   console.log("editData: ", editData);
 }
@@ -258,7 +219,7 @@ function handleAddTable() {
  * 打开编辑表格
  * @param rowId 当前列的key值即user_id的值
  */
-function handleEditTable(rowId: string | null) {
+function handleEditTable(rowId?: string | null) {
   console.log("rowId: ", rowId);
   //可能存在没有的变量的值
   const findItem = tableData.value.find((item) => item._id === rowId);
@@ -271,8 +232,8 @@ function handleEditTable(rowId: string | null) {
   openModal();
 }
 
-async function handleDeleteTable(rowId: string | null) {
-  let { error, data } = await fetchLeavewordDel(rowId as string);
+async function handleDeleteTable(rowId?: string | null) {
+  let { error, data } = await fetchFeedbackDel(rowId as string);
   if (!error) {
     getTableData();
     window.$message?.info("删除成功");

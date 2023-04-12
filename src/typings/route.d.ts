@@ -32,7 +32,7 @@ declare namespace AuthRoute {
     /** 路由标题(可用来作document.title或者菜单的名称) */
     title: string;
     /** 路由的动态路径(需要动态路径的页面需要将path添加进范型参数) */
-    dynamicPath?: AuthRouteUtils.GetDynamicPath<'/login'>;
+    dynamicPath?: AuthRouteUtils.GetDynamicPath<'/login'|'/personal'>;
     /** 作为单级路由的父级路由布局组件 */
     singleLayout?: Extract<RouteComponentType, 'basic' | 'blank'>;
     /** 需要登录权限 */

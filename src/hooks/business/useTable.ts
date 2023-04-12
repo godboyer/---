@@ -153,6 +153,7 @@ export function useTable<T>(tableName: MaybeRef<string>) {
   const checkedRowKeysRef = ref<DataTableRowKey[]>([]);
   /**选中行事件 */
   const handleCheckRowKeys = (rowKeys: DataTableRowKey[]) => {
+    checkedRowKeysRef.value = []
     //选中的key值数组,可以进行多选操作比如删除,等等
     checkedRowKeysRef.value = rowKeys;
     window.$message?.info(`你选择中了 ${rowKeys}` as any);

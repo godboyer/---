@@ -86,6 +86,19 @@ export function useRouterPush(inSetup = true) {
     }
   }
 
+    /**跳转到详情页 */
+  function toHouseDetail(id: string) {
+    routerPush({
+      path: `/house/detail`,
+      query: {
+        house_id: id,
+      },
+    });
+  }
+
+
+
+
   return {
     routerPush,
     routerBack,
@@ -93,5 +106,7 @@ export function useRouterPush(inSetup = true) {
     toLogin,
     toLoginModule,
     toLoginRedirect,
+    toHouseDetail,
+    toAdminHome
   };
 }

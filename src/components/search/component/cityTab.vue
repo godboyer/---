@@ -2,7 +2,7 @@
   <n-space class="wh-full" :vertical="true" :size="50">
     <n-space :vertical="true">
       <h2>当前选中城市</h2>
-      <button class="action-button text-16px">
+      <button  class="w-60px h-45px text-16px b-rd-12px inline-block">
         {{ house.cityName }}
       </button>
     </n-space>
@@ -31,7 +31,7 @@ defineOptions({ name: "cityTab" })
 
 const search = useSearchStore()
 const house = useHouseStore()
-const { closeSearchPanel, openSearchPanel } = useSearchStore()
+const { closeSearchPanel } = useSearchStore()
 const cityList = ref<ApiCityManagement.City[]>([]);
 const modelValue = ref<string>("");
 async function initialData() {

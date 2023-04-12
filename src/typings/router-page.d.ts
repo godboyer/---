@@ -37,6 +37,7 @@ declare namespace RouterPage {
     | "admin_city_list"
     | "houselease"
     | "houselease_list"
+    | "houselease_outlist"
     | "notice"
     | "notice_list"
     | "houseInfo"
@@ -55,8 +56,10 @@ declare namespace RouterPage {
     | "management_role"
     | "management_route"
     | "management_user"
+    | "test"
+    | "feedback"
+    | "personal"
     | "not-found";
-
 
   /** 最后一级路由(该级路有对应的vue文件) */
   type LastDegreeRouteKey = Extract<
@@ -81,6 +84,7 @@ declare namespace RouterPage {
     | "admin_about"
     | "admin_city_list"
     | "houselease_list"
+    | "houselease_outlist"
     | "notice_list"
     | "houseInfo_list"
     | "houseComment_list"
@@ -89,5 +93,8 @@ declare namespace RouterPage {
     | "login"
     | "management_user"
     | "not-found"
+    | "test"
+    | "feedback"
+    | "personal"
   >;
 }

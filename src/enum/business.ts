@@ -13,3 +13,11 @@ export enum EnumLoginModule {
   'reset-pwd' = '重置密码',
   'bind-wechat' = '微信绑定'
 }
+/** 个人中心模块 */
+export enum EnumPersonalModule {
+  'userinfo' = '个人信息',
+  'collection' = '个人收藏',
+  'comment' = '房源评价',
+  'history' = '浏览历史',
+  'subscribe' = '预约房源',
+}

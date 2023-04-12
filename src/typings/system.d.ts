@@ -17,6 +17,10 @@ declare namespace EnumType {
 
   /** 登录模块 */
   type LoginModuleKey = keyof typeof import('@/enum').EnumLoginModule;
+
+  /**个人中心模块 */
+  type PersonalModuleKey = keyof typeof import('@/enum').EnumPersonalModule;
+
 }
 
 /** 请求的相关类型 */

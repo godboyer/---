@@ -10,9 +10,9 @@ const serviceEnv: ServiceEnv = {
 		secondUrlPattern: "/second-url-pattern",
 	},
 	test: {
-		url: "http://localhost:8080",
+		url: "https://localhost:8080",
 		urlPattern: "/url-pattern",
-		secondUrl: "http://localhost:8081",
+		secondUrl: "https://localhost:8081",
 		secondUrlPattern: "/second-url-pattern",
 	},
 	prod: {

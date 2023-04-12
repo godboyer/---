@@ -7,8 +7,10 @@ import {
   CommentAdapter,
   NoticeAdapter,
   LeavewordAdapter,
-  TableAdapter
+  TableAdapter,
+  FeedbackAdapter
 } from "./management.adapter";
+import { DataTableRowKey } from "naive-ui";
 
 /** 获取用户列表 */
 export const fetchUserList = async () => {
@@ -134,6 +136,21 @@ export const fetchCommentDel = async (_id: string) => {
   );
   return data;
 };
+
+interface CommentIds{
+  commentIds:DataTableRowKey[]
+}
+
+/**批量删除评论*/
+export const fetchBatchCommentDel = async (data: CommentIds) => {
+  const result = await request.post<ApiCommentManagement.Comment[] | null>(
+    `/comment/delete`,{...data}
+  
+  );
+  return result;
+};
+
+
 /**--------------------------------------------------公告接口---------------------------------------------------- */
 
 export type NoticeFormModel = Pick<
@@ -238,3 +255,46 @@ export const fetchTableList = async (tableName:string,qeury:TableQeury) => {
 }
 
 
+
+/**--------------------------------------------------反馈接口---------------------------------------------------- */
+
+export type FeedbackFormModel = Pick<
+  FeedbackManagement.Feedback,
+ |"title"  | "status"|"content"|"user_id"
+>;
+/** 获取反馈列表 */
+export const fetchFeedbackList = async () => {
+  const data = await request.get<ApiFeedbackManagement.Feedback[] | null>(
+    "/feedback"
+  );
+  return adapter(FeedbackAdapter, data);
+};
+
+/** 增加反馈 */
+export const fetchFeedbackAdd = async (data: FeedbackFormModel) => {
+  const result = await request.post<ApiFeedbackManagement.Feedback[] | null>(
+    "/feedback/add",
+    { ...data }
+  );
+  return result;
+};
+
+/** 更新反馈 */
+export const fetchFeedbackUpdate = async (
+  _id: string,
+  data: FeedbackFormModel
+) => {
+  const result = await request.put<ApiFeedbackManagement.Feedback[] | null>(
+    `/feedback/${_id}`,
+    { ...data }
+  );
+  return result;
+};
+
+/**删除反馈*/
+export const fetchFeedbackDel = async (_id: string) => {
+  const data = await request.delete<ApiFeedbackManagement.Feedback[] | null>(
+    `/feedback/${_id}`
+  );
+  return data;
+};

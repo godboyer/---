@@ -34,7 +34,6 @@ import HouseDetailFoot from "./housepage/HouseDetailFoot.vue";
 import { useMessage } from "naive-ui";
 import { computed, onMounted, reactive, Ref, ref, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import _ from "lodash";
 import { useHouseDetailStore } from "@/store";
 import windowResize from "../../utils/resize";
 

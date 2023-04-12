@@ -47,15 +47,14 @@ export default class CustomAxiosInstance {
         const handleConfig = { ...config, timeout: 100000 };
         if (handleConfig.headers) {
           // 数据转换matcher
-          const contentType = handleConfig.headers[
-            "setContentType"
-          ] as unknown as UnionKey.ContentType;
+          const contentType = handleConfig.headers['Content-Type'] as unknown as UnionKey.ContentType;
+            console.log('contentType: ', contentType);
+
           // 设置token
           const headers = handleConfig.headers as { [key: string]: string };
           const AUTH_TOKEN = localStg.get("token") || "";
           // 创建实例后修改默认值  这里是设置token
           headers["Authorization"] = AUTH_TOKEN ? `Bearer ${AUTH_TOKEN}` : "";
-
           handleConfig.data = await transformRequestData(
             handleConfig.data,
             contentType
@@ -68,7 +67,6 @@ export default class CustomAxiosInstance {
         return handleServiceResult(error, null);
       }
     );
-
     /**设置响应拦截 */
     this.instance.interceptors.response.use(
       async (response) => {
@@ -84,13 +82,13 @@ export default class CustomAxiosInstance {
             >;
           }
 
-          // // token失效, 刷新token
-          // if (REFRESH_TOKEN_CODE.includes(backend[codeKey])) {
-          //   const config = await handleRefreshToken(response.config);
-          //   if (config) {
-          //     return this.instance.request(config);
-          //   }
-          // }
+          // token失效, 刷新token
+          if (REFRESH_TOKEN_CODE.includes(backend[codeKey])) {
+            const config = await handleRefreshToken(response.config);
+            if (config) {
+              return this.instance.request(config);
+            }
+          }
 
           const error = handleBackendError(backend, this.backendConfig);
           return handleServiceResult(error, null) as unknown as Promise<

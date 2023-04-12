@@ -1,51 +1,36 @@
 <template>
   <div class="h-full overflow-hidden">
-    <n-card
-      title="房源评价管理"
-      :bordered="false"
-      class="rounded-16px shadow-sm"
-    >
+    <n-card title="房源评价管理" :bordered="false" class="rounded-16px shadow-sm">
       <n-space class="pb-12px" justify="space-between">
         <n-space>
           <n-button type="primary" @click="handleAddTable">
             <icon-ic-round-plus class="mr-4px text-20px" />
             新增
           </n-button>
-          <n-button type="error">
-            <icon-ic-round-delete class="mr-4px text-20px" />
-            删除
-          </n-button>
-          <export-excel
-            :table-data="tableData"
-            :columns="columns"
-            :checked-row-keys="checkedRowKeysRef"
-          />
+          <n-popconfirm @positive-click="handleBatchCommentDel">
+            <template #trigger>
+              <n-button type="error" :disabled="delButtoinDisable">
+                <icon-ic-round-delete class="mr-4px text-20px" />
+                删除
+              </n-button>
+            </template>
+            确认删除
+          </n-popconfirm>
+
+          <export-excel :table-data="tableData" :columns="columns" :checked-row-keys="checkedRowKeysRef" :table-title="tableName.lable" />
         </n-space>
         <n-space align="center" :size="18">
           <n-button size="small" type="primary" @click="createTable">
-            <icon-mdi-refresh
-              class="mr-4px text-16px"
-              :class="{ 'animate-spin': loading }"
-            />
+            <icon-mdi-refresh class="mr-4px text-16px" :class="{ 'animate-spin': loading }" />
             刷新表格
           </n-button>
           <column-setting v-model:columns="columns" />
         </n-space>
       </n-space>
-      <n-data-table
-        :columns="columns"
-        :data="tableData"
-        :loading="loading"
-        :pagination="pagination"
-        :max-height="800"
-        @update:checked-row-keys="handleCheckRowKeys"
-      />
-      <table-action-modal
-        v-model:visible="visible"
-        :type="modalType"
-        :edit-data="editData"
-        @update-action="createTable"
-      />
+      <n-data-table :columns="columns" :data="tableData" :loading="loading" :pagination="pagination" :max-height="800"
+        @update:checked-row-keys="handleCheckRowKeys" />
+      <table-action-modal v-model:visible="visible" :type="modalType" :edit-data="editData"
+        @update-action="createTable" />
     </n-card>
   </div>
 </template>
@@ -67,14 +52,18 @@ import {
   genderLabels,
   userStatusLabels,
 } from "@/constants";
-import { fetchCommentDel, fetchCommentList } from "@/service";
+import { fetchCommentDel, fetchCommentList, fetchBatchCommentDel } from "@/service";
 import { useTable } from "@/hooks";
 import TableActionModal from "./components/table-action-modal.vue";
 import ColumnSetting from "@/pages/admin/component/column-setting.vue";
 import dayjs from "dayjs";
 import ExportExcel from "@/pages/admin/component/exportExcel.vue";
 import { createColumn, renderBaseAction } from "@/utils";
-const tableName = ref("comment");
+import { computed } from "vue";
+const tableName = ref({
+  key: 'comment',
+  lable:'评论表格'
+});
 
 const {
   tableData,
@@ -89,7 +78,25 @@ const {
   visible,
   editData,
   createDefaultEditData,
-} = useTable<CommentManagement.Comment>(tableName);
+} = useTable<CommentManagement.Comment>(tableName.value.key);
+
+async function handleBatchCommentDel() {
+  if (checkedRowKeysRef.value.length == 0) {
+    window.$message?.warning('请选择需要删除的数据')
+    return false
+  }
+  let { error, data } = await fetchBatchCommentDel({ commentIds: checkedRowKeysRef.value })
+  if (!error) {
+    window.$message?.success('批量删除成功')
+    checkedRowKeysRef.value = []
+    createTable();
+  }
+
+}
+
+const delButtoinDisable = computed(() =>
+  checkedRowKeysRef.value.length === 0
+)
 
 
 const columns: Ref<DataTableColumns<CommentManagement.Comment>> = ref([
@@ -166,7 +173,7 @@ const columns: Ref<DataTableColumns<CommentManagement.Comment>> = ref([
       return <span></span>;
     },
   },
-   createColumn("actions", "操作", (row) => {
+  createColumn("actions", "操作", (row) => {
     return renderBaseAction(row, handleEditTable, handleDeleteTable);
   }),
 ]) as Ref<DataTableColumns<CommentManagement.Comment>>;

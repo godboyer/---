@@ -4,7 +4,7 @@ import { useRouteStore } from '@/store';
 import { localStg } from '@/utils';
 
 /**刷新佛也会触发
- * 创建动态路由
+ * 创建动态路由 guard
  */
 export async function createDynamicRouteGuard(
   to: RouteLocationNormalized,

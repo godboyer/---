@@ -10,7 +10,7 @@ export async function handleServiceResult<T = any>(error: Service.RequestError |
     return fail;
   }
   const {data} = responseData;
-  console.log('解密后的数据data: ',decrypto(data));
+  // console.log('解密后的数据data: ',decrypto(data));
   //成功的数据进行解密
   const success: Service.SuccessResult<T> = {
     error: null,

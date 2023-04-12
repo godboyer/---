@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, unref, watch } from "vue";
+import { ref } from "vue";
 import { useSearchStore } from "@/store";
 import { useFilterPopover } from "@/hooks";
 defineOptions({ name: "areaAndFloorPopover" });

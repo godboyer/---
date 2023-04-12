@@ -9,8 +9,8 @@
     <n-space class="w-400px h-300px " :vertical="true" justify="space-around">
       <div>
         <ul ref="priceBarRef" class="Bar-Chart">
-          <li v-for="(item, idx) in liStyle" :style="item">
-            <span></span>
+          <li v-for="(item) in liStyle" :style="item">
+            <!-- <span></span> -->
           </li>
         </ul>
 
@@ -41,17 +41,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, unref, watch } from "vue";
+import { ref, watch } from "vue";
 import { useSearchStore } from "@/store";
 const search = useSearchStore();
-const { openBackDrop, closeBackDrop, setPriceRange } = useSearchStore();
+const { openFilterBackDrop, closeFilterBackDrop } = useSearchStore();
 defineOptions({ name: "priceRangePopover" });
 const overlap = ref(false);
 const showPopover = ref(false);
 const priceBarRef = ref<Element | null>(null);
 const numberValue = ref([1000, 5000])
 const priceRange = ref<number[]>([1000, 5000]);
-
 const minPrice = ref(100);
 const maxPrice = ref(8000);
 const dpr = ref(50);
@@ -68,13 +67,11 @@ watch(
 
 watch(
   [priceBarRef, priceRange],
-  (val) => {
-    console.log('priceRange: ', val[1]);
-    console.log('priceRange: ', val[0]);
-    numberValue.value = val[1];
-    if (val[0]) {
-      boxWidth.value = val[0].clientWidth / 31;
-      dpr.value = val[0].clientWidth / maxPrice.value;
+  ([cmop,val]) => {
+    numberValue.value = val;
+    if (cmop) {
+      boxWidth.value = cmop.clientWidth / 31;
+      dpr.value = cmop.clientWidth / maxPrice.value;
       liStyle.value = createListyle();
     }
   },
@@ -118,7 +115,7 @@ function handlePopoverShow(value: boolean) {
 function handleSubmit() {
   search.setPriceRange(priceRange.value);
   showPopover.value = false;
-  closeBackDrop();
+  closeFilterBackDrop();
 }
 function handleReset() {
   priceRange.value = [minPrice.value, maxPrice.value];
@@ -126,10 +123,10 @@ function handleReset() {
 
 function handleBackDrop(e: Event) {
   showPopover.value = true;
-  openBackDrop();
+  openFilterBackDrop();
 }
 function handleOutsideClick() {
-  closeBackDrop();
+  closeFilterBackDrop();
   showPopover.value = false;
 }
 </script>

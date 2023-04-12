@@ -84,13 +84,28 @@
     <n-modal v-model:show="isPreview" size="huge">
       <vue-office-excel :src="excelSrc" style="width: 80vw; height: 860px" />
     </n-modal>
+
+    <!-- <kanban-board v-model:board-visible="drawerVisible" /> -->
+    <n-drawer v-model:show="drawerVisible" :width="700" :placement="placement">
+      <n-drawer-content title="房源详情查看">
+        <houseDetailCard  />
+      </n-drawer-content>
+    </n-drawer>
   </div>
 </template>
 
 <script setup lang="tsx">
 import { computed, h, reactive, ref, unref } from "vue";
 import type { Ref } from "vue";
-import { DataTableRowKey, NButton, NImage, NPopconfirm, NSpace, NTag } from "naive-ui";
+import {
+  DataTableRowKey,
+  DrawerPlacement,
+  NButton,
+  NImage,
+  NPopconfirm,
+  NSpace,
+  NTag,
+} from "naive-ui";
 import type { DataTableColumns, PaginationProps } from "naive-ui";
 import {
   leaseStatusLabels,
@@ -112,7 +127,22 @@ import {
 } from "@/constants";
 import { SearchSelectOption } from "@/hooks/business/useTable";
 import "@vue-office/excel/lib/index.css";
-import { extractKeysAndTitles, renderHouseAction, renderDescription, renderFirstPicture, renderFormDate, renderTag } from "@/utils";
+import {
+  extractKeysAndTitles,
+  renderHouseAction,
+  renderDescription,
+  renderFirstPicture,
+  renderFormDate,
+  renderTag,
+} from "@/utils";
+import KanbanBoard from "./components/one-house-card.vue";
+import houseDetailCard from "./components/house-detail-card.vue";
+import { useHouseStore } from "@/store";
+
+
+const {getOneHouseDetail} = useHouseStore();
+const house = useHouseStore();
+
 const { exportExcelFile, previewExcel, excelSrc, isPreview } = useExcelTool();
 const { fetchHouseListToAdmin, fetchHouseDeleteToAdmin } = new HouseFetch();
 const { creatSearchData } = useSearchTable();
@@ -126,6 +156,9 @@ function setTableData(data: HouseManagement.House[]) {
   tableData.value = data;
 }
 
+//抽屉
+const drawerVisible = ref(false);
+const placement = ref<DrawerPlacement>('left')
 //查询的参数
 
 const searchModel = reactive({
@@ -283,7 +316,7 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     title: "房屋图片",
     align: "center",
     render: ({ first_picture }) => {
-       return renderFirstPicture(first_picture);
+      return renderFirstPicture(first_picture);
     },
   },
   {
@@ -291,7 +324,7 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     title: "房屋介绍",
     align: "center",
     render: ({ house_description }) => {
-       return  renderDescription(house_description)
+      return renderDescription(house_description);
     },
   },
   {
@@ -336,7 +369,7 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     title: "发布时间",
     align: "center",
     render: ({ create_time }) => {
-       return  renderFormDate(create_time);
+      return renderFormDate(create_time);
     },
   },
 
@@ -345,8 +378,12 @@ const columns: Ref<DataTableColumns<HouseManagement.House>> = ref([
     title: "操作",
     align: "center",
     render: (row) => {
-
-        return renderHouseAction(row.house_id,handleEditTable,handleShowTable,handleDeleteTable)
+      return renderHouseAction(
+        row,
+        handleEditTable,
+        handleShowTable,
+        handleDeleteTable
+      );
     },
   },
 ]) as Ref<DataTableColumns<HouseManagement.House>>;
@@ -420,7 +457,7 @@ function handleAddTable() {
  * @param rowId 当前列的key值即user_id的值
  */
 function handleEditTable(rowId: string | null) {
-  console.log('rowId: ', rowId);
+  console.log("rowId: ", rowId);
   // console.log("rowId: ", rowId);
   //可能存在没有的变量的值
   const findItem = tableData.value.find((item) => item.house_id === rowId);
@@ -433,16 +470,16 @@ function handleEditTable(rowId: string | null) {
   openModal();
 }
 
-function handleShowTable(rowId: string | null) {
-  //明显错误
-  // housedataone.value = computed(() => {
-  //   return tableData.value.find((item) => item.house_id == rowId);
-  // });
+
+//查看
+ async function handleShowTable(rowId: string | null) {
+  drawerVisible.value = true;
+  await getOneHouseDetail(rowId as string);
+ 
 }
 
 /**删除指定数据 */
 async function handleDeleteTable(rowId: string | null) {
-  // console.log("rowId: ", rowId);
   window.$message?.info(`你要删除的id是${rowId}`);
   let { error, data } = await fetchHouseDeleteToAdmin(rowId as string);
   if (!error) {

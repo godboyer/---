@@ -27,52 +27,52 @@ export default defineConfig(configEnv => {
   const isOpenProxy = viteEnv.VITE_HTTP_PROXY === 'Y';
   const envConfig = getServiceEnvConfig(viteEnv);
 
-  return{
+  return {
     plugins: [
       // ...setupVitePlugins(viteEnv),
       ...unplugin(viteEnv),
-    vue(),
-    vueJsx(),
-    AutoImport({
-      imports: [
-        "vue",
-        {
-          "naive-ui": [
-            "useDialog",
-            "useMessage",
-            "useNotification",
-            "useLoadingBar",
-          ],
-        },
-      ],
+      vue(),
+      vueJsx(),
+      AutoImport({
+        imports: [
+          "vue",
+          {
+            "naive-ui": [
+              "useDialog",
+              "useMessage",
+              "useNotification",
+              "useLoadingBar",
+            ],
+          },
+        ],
     
-    }),
+      }),
    
-    Unocss({
-      presets: [presetUno(), presetAttributify(), presetIcons()],
-    }),
-  ],
-  define: viteDefine,
-  mode: "development", // 代码环境  开发和生产    production 生产环境
-  // @ => src
-  resolve: {
-    alias: {
-      "~": rootPath,
-      "@": srcPath,
-      "vue-i18n": "vue-i18n/dist/vue-i18n.cjs.js",
+      Unocss({
+        presets: [presetUno(), presetAttributify(), presetIcons()],
+      }),
+    ],
+    define: viteDefine,
+    mode: "development", // 代码环境  开发和生产    production 生产环境
+    // @ => src
+    resolve: {
+      alias: {
+        "~": rootPath,
+        "@": srcPath,
+        "vue-i18n": "vue-i18n/dist/vue-i18n.cjs.js",
+      },
     },
-  },
-  base: "http://localhost:5173",
-  server: {
-    hmr: {
-      host: "localhost",
-    },
-    host: "0.0.0.0",
-    port: 5173,
-    open: true,
-    proxy: {},
-  },
+    base: "http://localhost:3040",
+    server: {
+      hmr: {
+        host: "localhost",
+      },
+      host: "0.0.0.0",
+      port: 5173,
+      open: true,
+      proxy: {},
 
 
+    }
   }
 })
