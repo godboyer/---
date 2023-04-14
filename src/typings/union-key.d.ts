@@ -29,7 +29,7 @@ declare namespace UnionKey {
    * - horizontal-mix: 顶部菜单混合模式
    */
   type ThemeLayoutMode = 'vertical' | 'horizontal' | 'vertical-mix' | 'horizontal-mix';
-
+  
   /**
    * 内容溢出时的出现滚动条的方式
    * - wrapper 布局组件最外层的元素出现滚动条

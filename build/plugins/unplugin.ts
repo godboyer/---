@@ -1,4 +1,4 @@
-import VueMacros from 'unplugin-vue-macros/vite';
+import VueMacros from 'unplugin-vue-macros';
 import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
 import Components from 'unplugin-vue-components/vite';
@@ -6,6 +6,7 @@ import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
 import { FileSystemIconLoader } from 'unplugin-icons/loaders';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import { getSrcPath } from '../utils';
+import html from './html';
 export default function unplugin(viteEnv: ImportMetaEnv) {
   const { VITE_ICON_PREFFIX, VITE_ICON_LOCAL_PREFFIX } = viteEnv;
 
@@ -16,7 +17,8 @@ export default function unplugin(viteEnv: ImportMetaEnv) {
   const collectionName = VITE_ICON_LOCAL_PREFFIX.replace(`${VITE_ICON_PREFFIX}-`, '');
 
   return [
-    VueMacros(),
+    html(viteEnv),
+    VueMacros.vite(),
     Icons({
       compiler: 'vue3',
       customCollections: {

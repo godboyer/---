@@ -369,6 +369,13 @@ declare namespace FeedbackManagement {
 
   }
 
+  interface FeedbackInfo extends ApiFeedbackManagement.Feedback {
+    /**图片 */
+    images?: ApiFeedbackManagement.ImgInfo[];
+    /**视频 */
+    video?: ApiFeedbackManagement.VideoInfo;
+  }
+  type TypeKey  = "suggest" | "bug" | "other" ;
 
     type StatusKey = '1'|'2'|'0' |string | number | symbol;
 }

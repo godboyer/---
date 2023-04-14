@@ -1,4 +1,4 @@
-import { getPersonalModuleRegExp } from "@/utils";
+import { getPersonalModuleRegExp, getPublishModuleRegExp } from "@/utils";
 
 //website网站主题页面路由
 export const appRoutes: AuthRoute.Route[] = [
@@ -77,16 +77,7 @@ export const appRoutes: AuthRoute.Route[] = [
       // singleLayout: "blank",
     },
   },
-  {
-    path: "/publish",
-    name: "publish",
-    component: "self",
-    meta: {
-      title: "发布房源",
-      requiresAuth: false,
-      singleLayout: "blank",
-    },
-  },
+
   {
     path: "/feedback",
     name: "feedback",
@@ -122,7 +113,6 @@ export const appRoutes: AuthRoute.Route[] = [
     name: "personal",
     component: "self",
     props: (route: any) => {
-      console.log("路由", route.params.module);
       const moduleType =
         (route.params.module as EnumType.PersonalModuleKey) || "userinfo";
       return {
@@ -134,6 +124,26 @@ export const appRoutes: AuthRoute.Route[] = [
       permissions: ["super", "admin", "user"],
       dynamicPath: `/personal/:module(${getPersonalModuleRegExp()})?`,
       singleLayout: "blank",
+    },
+  },
+  {
+    path: "/publish",
+    name: "publish",
+    component: "self",
+    props: (route: any) => {
+      const moduleType =
+        (route.params.module as EnumType.PublishModuleKey) || "home";
+
+      return {
+        module: moduleType,
+      };
+    },
+
+    meta: {
+      title: "发布房源",
+      requiresAuth: true,
+      singleLayout: "blank",
+      dynamicPath: `/publish/:module(${getPublishModuleRegExp()})?`,
     },
   },
 ];

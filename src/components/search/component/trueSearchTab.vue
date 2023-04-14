@@ -28,8 +28,11 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useSearchStore } from "@/store";
+import { useRouterPush } from "@/composables";
+
 const search = useSearchStore();
-const {openSearchPanel,GetHouseCardInfo } = useSearchStore();
+const { openSearchPanel, GetHouseCardInfo } = useSearchStore();
+const {routerPush} = useRouterPush();
 
 const keywords = computed({
   get: () => search.filter.keywords.join(" "),
@@ -50,9 +53,12 @@ function handleShowSearchPanel(key: string) {
 }
 
 function handleSearchActive() {
+  /**跳转到租房页面 */
+  routerPush('/lease');
   //调用房源搜索接口
   search.handleFetchSearchHouse();
-  console.log("handleSearchActive调用搜索接口");
+
+  // console.log("handleSearchActive调用搜索接口");
 }
 </script>
 
@@ -147,6 +153,9 @@ function handleSearchActive() {
     display: none;
   }
 }
+// .seacrh-tab-container{
+//  pointer-events: none;
+// }
 
 .seacrh-tab-container::before {
   content: '';
@@ -156,25 +165,31 @@ function handleSearchActive() {
   min-width: 100vw;
   height: 0;
   background: #fff;
-  z-index: -1 !important;
-  transition: height  0.55s;
+  z-index: 99 !important;
+  transition: height  0.25s;
   border-bottom: 1px solid #e5e5e5;
 }
 .seacrh-tab-container::after{
   content: '';
   position: fixed;
   left: 0px;
-  top:  0px;
-  transition: top  0.55s;
+  top: 160px;
+  opacity: 0;
+  //延迟显示
+  transition:  0.15s 0.25s;
+  min-width: 100vw !important;
+  min-height: 1vh !important;
+  transform: scaleY(1);
+  transform-origin: top center;
+   
 }
 
 
 .backdrop::after {
-  top: 160px;
-  min-width: 100vw !important;
-  min-height: 100vh !important;
+   transform: scaleY(100);
   background: rgba(84, 84, 84, 0.5);
-  z-index: 2 !important;
+  z-index: 99 !important;
+  opacity: 1;
 }
 
 .backdrop::before {

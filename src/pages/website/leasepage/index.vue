@@ -35,10 +35,6 @@ const showPopover = ref(false);
 const backdropRef = ref<HTMLElement | null>(null)
 
 
-// async function initData() {
-//    await auth.getCollectList();
-// };
-// initData()
 
 </script>
 
@@ -50,7 +46,7 @@ const backdropRef = ref<HTMLElement | null>(null)
   width: 100% !important;
   
   background-color: #fff !important;
-  z-index: 99;
+  z-index: 2;
 
 }
 .search-tab{

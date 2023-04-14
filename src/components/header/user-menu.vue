@@ -30,7 +30,7 @@ import UploadAvatar from "@/components/common/uploadAvatar.vue";
 defineOptions({ name: "userMenu" });
 const auth = useAuthStore();
 const { openLoginModel } = useAuthStore();
-const { routerPush,toAdminHome } = useRouterPush();
+const { routerPush,toAdminHome,toPublish } = useRouterPush();
 let options = computed(() => {
   return auth.getMenuList();
 });
@@ -47,7 +47,7 @@ const handleSelect = function (key: string | number) {
   switch (key) {
     case "publish":
       if (auth.isLogin) {
-        routerPush("/publish");
+      toPublish();
       } else {
         openLoginModel();
       }

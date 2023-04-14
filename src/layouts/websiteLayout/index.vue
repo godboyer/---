@@ -1,14 +1,11 @@
 <template>
   <n-layout class="wh-full">
     <n-layout-header :bordered="true">
-      <systemHeader>
-        <template v-if="showNavOrSearch" #nav>
-          <systemNavBar  />
+      <system-header>
+        <template  #search>
+          <search-box />
         </template>
-        <template v-if="!showNavOrSearch" #search="{ changeState }">
-          <search-box :on-update-show-serach="changeState" />
-        </template>
-      </systemHeader>
+      </system-header>
     </n-layout-header>
     <n-layout-content :content-style="contentStyle">
       <RouterView v-slot="{ Component }">

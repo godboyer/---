@@ -4,14 +4,14 @@
       <n-grid-item span="2">
         <n-card :bordered="false">
           <template #cover>
-            <img class="w-650px h-450px" :src="firstPictureLink" />
+            <img  class="w-650px h-450px"  loading="eager" :src="house.OneHouseDetailInfo?.first_picture" />
           </template>
         </n-card>
       </n-grid-item>
       <n-grid-item span="4">
         <n-card class="right-card" :bordered="false" :content-style="contentstyle" :footer-style="footerstyle">
           <template #header-extra>
-            <img class="mr-25px" :src="mapSrc" alt="" />
+            <icon-local-map-tag class="text-46px" />
           </template>
           <template #header>
             <n-h2>{{ houseTitle }}</n-h2>
@@ -89,7 +89,6 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import { useHouseDetailStore,useHouseStore } from "@/store";
-import mapSrc from "@/assets/map2.png";
 import BetterScroll from "@/components/custom/BetterScroll.vue";
 import { computed } from "vue";
 const store = useHouseDetailStore();

@@ -33,10 +33,14 @@
               </ul>
             </n-space>
           </n-tab-pane>
-          <n-tab-pane name="comment" tab="评价"> 
-            
-            暂无评价
-
+          <n-tab-pane name="comment" tab="评价">
+            <n-scrollbar style="max-height: 1520px">
+              <n-space :vertical="true">
+                <div v-for="item in commentList">
+                  <commentItme :comment="item" />
+                </div>
+              </n-space>
+            </n-scrollbar>
           </n-tab-pane>
 
           <n-tab-pane name="Facilities" :tab="Facilities?.title">
@@ -62,15 +66,19 @@
               <n-h3 class="text-center">{{ ownerInfo.houseName }}</n-h3>
             </div>
           </template>
-          <div class="owner-info">
+          <div class="owner-info mb-24px">
             <n-avatar round :size="80" :src="ownerAvatar" />
             <div class="owner-info-item">
               <span class="name">{{ owner?.username }}</span>
               <span class="phone">{{ owner?.phone }}</span>
             </div>
           </div>
+          <n-space :vertical="true" :size="12">
+            <n-button size="large" type="primary" block>立即预约</n-button>
+            <n-button @click="handleGotoRentOrder" size="large" type="error" block>线上签约</n-button>
+          </n-space>
+         
 
-          <n-button type="primary" block>立即预约</n-button>
         </n-card>
       </n-grid-item>
     </n-grid>
@@ -81,6 +89,11 @@
 import { computed, ref } from "vue";
 import { useHouseDetailStore } from "@/store/index";
 import { BaiduMap } from "@/components/map/components";
+import { fetchCommentList } from "@/service";
+import commentItme from "@/components/comment/index.vue";
+import BetterScroll from "@/components/custom/BetterScroll.vue";
+import { useRouterPush } from "@/composables";
+
 const store = useHouseDetailStore();
 const dividerRef = ref<HTMLElement | undefined>(undefined);
 const Facilities = computed(() => {
@@ -100,7 +113,8 @@ const ownerInfo = computed(() => {
   return {
     houseName: store.HouseDetail?.owner_id?.own_house_name.replace(
       "自如友家·",
-      ""),
+      ""
+    ),
     owner: store.HouseDetail?.owner_id,
     ownerAvatar: store.HouseDetail?.owner_id?.avatar,
     houseDetail: store.HouseDetail?.houseDetail,
@@ -121,6 +135,36 @@ const handleClickTab = (name: string) => {
   showTop.value = true;
   window.scrollBy(0, (dividerRef.value?.offsetTop as number) - window.scrollY);
 };
+
+const commentList = ref([]);
+
+async function getCommentList() {
+  const { error, data } = await fetchCommentList();
+  console.log("data: ", data);
+  if (!error && data) {
+    commentList.value = data as any;
+  }
+}
+getCommentList();
+const {routerPush} = useRouterPush()
+
+
+function handleGotoRentOrder() {
+  console.log("去租赁订单");
+  routerPush('/rentOrder')
+}
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
 
 <style lang="scss" scoped>

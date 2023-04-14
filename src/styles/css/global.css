@@ -1,0 +1,36 @@
+.small-foot {
+  cursor: pointer !important;
+  display: flex inline-block !important;
+  column-gap: 10px !important;
+  margin: 0px !important;
+  position: fixed !important;
+  bottom: 15px !important;
+  right: 25px;
+  z-index: 6 !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  width: auto !important;
+  touch-action: manipulation !important;
+  font-size: 14px !important;
+  line-height: 18px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  border-width: 1px !important;
+  border-style: none !important;
+  outline: none !important;
+  padding: 8px 16px !important;
+  transition: box-shadow 0.2s ease 0s, -ms-transform 0.1s ease 0s,
+    -webkit-transform 0.1s ease 0s, transform 0.1s ease 0s !important;
+  -webkit-tap-highlight-color: transparent !important;
+  border-color: #222 !important;
+  background: #fff !important;
+  color: #222 !important;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 6px 16px !important;
+}
+
+@media screen and (max-width: 1010px) {
+  .small-foot {
+    left: 25px !important;
+    width: 172px !important;
+  }
+}

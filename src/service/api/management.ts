@@ -259,8 +259,8 @@ export const fetchTableList = async (tableName:string,qeury:TableQeury) => {
 /**--------------------------------------------------反馈接口---------------------------------------------------- */
 
 export type FeedbackFormModel = Pick<
-  FeedbackManagement.Feedback,
- |"title"  | "status"|"content"|"user_id"
+  FeedbackManagement.FeedbackInfo,
+ |"title"  | "status"|"content"|"user_id"|"createAt"|"email"|'phone'
 >;
 /** 获取反馈列表 */
 export const fetchFeedbackList = async () => {

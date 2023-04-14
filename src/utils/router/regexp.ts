@@ -9,3 +9,9 @@ export function getPersonalModuleRegExp() {
   const modules: EnumType.PersonalModuleKey[] = ['userinfo', 'collection', 'comment', 'history','subscribe'];
   return modules.join('|');
 }
+
+export function getPublishModuleRegExp() { 
+
+  const modules: EnumType.PublishModuleKey[] = ['nextone', 'nexttwo', 'nextthr', 'nextfour', 'nextfive']
+    return modules.join('|');
+}

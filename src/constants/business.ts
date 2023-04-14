@@ -19,6 +19,12 @@ export const userRoleLabels: Record<Auth.RoleType, string> = {
   user: "普通用户",
 };
 
+
+
+
+
+
+
 export const userRoleOptions: Common.OptionWithKey<Auth.RoleType>[] = [
   { value: "super", label: userRoleLabels.super },
   { value: "admin", label: userRoleLabels.admin },
@@ -136,6 +142,16 @@ export const defaultStatusLabels: Record<
 export const defaultStatusOptions =  generateOptions(defaultStatusLabels,'default_status')
 
 export const userStatusOptions =  generateOptions(userStatusLabels,"user_status")
+
+export const feedbackTypeLabels: Record<FeedbackManagement.TypeKey, string> = {
+  suggest: "功能建议",
+  bug: "BUG",
+  other: "其他",
+}
+
+
+export const feedbackTypeOptions =  generateOptions(feedbackTypeLabels,"feedback_type")
+
 
 
 function generateOptions<T extends string | number >(

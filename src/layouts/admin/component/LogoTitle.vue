@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import logoSrcIn from "@/assets/logo_8.svg";
+import logoSrcIn from "@/assets/svg-icon/logo_8.svg";
 </script>
 
 <style lang="scss" scoped>

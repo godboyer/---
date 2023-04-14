@@ -50,8 +50,7 @@
 
 <script setup lang="ts">
 import { TableTh } from "@/store/modules/admin/tableData";
-import * as _ from "lodash";
-import { keysOf } from "naive-ui/es/_utils";
+import _ from "lodash-es";
 const tableTitle = _.filter(TableTh, (item: any) => {
   if (item.key === "Homeowner_info") {
   }

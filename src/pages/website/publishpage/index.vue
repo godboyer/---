@@ -1,71 +1,130 @@
 <template>
   <div class="publish-page">
-    <h1>Publish Property</h1>
-    <form class="publish-form" @submit.prevent="submitForm">
-      <div class="form-group">
-        <label for="title">Title:</label>
-        <input type="text" id="title" v-model="title" />
-        <span v-if="!titleValid">Please enter a title</span>
-      </div>
-      <div class="form-group">
-        <label for="price">Price:</label>
-        <input type="number" id="price" v-model.number="price" />
-        <span v-if="!priceValid">Please enter a valid price</span>
-      </div>
-      <div class="form-group">
-        <label for="description">Description:</label>
-        <textarea id="description" v-model="description"></textarea>
-        <span v-if="!descriptionValid">Please enter a description</span>
-      </div>
-      <button class="btn btn-primary">Publish</button>
-    </form>
+    <n-space
+      class="h-80px  p-l-24px p-r-24px"
+      justify="space-between"
+      align="center"
+    >
+      <system-logo class="text-46px" />
+      <n-button size="medium" text-color="#222"  @click="handleSaveAndOut"> 保存并退出</n-button>
+    </n-space>
+
+    <main class="flex-1 ">
+      <component :is="activeModule.component"></component>
+    </main>
+    <div class="h-80px publish-foot">
+      <n-progress
+        type="line"
+        :show-indicator="false"
+        :percentage="activeModule.progress"
+        :height="12"
+        :border-radius="0"
+        :fill-border-radius="0"
+      />
+      <n-space
+        class="w-100% p-l-24px p-r-24px flex-1"
+        justify="space-between"
+        align="center"
+      >
+        <n-button size="medium"  @click="handleBackClick"> 
+          {{activeModule.leftBtnText}}
+        </n-button>
+        <n-button
+          :strong="true"
+          size="medium"
+          :color="rightBtnColor"
+          text-color="#fff"
+          @click="handleNextClick"
+        >
+         {{activeModule.rightBtnText}}
+        </n-button>
+      </n-space>
+    </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: "PublishPage",
-  data() {
-    return {
-      title: "",
-      price: 0,
-      description: "",
-    };
-  },
-  computed: {
-    titleValid() {
-      return this.title.trim().length > 0;
-    },
-    priceValid() {
-      return this.price > 0;
-    },
-    descriptionValid() {
-      return this.description.trim().length > 0;
-    },
-    formValid() {
-      return this.titleValid && this.priceValid && this.descriptionValid;
-    },
-  },
-  methods: {
-    submitForm() {
-      if (!this.formValid) {
-        return;
-      }
-      // TODO: submit form data
-      console.log("Form submitted");
-    },
-  },
-};
+<script setup lang="ts">
+import { type Component, ref,reactive ,markRaw,computed} from "vue";
+import { publishOne, publishTwo, publishThr,publishHome } from "./components";
+import { useRouterPush } from "@/composables";
+import { PublishModule } from "@/store/modules/publish";
+const props =  defineProps<{
+  module: string;
+}>();
+
+const {routerPush,routerPushKeepRedirect,routerBack,routerPushByParams} = useRouterPush();
+
+const modules = markRaw<PublishModule[]>([
+  { key: "home", label: "发布房源", component: publishHome ,progress: 0,leftBtnText:'返回',rightBtnText:'下一步',},
+  { key: "nextone", label: "发布房源第一步", component: publishOne ,progress: 15,leftBtnText:'上一步',rightBtnText:'下一步'},
+  { key: "nexttwo", label: "发布房源第二步", component: publishTwo ,progress: 30,leftBtnText:'上一步',rightBtnText:'下一步'},
+  { key: "nextthr", label: "发布房源第三步", component: publishThr ,progress: 60,isLast:true,leftBtnText:'上一步',rightBtnText:'确认发布'},
+]);
+
+const activeModule = computed(() => {
+  const active: PublishModule = { ...modules[0] };
+  const findItem = modules.find((item) => item.key === props.module);
+  if (findItem) {
+    Object.assign(active, findItem);
+  }
+  return active;
+});
+
+const rightBtnColor = computed(() => {
+  return activeModule.value.isLast ? "#E51D52" : "#222";
+});
+
+function handleSaveAndOut() {
+  console.log('保存并退出')
+  
+
+  /**1保存数据 */
+
+  /**2重定向到之前的页面 */
+  routerPushByParams()
+
+
+}
+function handleBackClick() {
+  console.log('返回')
+  routerBack()
+}
+function handleNextClick() {
+  if(activeModule.value.isLast) {
+    console.log('确认发布')
+    return
+  }
+
+
+  console.log('下一步')
+  //找到当前模块的下一个模块
+  const index = modules.findIndex((item) => item.key === activeModule.value.key) + 1;
+  let path  = index >= modules.length - 1 ? `/publish/${modules[modules.length - 1].key}` : `/publish/${modules[index].key}`
+
+  routerPushKeepRedirect(path)
+}
+
 </script>
 
 <style scoped>
+.publish-foot {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
 .publish-page {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 50px;
+  justify-content: flex-start;
   text-align: center;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+  background-color: #fff;
 }
 
 h1 {
@@ -98,25 +157,5 @@ textarea {
   border-radius: 0.5rem;
   border: none;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-}
-
-button {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  font-size: 1.2rem;
-  border-radius: 0.5rem;
-  border: none;
-  background-color: #3f51b5;
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-button:hover {
-  background-color: #1a237e;
-}
-
-span {
-  color: red;
 }
 </style>

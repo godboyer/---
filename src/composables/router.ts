@@ -23,6 +23,28 @@ export function useRouterPush(inSetup = true) {
       router.push(to);
     }
   }
+  /**路由跳转保留当前重定向*/
+  function routerPushKeepRedirect(path: string) {
+    const { query } = route.value;
+  
+    if (query?.redirect) {
+      const redirect = query.redirect as string;
+      const routeLocation: RouteLocationRaw = {
+        path: path as string,
+        query: { redirect },
+      };
+     return routerPush(routeLocation);
+    } else {
+      return routerPush(path);
+    }
+  }
+
+  /**根据路由参数跳转 */
+  function routerPushByParams(path?: any) {
+    const { query } = route.value;
+    const routeLocation: RouteLocationRaw =path ||  query.redirect;
+    routerPush(routeLocation);
+  }
 
   /** 返回上一级路由 */
   function routerBack() {
@@ -77,7 +99,7 @@ export function useRouterPush(inSetup = true) {
    */
   function toLoginRedirect() {
     const { query } = route.value;
-    console.log("query: ", query);
+    // console.log("query: ", query);
     if (query?.redirect) {
       routerPush(query.redirect as string);
     } else {
@@ -86,7 +108,7 @@ export function useRouterPush(inSetup = true) {
     }
   }
 
-    /**跳转到详情页 */
+  /**跳转到详情页 */
   function toHouseDetail(id: string) {
     routerPush({
       path: `/house/detail`,
@@ -95,9 +117,15 @@ export function useRouterPush(inSetup = true) {
       },
     });
   }
-
-
-
+  /**跳转发布页 */
+  function toPublish(redirectUrl?: string) {
+    const routeLocation: RouteLocationRaw = {
+      name: routeName("publish"),
+    };
+    const redirect = redirectUrl || route.value.fullPath;
+    Object.assign(routeLocation, { query: { redirect } });
+    routerPush(routeLocation);
+  }
 
   return {
     routerPush,
@@ -107,6 +135,9 @@ export function useRouterPush(inSetup = true) {
     toLoginModule,
     toLoginRedirect,
     toHouseDetail,
-    toAdminHome
+    toAdminHome,
+    toPublish,
+    routerPushKeepRedirect,
+    routerPushByParams,
   };
 }

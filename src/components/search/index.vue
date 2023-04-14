@@ -1,12 +1,10 @@
 <template>
-  <div id="search" ref="searchRef" class="h-68px flex-x-center items-center">
+  <div id="search" ref="searchRef" class="h-68px flex-x-center items-center bg-#fff">
     <div>
       <Transition name="scale">
         <component :is="topModuled.component" />
       </Transition>
     </div>
-
-
     <true-search-tab v-on-click-outside="handleSearchOff" />
     <n-card ref="searchPanelRef" v-show="showSearchPanel" :title="activeModule.label"
       class="absolute top-180px searchPanel w-865px">
@@ -138,22 +136,23 @@ function handleSearchOff(event: any) {
 
 
 .scale-enter-active {
-  animation: scaleMove 0.25s reverse;
+
+  animation: scaleMove 0.25s reverse ;
 
 }
 
 .scale-leave-active {
-  animation: scaleMove 0.25s;
+  animation: scaleMove 0.25s ;
 }
 
 @keyframes scaleMove {
   0% {
-    opacity: 1;
+    opacity: 0;
     transform: translateY(0px) scale(1);
   }
 
   50% {
-    opacity: 0;
+    opacity: 1;
     transform: translateY(30px) scale(0.5);
   }
 

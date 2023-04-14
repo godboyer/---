@@ -17,7 +17,7 @@ interface WebSiteLinkProps {
   link: string;
 }
 
-defineProps<WebSiteLink>();
+defineProps<WebSiteLinkProps>();
 </script>
 
 <style scoped></style>

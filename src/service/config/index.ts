@@ -4,7 +4,7 @@ type ServiceEnv = Record<ServiceEnvType, ServiceEnvConfig>;
 /** 不同请求服务的环境配置 */
 const serviceEnv: ServiceEnv = {
 	dev: {
-		url: "http://127.0.0.1:3040/api",
+		url: "http://localhost:3040/api",
 		urlPattern: "/url-pattern",
 		secondUrl: "http://127.0.0.1:3040/api",
 		secondUrlPattern: "/second-url-pattern",

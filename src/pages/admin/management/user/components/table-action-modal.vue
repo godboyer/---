@@ -147,7 +147,7 @@ function createDefaultFormModel(): FormModel {
     phone: null,
     email: null,
     user_status: null,
-    role_permission: "",
+    role_permission: 'user',
   };
 }
 /**将从props获取的数据填入formModel */

@@ -17,7 +17,7 @@
         :src="src"
         object-fit="cover"
         class="imgstyle"
-        :img-props="{width: '100%'} "  
+        :img-props="{ width: '100%' }"
       />
       <template #arrow="{ prev, next }">
         <div class="custom-arrow">
@@ -43,7 +43,6 @@
       </template>
     </n-carousel>
 
-
     <div class="Collection-btn">
       <collection-btn :house_id="house_id" />
     </div>
@@ -55,33 +54,28 @@ import { ImgHTMLAttributes, Ref, computed, ref, useAttrs } from "vue";
 import { useRouter } from "vue-router";
 import collectionBtn from "./collection-btn.vue";
 import { useRouterPush } from "@/composables";
-
+import { throttle ,debounce } from "lodash-es";
 defineOptions({ name: "swiperHousePic" });
 const props = defineProps<{
   cardData: HousePage.Card | HouseManagement.House;
 }>();
-//可选参数透传
-const attrs = useAttrs();
-console.log("attrs: ", attrs);
-// const previewDisabled = computed(() => {
-//   if (attrs["preview-disabled"]) {
-//     return true;
-//   }
-//   return false;
-// });
+
 const imgRef = ref<ImgHTMLAttributes | null>(null);
 const swiperPic = computed(() => {
   return props.cardData?.swiper_pic;
 });
 
-
 const showarrow: Ref<boolean> = ref(false);
-const onMouseEnter = function () {
-  showarrow.value = true;
-};
-const onMouseLeave = function () {
+const onMouseEnter = debounce(function () {
+  console.log("onMouseEnter");
+  /**事件节流 */
+ showarrow.value = true;
+},100);
+const onMouseLeave = debounce(function () {
+  console.log("onMouseLeave");
+
   showarrow.value = false;
-};
+},100);
 
 const house_id = computed(() => props.cardData.house_id);
 </script>
@@ -95,12 +89,11 @@ const house_id = computed(() => props.cardData.house_id);
   width: 100%;
   height: 100%;
   font-size: large;
-  // background: red;
-
+  z-index: 1;
   .custom-arrow--left {
     position: absolute;
     top: 0px;
-    left:0px;
+    left: 0px;
     font-size: 40px;
     height: 100%;
 
@@ -144,13 +137,13 @@ const house_id = computed(() => props.cardData.house_id);
   align-items: center;
   justify-content: center;
   height: 100%;
-
   color: #fff;
   background-color: rgba(255, 255, 255, 0.1);
   border-width: 0;
   border-radius: 8px;
   transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  z-index: 1 !important;
 }
 
 .custom-arrow button:hover {
@@ -204,11 +197,6 @@ const house_id = computed(() => props.cardData.house_id);
     width: 6px;
     height: 6px;
   }
-
-  // &~li{
-  //   width: 6px;
-  //   height: 6px;
-  // }
 }
 
 .Collection-btn {
@@ -230,10 +218,10 @@ const house_id = computed(() => props.cardData.house_id);
   background: transparent !important;
 }
 
-.imgstyle{
+.imgstyle {
   width: 100%;
   height: 100%;
   object-fit: cover;
-    aspect-ratio: 350/235; //容器的宽高比例
+  aspect-ratio: 350/235; //容器的宽高比例
 }
 </style>

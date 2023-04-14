@@ -21,7 +21,8 @@ import unplugin from "./build/plugins/unplugin"
 
 // https://vitejs.dev/config/
 export default defineConfig(configEnv => {
-    const viteEnv = loadEnv(configEnv.mode, process.cwd()) as unknown as any;
+  const viteEnv = loadEnv(configEnv.mode, process.cwd()) as unknown as any;
+  console.log('viteEnv: ', viteEnv);
   const rootPath = getRootPath();
   const srcPath = getSrcPath();
   const isOpenProxy = viteEnv.VITE_HTTP_PROXY === 'Y';
@@ -29,7 +30,6 @@ export default defineConfig(configEnv => {
 
   return {
     plugins: [
-      // ...setupVitePlugins(viteEnv),
       ...unplugin(viteEnv),
       vue(),
       vueJsx(),
@@ -47,9 +47,8 @@ export default defineConfig(configEnv => {
         ],
     
       }),
-   
       Unocss({
-        presets: [presetUno(), presetAttributify(), presetIcons()],
+        presets: [ presetAttributify(), presetIcons()],
       }),
     ],
     define: viteDefine,
@@ -62,17 +61,27 @@ export default defineConfig(configEnv => {
         "vue-i18n": "vue-i18n/dist/vue-i18n.cjs.js",
       },
     },
-    base: "http://localhost:3040",
+    base: "./", // 打包路径
     server: {
       hmr: {
         host: "localhost",
       },
-      host: "0.0.0.0",
+      cors: true,
       port: 5173,
       open: true,
       proxy: {},
 
 
+    },
+    build: {// 打包配置
+      minify: 'terser',// 压缩
+      terserOptions: {
+        compress: {
+          drop_console: true,// 删除console
+          drop_debugger: true,// 删除debugger
+        }
+      }
     }
+
   }
 })

@@ -42,7 +42,7 @@ const house = useHouseStore();
 
 
 const housetitle = computed(() => {
-  return HouseDetail?.title;
+  return house.OneHouseDetailInfo?.title;
 });
 let houseDetail  = reactive<HouseManagement.HouseInfo>({
 _id: null,

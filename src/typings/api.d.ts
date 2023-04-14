@@ -16,13 +16,12 @@ declare namespace ApiAuth {
     createAt: String;
   }
 
-    /**收藏参数 */
+  /**收藏参数 */
   interface Collect {
     /**用户id */
     user_id: string;
     house_id: string;
-    is_collect:'1'|'0';
-
+    is_collect: "1" | "0";
   }
 
   /** 返回的用户信息 */
@@ -43,9 +42,9 @@ declare namespace ApiRoute {
 declare namespace ApiUserManagement {
   interface User {
     /**文档id */
-    _id: string | null;
+    _id?: string;
     /** 用户id */
-    user_id: string | null;
+    user_id: string | "visitor";
     /** 用户名 */
     username: string | null;
     /** 用户年龄 */
@@ -82,13 +81,13 @@ declare namespace ApiUserManagement {
     createtime: string | null;
   }
 
-   interface CollectLsit{
-        user_id: string;
-        house_id: string;
-        title: string;
-        price: string;
-        first_picture: string;
-        address: string;
+  interface CollectLsit {
+    user_id: string;
+    house_id: string;
+    title: string;
+    price: string;
+    first_picture: string;
+    address: string;
   }
 }
 /**城市管理接口 */
@@ -165,7 +164,7 @@ declare namespace ApiCommentManagement {
      */
 
     content: string;
-
+    evaluation_content?: string;
     /**
      * 删除状态，该条[评论是否删除或者能否查看
      */
@@ -310,7 +309,7 @@ declare namespace ApiTableManagement {
 }
 declare namespace ApiFeedbackManagement {
   interface Feedback {
-    _id?:string
+    _id?: string;
     /**
      * 内容
      */
@@ -318,13 +317,45 @@ declare namespace ApiFeedbackManagement {
     /**
      * 标题
      */
-    title: string;
+    title?: string;
     /**
      * 用户
+     * 可匿名
      */
-    user_id: null | string;
-
+    user_id?: "anonymous" | string;
+    /**
+     * 类型
+     */
+    feedback_type: "suggest" | "bug" | "other";
+    /**邮箱  */
+    email: string;
+    /**电话 */
+    phone: string;
     status: "0" | "1" | "2";
-    create_time: string;
+    createAt: string;
+  }
+
+  /**图片信息对象 */
+  interface ImgInfo {
+    fieldname: string;
+    originalname: string;
+    encoding: string;
+    mimetype: string;
+    destination: string;
+    filename: string;
+    path: string;
+    size: number;
+  }
+
+  /**视频信息对象 */
+  interface VideoInfo {
+    fieldname: string;
+    originalname: string;
+    encoding: string;
+    mimetype: string;
+    destination: string;
+    filename: string;
+    path: string;
+    size: number;
   }
 }

@@ -1,5 +1,3 @@
-
-
 <template>
   <n-config-provider
     :theme="theme.naiveTheme"
@@ -25,7 +23,7 @@ const theme = useThemeStore();
 
 subscribeStore();
 useGlobalEvents();
-const {  calcRate, windowDraw, unWindowDraw } = windowResize();
+const { calcRate, windowDraw, unWindowDraw } = windowResize();
 
 onMounted(() => {
   // 监听浏览器窗口尺寸变化

@@ -20,6 +20,8 @@ declare namespace EnumType {
 
   /**个人中心模块 */
   type PersonalModuleKey = keyof typeof import('@/enum').EnumPersonalModule;
+  /** 发布模块 */
+  type PublishModuleKey = keyof typeof import('@/enum').EnumPublishModule;
 
 }
 

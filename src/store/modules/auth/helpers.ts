@@ -9,14 +9,13 @@ export function getToken() {
 /** 获取用户信息 */
 export function getUserInfo() {
 	const emptyInfo: ApiUserManagement.User = {
-		user_id: "",
+		user_id: "visitor",	/**如果没有默认访客 */
 		username: "",
 		role_permission: "user",
 		avatar: '',
 		user_status: "1",
 		createtime: '',
 		gender: null,
-		_id: null,
 		age: null,
 		email: null
 	};
@@ -24,6 +23,13 @@ export function getUserInfo() {
 	const userInfo:  ApiUserManagement.User = localStg.get("userInfo") || emptyInfo;
 	return userInfo;
 }
+/**获取用户id */
+export function getUserId() {
+	const userInfo = getUserInfo();
+	return userInfo.user_id;
+}
+
+
 
 /** 去除用户相关缓存 */
 export function clearAuthStorage() {
