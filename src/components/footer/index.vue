@@ -1,7 +1,7 @@
 <template>
-  <Transition appear enter-active-class="animate__animated animate__fadeIn"
+  <Transition  enter-active-class="animate__animated animate__fadeIn"
     leave-active-class="animate__animated animate__fadeOut">
-    <footer v-show="show " class="mestyle2  fixed left-0 bottom-0 h-20 p-l-10 p-r-10 bg-#fff w-full">
+    <footer v-show="show " class="mestyle2  fixed left-0 bottom-0 h-60px p-l-10 p-r-10 bg-#fff w-full">
       <div class="w-100 h-5 flex-y-center gap-6">
         <span>
           <icon-fa-brands:weibo class="text-20px cursor color-black" />

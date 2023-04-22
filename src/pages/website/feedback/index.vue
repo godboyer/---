@@ -6,57 +6,37 @@
     <main class="flex bg-#fff">
       <div class="feedback-page">
         <div class="feedback-form">
-          <form class="wh-full">
-            <!-- <div class="form-group">
-              <label for="name">姓名：</label>
-              <input
-                placeholder="我们怎么称呼您"
-                type="text"
-                id="name"
-                v-model="feedbackInfo.name"
-                required
-              />
-            </div> -->
-            <div class="form-group">
-              <label for="email">邮箱：</label>
-              <input
-                type="email"
-                id="email"
-                v-model="feedbackInfo.email"
-                required
+          <n-form ref="formRef" class="wh-full" size="large" :model="feedbackInfo" :rules="rules">
+            <n-form-item label="邮箱：" path="email">
+              <n-input
+                v-model:value="feedbackInfo.email"
                 placeholder="输入您的有效邮箱"
               />
-              {{ feedback.feedbackInfo }}
-            </div>
-            <div class="form-group">
-              <label for="phone">电话：</label>
-              <input
+            </n-form-item>
+            <n-form-item label="电话号码:" path="phone">
+              <n-input
+                v-model:value="feedbackInfo.phone"
                 placeholder="输入您的有效电话"
-                type="tel"
-                id="phone"
-                v-model="feedbackInfo.phone"
-                required
               />
-              {{ getFeedbackInfo }}
-            </div>
-            <div class="form-group">
-              <label for="phone">反馈类型：</label>
+            </n-form-item>
+            <n-form-item label="反馈类型：" path="feedback_type">
               <n-select
                 v-model:value="feedbackInfo.feedback_type"
                 :options="feedbackTypeOptions"
               />
-            </div>
+            </n-form-item>
 
-            <div class="form-group">
-              <label for="content">反馈内容：</label>
-              <textarea
-                id="content"
-                v-model="feedbackInfo.content"
-                rows="5"
-                required
+            <n-form-item label="反馈内容：" path="content">
+              <n-input
+                type="textarea"
                 placeholder="输入您的反馈内容"
-              ></textarea>
-            </div>
+                v-model:value="feedbackInfo.content"
+                :autosize="{
+                  minRows: 3,
+                  maxRows: 5,
+                }"
+              />
+            </n-form-item>
             <button
               type="submit"
               class="submit-btn"
@@ -64,7 +44,7 @@
             >
               提交反馈
             </button>
-          </form>
+          </n-form>
         </div>
       </div>
 
@@ -74,14 +54,10 @@
         <n-upload
           multiple
           :max="5"
-          accept="image/*"
-          name="feedback"
-          action="http://localhost:3040/api/upload/image"
           list-type="image-card"
+          :custom-request="customRequestImageHandler"
           @preview="handlePreview"
-          @finish="handleUploadImageFinish"
         >
-          <!-- :default-file-list="previewFileList" -->
           点击上传
         </n-upload>
         <n-divider />
@@ -92,19 +68,14 @@
           >
         </div>
         <n-upload
-          accept="video/*"
           directory-dnd
-          action="http://localhost:3040/api/upload/video"
           :max="1"
-          :data="{
-            name: 'feedback',
-            type: 'video',
-          }"
           name="feedback"
           :custom-request="customRequestHandler"
-          @finish="handleFinish"
+          @finish="handleUploadVideoFinish"
+          @remove="handleRemove"
         >
-          <n-upload-dragger>
+          <n-upload-dragger v-show="testVideo">
             <div style="margin-bottom: 12px">
               <icon-ph:archive-tray class="text-48px" />
             </div>
@@ -124,9 +95,8 @@
         >
           <img :src="previewImageUrl" style="width: 100%" />
         </n-modal>
+        {{ feedbackInfo }}
       </div>
-
-      <img :src="testImg" style="width: 200px" />
     </main>
   </middle-layout>
 </template>
@@ -134,31 +104,84 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 import MiddleLayout from "@/layouts/MiddleLayout/index.vue";
-import { UploadCustomRequestOptions, UploadFileInfo } from "naive-ui";
+import {
+  FormRules,
+  UploadCustomRequestOptions,
+  UploadFileInfo,
+} from "naive-ui";
 import { FileInfo } from "naive-ui/es/upload/src/interface";
 import axios from "axios";
 import { useFeedbackStore } from "@/store";
 import { storeToRefs } from "pinia";
 import { feedbackTypeOptions } from "@/constants";
 import { changeFileToBuffer } from "@/utils";
-
+import {
+  fetchUploadVideo,
+  fetchUploadPrepare,
+  fetchUploadMerge,
+  fetchUploadImage,
+} from "@/service";
+import { REGEXP_PHONE, REGEXP_EMAIL } from "@/config";
 defineOptions({
   name: "FeedbackPage",
 });
 
 const feedback = useFeedbackStore();
 //结果action方法
-const { fetchFeedbackAddHandle, setFeedbackInfo, setFeedbackPushImg } =
-  useFeedbackStore();
+const {
+  fetchFeedbackAddHandle,
+  setFeedbackInfo,
+  setFeedbackPushImg,
+  setFeedbackVideoInfo,
+} = useFeedbackStore();
 
 //保留响应式解构
 const { getFeedbackInfo, feedbackInfo } = storeToRefs(feedback);
 
-function submitFeedback() {
-  // 校验表单
+const formRef = ref<HTMLFormElement | null>(null);
 
-  // TODO: 实现提交反馈逻辑
-  fetchFeedbackAddHandle();
+const rules = reactive<FormRules>({
+  email: [
+    {
+      required: true,
+      message: "请输入邮箱",
+    },
+    {
+      pattern: REGEXP_EMAIL,
+      message: "请输入正确的邮箱",
+      trigger: ['input', 'blur']
+    },
+  ],
+  phone: [
+    {
+      required: true,
+      message: "请输入电话号码",
+    },
+    {
+      pattern: REGEXP_PHONE,
+      message: "请输入正确的电话号码",
+      trigger: ['input', 'blur']
+    },
+  ],
+  feedback_type: {
+    required: true,
+    message: "请选择反馈类型",
+    trigger: ['blur']
+  },
+  content: {
+    required: true,
+    message: "请输入反馈内容",
+    trigger: ['blur']
+
+  },
+});
+
+async function submitFeedback(e: Event) {
+  // 校验表单
+  e.preventDefault();
+  console.log(formRef.value);
+   await formRef.value?.validate();
+   fetchFeedbackAddHandle();
 }
 
 const showModal = ref(false);
@@ -189,49 +212,56 @@ function handlePreview(file: UploadFileInfo) {
   }
 }
 
+let testVideo = ref(true);
 /** 切片上传完成处理*/
-function handleFinish({
+function handleUploadVideoFinish({
   file,
   event,
 }: {
   file: UploadFileInfo;
   event?: ProgressEvent;
 }) {
-  console.log("上传完成");
-  console.log("file: ", file);
-  console.log("event: ", event);
+  console.log("切片上传上传完成", file, event);
+  testVideo.value = false;
+}
+function handleRemove() {
+  testVideo.value = true;
 }
 
-const testImg = ref("");
-
-/**
- * 处理图片上传完成
- */
-function handleUploadImageFinish({
-  file,
-  event,
-}: {
-  file: UploadFileInfo;
-  event?: ProgressEvent;
-}) {
-  /**每上传完一张就push一张 */
-  console.log("图片上传完成");
-  console.log("file: ", file);
-  console.log("event: ", event?.target as XMLHttpRequest);
-  /**从事件中获取图片上传完成的信息 */
-  const { readyState, status, response, responseURL } =
-    event?.target as XMLHttpRequest;
-  if (readyState === 4 && status === 200) {
-    const { data, code } = JSON.parse(response);
-    if (code !== 200) return;
-    let path = responseURL.replace(
-      "/api/upload/image",
-      data?.path.replace(/public/, "").replace(/\\/g, "/")
-    );
-    data.path = path;
-    console.log("data: ", data);
-    setFeedbackPushImg(data);
+async function customRequestImageHandler(options: UploadCustomRequestOptions) {
+  const { file: fileInfo, onFinish, onError } = options;
+  if (!fileInfo.file) {
+    onError();
+    return;
   }
+  //判断文件类型
+  const { type, file } = fileInfo;
+  if (type?.indexOf("image") === -1) {
+    onError();
+    return;
+  }
+
+  let { HASH, buffer, suffix, filename } = await changeFileToBuffer(file);
+  //准备上传
+  const uploadIamge = {
+    feedback: file, //字段 上传的文件
+    filename,
+  };
+
+  fetchUploadImage(uploadIamge, {
+    filename,
+  }).then((res) => {
+    console.log("res: ", res);
+    const { data, error } = res;
+    if (!data || error) {
+      onError();
+      return;
+    }
+    //储存图片的文件信息
+    setFeedbackPushImg(data);
+    //上传成功
+    onFinish();
+  });
 }
 
 /**
@@ -239,6 +269,12 @@ function handleUploadImageFinish({
  */
 function customRequestHandler(options: UploadCustomRequestOptions) {
   const { file, onFinish, onError } = options;
+  //判断文件类型
+  const { type, file: fileInfo } = file;
+  if (type?.indexOf("video") === -1) {
+    onError();
+    return;
+  }
 
   //文件切片上传
   uploadFileByChunks(file, options);
@@ -259,89 +295,107 @@ async function uploadFileByChunks(
   // 1. 获取文件信息
   const file = fileInfo.file!;
   let { HASH, buffer, suffix, filename } = await changeFileToBuffer(file);
-  console.log("HASH ,buffer,suffix,filename: ", HASH, buffer, suffix, filename);
-  debugger;
 
   //获取已经上传的文件切片信息
-  let already = []; //已经上传的切片
+  let already: string[] = []; //已经上传的切片
   try {
-    let response = await axios.get(
-      action?.replace("video", "already") as string,
-      {
-        params: {
-          HASH,
-        },
-      }
-    );
-    const { code, data } = response.data;
-    if (+code === 200) {
+    let { error, data } = await fetchUploadPrepare(HASH);
+    // console.log("data: ", data);
+    if (!error && data) {
       already = data.fileList;
     }
   } catch (error) {}
 
   // 2. 将文件切成块 [固定数量 && 固定大小]
+  //文件字段
+  const fieldname = "feedback-video";
   const chunks: {
-    file: Blob;
+    "feedback-video": Blob;
     filename: string;
-  }[] = [];//切片后的文件数组
+  }[] = []; //切片后的文件数组
   let numChunks = Math.ceil(file.size / chunkSize); //切片的数量
   if (numChunks > 100) {
     chunkSize = Math.ceil(file.size / 100);
     numChunks = 100;
   }
-  let index = 0;
-  while (index < file.size) {
+  let index = ref(0);
+  while (index.value < numChunks) {
     chunks.push({
-      file: file.slice(index * chunkSize, (index + 1) * chunkSize),
-      filename: `${HASH}_${index + 1}.${suffix}`,
+      "feedback-video": file.slice(
+        index.value * chunkSize,
+        (index.value + 1) * chunkSize
+      ),
+      filename: `${HASH}_${index.value + 1}.${suffix}`,
     });
-    index++;
+    index.value++;
   }
-
-  console.log("chunks: ", chunks);
 
   // 2. 上传每个块
-  for (let i = 0; i < numChunks; i++) {
-    //判断当前切片是否已经上传过
-    if (already.length > 0 && already.includes(chunks[i].filename)) {
-      onProgress(
-        {
-          percent: Math.round(((i + 1) / numChunks) * 100),
-        },
-      )
-      continue;
-    }
+  // 当前上传的切片索引
+  let currentIndex = 0;
 
-    const formData = new FormData();
-    formData.append("feedback-video", chunks[i].file);
-    formData.append("filename", chunks[i].filename);
-    axios
-      .post(action!, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          accept: file.type,
-        },
-        params: {},
+  //每个切片上传完成后，调用此方法
+  function onLoaded() {
+    currentIndex++;
+    // 上传进度
+    onProgress({
+      percent: Math.round((currentIndex / numChunks) * 100),
+    });
+
+    // 上传完成
+    if (currentIndex == numChunks) {
+      //上传完成后，合并切片
+      fetchUploadMerge({
+        HASH,
+        numChunks,
+        dirpath: `${fieldname}_${HASH}`,
       })
-      .then((res) => {
-        const { code, data, msg } = res.data;
-        console.log("data: ", data);
-        if (+code === 200) {
-          already.push(data);
-          onProgress({
-            percent: Math.round(((i + 1) / numChunks) * 100),
-          });
-          return;
-        }
-        return Promise.reject(res.data);
-      })
-      .catch((err) => {
-        alert("当前切片上传失败,请重新上传");
-      });
+        .then((result) => {
+          const { error, data } = result;
+          if (!error && data) {
+            setFeedbackVideoInfo(data);
+            onFinish();
+            return;
+          }
+          return Promise.reject(error);
+        })
+        .catch((err) => {
+          console.log("err: ", err);
+          onError();
+        });
+    }
   }
 
-  // 3. 通知上传完成
-  // onFinish();
+  chunks.forEach((chunk, index) => {
+    //判断当前切片是否已经上传过
+    let dirName = `${fieldname}_${chunk.filename}`;
+    if (already.length > 0 && already.includes(dirName)) {
+      console.log("这个切片已经上传过了");
+      onLoaded();
+      return;
+    }
+
+    fetchUploadVideo(chunk, {
+      HASH,
+      filename: chunk.filename,
+      suffix,
+      chunkSize,
+      numChunks,
+      index: index + 1,
+    })
+      .then((result) => {
+        const { error, data } = result;
+        if (!error && data) {
+          onLoaded();
+          return;
+        }
+        return Promise.reject(error);
+      })
+      .catch((err) => {
+        onError();
+        alert("当前切片上传失败,请重新上传");
+      });
+  });
 }
 </script>
 

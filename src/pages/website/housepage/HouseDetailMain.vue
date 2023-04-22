@@ -2,11 +2,7 @@
   <div class="main">
     <n-grid cols="6" x-gap="12" item-responsive responsive="screen">
       <n-grid-item span="2">
-        <n-card :bordered="false">
-          <template #cover>
-            <img  class="w-650px h-450px"  loading="eager" :src="house.OneHouseDetailInfo?.first_picture" />
-          </template>
-        </n-card>
+       <n-image class="w-650px h-450px"  :src="firstPictureLink" />
       </n-grid-item>
       <n-grid-item span="4">
         <n-card class="right-card" :bordered="false" :content-style="contentstyle" :footer-style="footerstyle">
@@ -18,33 +14,37 @@
           </template>
           <template #footer>
             <n-h4> 更多房间 </n-h4>
-            <n-carousel slides-per-view="auto" show-arrow :loop="false" draggable :space-between="20" class="wh-full h-220px b-rd-15px  flex-y-center justify-around">
-              <n-carousel-item v-for="item in  RoommateInfo?.data" :key="item.area"  class="roommate-card p-10px   bg-#e5e5e5 b-rd-15px color-#222">
-               <template v-if="item.time">
-                 <n-avatar round :size="64" :src="item.pic.substr(6)"/>
-                <ul class="right-ul">
-                  <li><span class="label">{{ item.housename }}</span><span>{{ item.time }}</span> </li>
-                  <li><span class="label">{{ item.sex }}</span> <span class="label-sub">{{ item.star_sign }}</span> <span>{{ item.work }}</span> </li>
-                </ul>
-               </template>
-                 <template v-else>
-                 <img class="w-100px" :src="item.pic.substr(6)"/>
-                <ul class="right-ul">
-                  <li><span class="label">{{ item.housename }}</span> <span class="!color-red font-700 text-18px">1500元/月</span> </li>
-                  <li><span class="label">{{ item.qibla }}</span> <span>{{ item.area }}</span> </li>
-                </ul>
-               </template>
-                
+            <n-carousel slides-per-view="auto" show-arrow :loop="false" draggable :space-between="20"
+              class="wh-full h-220px b-rd-15px  flex-y-center justify-around">
+              <n-carousel-item v-for="item in  RoommateInfo?.data" :key="item.area"
+                class="roommate-card p-10px   bg-#e5e5e5 b-rd-15px color-#222">
+                <template v-if="item.time">
+                  <n-avatar round :size="64" :src="item.pic.substr(6)" />
+                  <ul class="right-ul">
+                    <li><span class="label">{{ item.housename }}</span><span>{{ item.time }}</span> </li>
+                    <li><span class="label">{{ item.sex }}</span> <span class="label-sub">{{ item.star_sign }}</span>
+                      <span>{{ item.work }}</span> </li>
+                  </ul>
+                </template>
+                <template v-else>
+                  <img class="w-100px" :src="item.pic.substr(6)" />
+                  <ul class="right-ul">
+                    <li><span class="label">{{ item.housename }}</span> <span
+                        class="!color-red font-700 text-18px">1500元/月</span> </li>
+                    <li><span class="label">{{ item.qibla }}</span> <span>{{ item.area }}</span> </li>
+                  </ul>
+                </template>
+
               </n-carousel-item>
-             
+
             </n-carousel>
 
           </template>
           <!-- <template #action>1111 </template> -->
-          <div class="decbox">{{ store.HouseDetail?.address }}</div>
+          <div class="decbox">{{ houseInfo?.address }}</div>
 
           <div class="tagbox">
-            <n-tag v-for="v in store.HouseDetail?.tags" type="success" size="small">
+            <n-tag v-for="v in houseInfo?.tags" type="success" size="small">
               {{ v }}
             </n-tag>
           </div>
@@ -52,23 +52,22 @@
       </n-grid-item>
     </n-grid>
     <div class="bot-swiper">
-   
+
       <n-image-group>
 
         <n-carousel slides-per-view="auto" :space-between="20" dot-placement="bottom" show-arrow :loop="false" draggable>
 
-          <n-carousel-item v-for="(src, index) in store.HouseDetail?.swiper_pic" :key="index" style="width: 356px">
+          <n-carousel-item v-for="(src, index) in houseInfo?.swiper_pic" :key="index" style="width: 356px">
             <n-image width="356" :src="src" />
-
           </n-carousel-item>
 
           <template #arrow="{ prev, next }">
             <div class="custom-arrow">
               <button type="button" class="custom-arrow--left" @click="prev">
-              <icon-ion:chevron-left class="text-64px color-#fff"/>
+                <icon-ion:chevron-left class="text-64px color-#fff" />
               </button>
               <button type="button" class="custom-arrow--right" @click="next">
-                 <icon-ion:chevron-right class="text-64px color-#fff"/>
+                <icon-ion:chevron-right class="text-64px color-#fff" />
               </button>
             </div>
           </template>
@@ -81,18 +80,18 @@
         </n-carousel>
 
       </n-image-group>
-     
+
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive } from "vue";
-import { useHouseDetailStore,useHouseStore } from "@/store";
-import BetterScroll from "@/components/custom/BetterScroll.vue";
+import { useHouseDetailStore, useHouseStore } from "@/store";
 import { computed } from "vue";
-const store = useHouseDetailStore();
+import { storeToRefs } from "pinia";
 const house = useHouseStore();
+const { OneHouseDetailInfo: houseInfo } = storeToRefs(house);
 
 //标题
 const houseTitle = computed(() => {
@@ -100,8 +99,8 @@ const houseTitle = computed(() => {
 });
 
 //首图连接
-const  firstPictureLink = computed(() => {
-  return house.OneHouseDetailInfo?.first_picture;
+const firstPictureLink = computed(() => {
+  return 'https:' + house.OneHouseDetailInfo?.first_picture;
 });
 
 
@@ -111,10 +110,7 @@ const contentstyle = reactive({
   padding: 0,
   paddingLeft: "16px",
 });
-const options = {
-  scrollX: true,
-  click: true,
-};
+
 const footerstyle = reactive({
   padding: 0,
   color: "white",
@@ -123,7 +119,7 @@ const footerstyle = reactive({
 });
 
 const RoommateInfo = computed(() => {
-  return store.HouseDetail?.Roommate_Info;
+  return house.OneHouseDetailInfo?.Roommate_Info;
 });
 
 </script>
@@ -145,7 +141,7 @@ const RoommateInfo = computed(() => {
   width: 10%;
   height: 100%;
   pointer-events: auto;
-    display: flex;
+  display: flex;
   justify-content: flex-start;
   align-items: center;
   //渐变
@@ -162,8 +158,9 @@ const RoommateInfo = computed(() => {
   background: linear-gradient(to left, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0) 100%);
   display: flex;
   justify-content: flex-end;
-    align-items: center;
+  align-items: center;
 }
+
 .custom-dots {
   display: flex;
   justify-content: center;
@@ -190,6 +187,7 @@ const RoommateInfo = computed(() => {
   width: 40px;
   background: #fff;
 }
+
 .n-grid {
   // background-color: red;
 }
@@ -231,41 +229,47 @@ const RoommateInfo = computed(() => {
 }
 
 
-.roommate-card{
+.roommate-card {
   display: flex;
-  width:auto !important;
+  width: auto !important;
   height: 150px !important;
   justify-content: space-around;
   align-items: center;
-  .right-ul{
+
+  .right-ul {
     display: flex;
     flex-direction: column;
     justify-content: center;
     height: 100%;
     margin-left: 12px !important;
-    li{
+
+    li {
       display: flex;
       align-items: center;
-      .label{
+
+      .label {
         font-size: 16px;
         color: #999999;
         margin-right: 8px;
-        &::after{
+
+        &::after {
           content: "|";
         }
-      
+
       }
-      .label-sub{
-          margin-right: 8px;
-         &::after{
+
+      .label-sub {
+        margin-right: 8px;
+
+        &::after {
           content: "|";
         }
       }
-      span{
+
+      span {
         font-size: 16px;
         color: #333333;
       }
     }
   }
-}
-</style>
+}</style>

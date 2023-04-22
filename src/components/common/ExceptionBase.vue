@@ -6,16 +6,17 @@
       <icon-local-service-error v-if="type === '500'" />
     </div>
     <router-link :to="{ name: routeHomePath }">
-      <n-button type="primary">回到首页</n-button>
+      <n-button type="primary">{{ currentPath == 'website' ?  '回到首页' : '回到后台管理'}}</n-button>
     </router-link>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { routeName } from '@/router';
-
+import { useRouterPush } from '@/composables';
 defineOptions({ name: 'ExceptionBase' });
 
+const { toHome } = useRouterPush();
 type ExceptionType = '403' | '404' | '500';
 
 interface Props {
@@ -24,8 +25,17 @@ interface Props {
 }
 
 defineProps<Props>();
+const currentPath = ref('website')
+const routeHomePath = computed(() => {
 
-const routeHomePath = routeName('root');
+  if (localStorage.getItem('currentPath') === 'website') {
+    currentPath.value = 'website'
+    return routeName('website');
+  }
+  currentPath.value = 'admin'
+  return routeName('admin');
+
+});
 </script>
 
 <style scoped></style>

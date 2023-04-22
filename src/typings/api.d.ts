@@ -79,6 +79,7 @@ declare namespace ApiUserManagement {
     role_permission: "super" | "admin" | "user";
     /**创建时间 */
     createtime: string | null;
+    own_house_name?: string;
   }
 
   interface CollectLsit {
@@ -217,15 +218,18 @@ declare namespace ApiHouseManagement {
   interface House {
     /**文档id */
     _id: string | null;
-    address: string;
-    alt?: string;
-    area?: string;
-    city_id: string;
-    create_time: Date | null;
+    address?: string;
+    alt: string | null;
+    area: {
+      value: number;
+      unit: string;
+    };
+    city_id?: string;
+    create_time?: number | string;
     decoration_condition: string;
-    deleted_state: string;
+    deleted_state?: string;
     des?: string;
-    exam_status: string;
+    exam_status?: string;
     facilities?: { [key: string]: any };
     first_picture?: string;
     Homeowner_info?: { [key: string]: any } | null;
@@ -234,11 +238,11 @@ declare namespace ApiHouseManagement {
     house_id: string;
     houseDetail?: { [key: string]: any };
     href?: string;
-    image_path?: string;
+    image_path: string | null;
     lease_state: string;
     location?: string;
     city_name?: string;
-    price: string;
+    price: number | null;
     rental_category: string;
     rentinfo?: { [key: string]: any };
     Roommate_Info?: { [key: string]: any };
@@ -248,7 +252,18 @@ declare namespace ApiHouseManagement {
     title?: string;
     user_id: string;
     video?: string;
-    owner_id?: Record<string, any>;
+    owner_id?: ApiAuth.UserInfo;
+    elevator?: string; // 电梯
+    floor?: number | null;
+    //总楼层
+    total_floor?: number | null;
+    bathroom?: string; //卫生间
+    living_room?: string; //客厅
+    bedroom?: string; //卧室
+    kitchen?: string; //厨房
+    balcony?: string; //阳台
+    buildYear?: string; //建筑年代
+    orientation?: string; //朝向
   }
 
   interface ApiData {
@@ -256,7 +271,14 @@ declare namespace ApiHouseManagement {
     houseStatus: HouseStatus;
   }
 
-  interface HouseStatus {
+  interface ApiDataList {
+    houseList: House[];
+    houseTotal: number;
+    city_name: string;
+    city_id: string;
+  }
+
+  interface HouseStatus extends ApiQuery.QeuryPage {
     city_id: string;
     house_total: string | number;
     city_name: string;
@@ -265,8 +287,8 @@ declare namespace ApiHouseManagement {
 
 declare namespace ApiQuery {
   interface QeuryPage {
-    page: number;
-    pageSize: number;
+    page?: number;
+    pageSize?: number;
     pageCount?: number;
   }
 
@@ -345,10 +367,26 @@ declare namespace ApiFeedbackManagement {
     filename: string;
     path: string;
     size: number;
+    servicePath: string;
   }
 
   /**视频信息对象 */
   interface VideoInfo {
+    fieldname?: string;
+    originalname?: string;
+    encoding?: string;
+    mimetype?: string;
+    destination?: string;
+    filename?: string;
+    path?: string;
+    size?: number;
+    servicePath: string;
+  }
+}
+
+declare namespace ApiUpload {
+  /**图片信息对象 */
+  interface ImgInfo {
     fieldname: string;
     originalname: string;
     encoding: string;
@@ -357,5 +395,36 @@ declare namespace ApiFeedbackManagement {
     filename: string;
     path: string;
     size: number;
+    servicePath: string;
+  }
+
+  /**视频信息对象 */
+  interface VideoInfo {
+    fieldname?: string;
+    originalname?: string;
+    encoding?: string;
+    mimetype?: string;
+    destination?: string;
+    filename?: string;
+    path?: string;
+    size?: number;
+    servicePath: string;
+  }
+}
+
+declare namespace ApiRentalOrderManagement {
+  interface RentalOrder {
+    /**文档id */
+    _id?: string | null;
+    houselease_id: string;
+    house_id: string;
+    user_id: string;
+    begin_date: number | null;
+    end_date: number | null;
+    days: number;
+    house_price: number;
+    amount: number;
+    status: string;
+    createAt: number | null;
   }
 }

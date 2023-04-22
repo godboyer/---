@@ -26,15 +26,15 @@ export function transformAuthRouteToMenu(
 			localIcon: meta.localIcon,
 			children: menuChildren,
 		});
-		   if (menuItem.key =='notice') {
-     		console.log(menuItem);
-    		}
+		//    if (menuItem.key =='notice') {
+     	// 	// console.log(menuItem);
+    	// 	}
 		if (!hideInMenu(route)) {
 			globalMenu.push(menuItem);
 		}
 	});
 
-	console.log('globalMenu: ', globalMenu);
+	// console.log('globalMenu: ', globalMenu);
 	return globalMenu;
 }
 

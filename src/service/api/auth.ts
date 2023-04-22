@@ -112,11 +112,7 @@ interface UpdateAvater{
 }
 /**上传用户图像 */
 export function fetchUploadAvatar(data: any) {
-  return request.post<UpdateAvater>("/user/avatar", data,{
-    headers: {
-      "Content-Type": EnumContentType.formData,
-    },
-  });
+  return request.post<UpdateAvater>("/user/avatar", data,);
 }
 
 /**获取手机区号 */

@@ -69,11 +69,6 @@ const modules = [
     component: cityTab,
   },
   {
-    key: "date",
-    label: "选择租房时长",
-    component: dateTab,
-  },
-  {
     key: "keywords",
     label: "关键字搜索",
     component: keywordTab,
@@ -130,7 +125,7 @@ function handleSearchOff(event: any) {
   left: 50%;
   transform: translateX(-50%);
   border-radius: 32px;
-  z-index: 9;
+  z-index: 999;
 }
 
 

@@ -2,7 +2,6 @@ import { adapter } from "@/utils";
 import { request } from "../request";
 import {
   adapterOfFetchUserList,
-  createAdapter,
   cityAdapter,
   CommentAdapter,
   NoticeAdapter,
@@ -273,7 +272,7 @@ export const fetchFeedbackList = async () => {
 /** 增加反馈 */
 export const fetchFeedbackAdd = async (data: FeedbackFormModel) => {
   const result = await request.post<ApiFeedbackManagement.Feedback[] | null>(
-    "/feedback/add",
+    "/feedback",
     { ...data }
   );
   return result;

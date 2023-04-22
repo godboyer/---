@@ -52,6 +52,14 @@ export const appRoutes: AuthRoute.Route[] = [
               title: "地图找房",
             },
           },
+          {
+            name: "lease_search",
+            path: "/lease/search",
+            component: "self",
+            meta: {
+              title: "搜索找房",
+            },
+          },
         ],
       },
     ],
@@ -113,6 +121,7 @@ export const appRoutes: AuthRoute.Route[] = [
     name: "personal",
     component: "self",
     props: (route: any) => {
+      console.log("route: ", route);
       const moduleType =
         (route.params.module as EnumType.PersonalModuleKey) || "userinfo";
       return {
@@ -138,7 +147,6 @@ export const appRoutes: AuthRoute.Route[] = [
         module: moduleType,
       };
     },
-
     meta: {
       title: "发布房源",
       requiresAuth: true,
@@ -146,4 +154,24 @@ export const appRoutes: AuthRoute.Route[] = [
       dynamicPath: `/publish/:module(${getPublishModuleRegExp()})?`,
     },
   },
+  {
+    path: '/rent/order',
+    name: 'rent_order',
+    component: 'self',
+    meta: {
+      title: '租房订单',
+      requiresAuth: true,
+      singleLayout: 'blank',
+    }
+  },
+   {
+    path: '/rent/pay',
+    name: 'rent_pay',
+    component: 'self',
+    meta: {
+      title: '支付订单',
+      requiresAuth: true,
+      singleLayout: 'blank',
+    }
+  }
 ];

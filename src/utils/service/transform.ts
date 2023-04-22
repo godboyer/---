@@ -30,8 +30,9 @@ export async function transformRequestData(
 async function handleFormData(data: Record<string, any>) {
   const formData = new FormData();
   const entries = Object.entries(data);
-
+  console.log('entries: ', entries);
   entries.forEach(async ([key, value]) => {
+    // 判断是否为文件类型
     const isFileType =
       isFile(value) || (isArray(value) && value.length && isFile(value[0]));
 

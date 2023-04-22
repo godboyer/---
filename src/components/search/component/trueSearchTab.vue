@@ -1,27 +1,56 @@
 <template>
-  <div class="seacrh-tab-container" data-search="closetab" :class="{ backdrop: search.showSearchTab }">
-
-    <Transition  name="scale" >
-    <n-form label-position="top" class="search-tab" ref="formRef" v-show="search.showSearchTab">
-      <n-form-item class="item-form" :class="{ active: showBefore == 'city' }" label="城市"
-        @click="handleShowSearchPanel('city')">
-        <input class="search-input" type="text" placeholder="你想去哪个城市" :value="search.getCityName" />
-      </n-form-item>
-      <n-form-item class="item-form" :class="{ active: showBefore == 'date' }" label="日期"
-        @click="handleShowSearchPanel('date')">
-        <input class="search-input" type="text" placeholder="请在日历中选择" :value="search.getDateTime" />
-      </n-form-item>
-      <div class="item-form flex items-center" :class="{ active: showBefore == 'keywords' }">
-        <n-form-item class="form" label="关键字" @click="handleShowSearchPanel('keywords')">
-          <input class="search-input" type="text" placeholder="景点/地点/房源名"  v-model="keywords" />
+  <div
+    class="seacrh-tab-container"
+    data-search="closetab"
+    :class="{ backdrop: search.showSearchTab }"
+  >
+    <Transition name="scale">
+      <n-form
+        label-position="top"
+        class="search-tab"
+        ref="formRef"
+        v-show="search.showSearchTab"
+      >
+        <n-form-item
+          class="item-form"
+          :class="{ active: showBefore == 'city' }"
+          label="城市"
+          @click="handleShowSearchPanel('city')"
+        >
+          <input
+            class="search-input"
+            type="text"
+            placeholder="你想去哪个城市"
+            :value="search.getCityName"
+          />
         </n-form-item>
-        <button @click="handleSearchActive" class="flex-center search-button active-btn" >
-          <icon-local-search-logo class="text-24px" />
-          <span>搜索</span>
-        </button>
-      </div>
-    </n-form>
-  </Transition>
+      
+        <div
+          class="item-form flex items-center justify-between"
+          :class="{ active: showBefore == 'keywords' }"
+        >
+          <n-form-item
+            class="form"
+            label="关键字"
+            @click="handleShowSearchPanel('keywords')"
+          >
+            <input
+              class="search-input"
+              type="text"
+              placeholder="景点/地点/房源名"
+              v-model="keywords"
+            />
+          </n-form-item>
+          <button
+            @click="handleSearchActive"
+            class="flex-center search-button active-btn"
+          >
+            <icon-local-search-logo class="text-24px" />
+            <span>搜索</span>
+          </button>
+        </div>
+      </n-form>
+    </Transition>
   </div>
 </template>
 
@@ -29,20 +58,19 @@
 import { computed, ref } from "vue";
 import { useSearchStore } from "@/store";
 import { useRouterPush } from "@/composables";
-
+import { useRoute } from "vue-router";
 const search = useSearchStore();
-const { openSearchPanel, GetHouseCardInfo } = useSearchStore();
-const {routerPush} = useRouterPush();
-
+const { openSearchPanel } = useSearchStore();
+const { routerPush } = useRouterPush();
+const route = useRoute();
 const keywords = computed({
   get: () => search.filter.keywords.join(" "),
   set: (val) => {
-    if(!val) return;
+    if (!val) return;
     search.filter.keywords = [];
     search.filter.keywords.push(val);
   },
 });
-
 
 const showBefore = ref("");
 
@@ -53,18 +81,18 @@ function handleShowSearchPanel(key: string) {
 }
 
 function handleSearchActive() {
-  /**跳转到租房页面 */
-  routerPush('/lease');
+  if (!route.path.startsWith("/lease")) {
+    /**跳转到租房页面 */
+    routerPush("/lease");
+  }
+
   //调用房源搜索接口
   search.handleFetchSearchHouse();
-
-  // console.log("handleSearchActive调用搜索接口");
 }
 </script>
 
 <style lang="scss" scoped>
 .search-tab {
-
   position: absolute;
   top: 80px !important;
   left: 50% !important;
@@ -81,7 +109,7 @@ function handleSearchActive() {
 
   display: flex;
   justify-content: center;
-  .search-input{
+  .search-input {
     background: #f7f7f7f7;
   }
   .item-form {
@@ -158,7 +186,7 @@ function handleSearchActive() {
 // }
 
 .seacrh-tab-container::before {
-  content: '';
+  content: "";
   position: fixed;
   left: 0px;
   top: 80px;
@@ -166,27 +194,25 @@ function handleSearchActive() {
   height: 0;
   background: #fff;
   z-index: 99 !important;
-  transition: height  0.25s;
+  transition: height 0.25s;
   border-bottom: 1px solid #e5e5e5;
 }
-.seacrh-tab-container::after{
-  content: '';
+.seacrh-tab-container::after {
+  content: "";
   position: fixed;
   left: 0px;
   top: 160px;
   opacity: 0;
   //延迟显示
-  transition:  0.15s 0.25s;
+  transition: 0.15s 0.25s;
   min-width: 100vw !important;
   min-height: 1vh !important;
   transform: scaleY(1);
   transform-origin: top center;
-   
 }
 
-
 .backdrop::after {
-   transform: scaleY(100);
+  transform: scaleY(100);
   background: rgba(84, 84, 84, 0.5);
   z-index: 99 !important;
   opacity: 1;
@@ -196,20 +222,16 @@ function handleSearchActive() {
   height: 80px !important;
 }
 
-
 .scale-enter-active {
   animation: identifier 0.35s;
-
-
 }
 .scale-leave-active {
   animation: identifier 0.35s reverse;
   transform-origin: center center;
 }
-.scale-enter{
+.scale-enter {
   transform: scale(0);
 }
-
 
 @keyframes identifier {
   from {
@@ -217,13 +239,11 @@ function handleSearchActive() {
     width: 20.25rem;
     opacity: 0;
     transform-origin: center;
-    transform:translateX(-50%)  translateY(-80px) scale(0.4) ;
+    transform: translateX(-50%) translateY(-80px) scale(0.4);
   }
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0px) scale(1);
   }
 }
-  
-
 </style>

@@ -1,25 +1,23 @@
 declare namespace HousePage {
-  interface Card {
-    _id: string;
-    href: string;
-    image_path: string;
-    alt: string;
-    price: string;
-    tags: Array<string>;
-    location: string;
-    des: string;
-    area: string;
-    title: string;
-    house_id: string;
-    swiper_pic: Array<string>;
-    Homeowner_info: IHomeownerinfo;
-  }
-  interface CardList extends HousePage.Card {
-    /** 序号 */
-    index: number | null;
-    /** 表格的key（id） */
-    key: string ;
-  }
+
+
+  type CardList = Pick<
+    HouseManagement.House,
+    | "_id"
+    | "href"
+    | "alt"
+    | "price"
+    | "tags"
+    | "location"
+    | "area"
+    | "title"
+    | "house_id"
+    | "swiper_pic"
+    | "Homeowner_info"
+    | "floor"
+    | "index"
+    | "key"
+  >;
 
   interface IHomeownerinfo {
     user_id: string;
@@ -29,13 +27,9 @@ declare namespace HousePage {
     pic: string;
   }
 
-
-  interface HouseState{
-      itemTotal:number
+  interface HouseState {
+    itemTotal: number;
   }
-
-
-
 }
 
 declare namespace HomePage {}

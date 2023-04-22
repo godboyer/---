@@ -26,14 +26,14 @@ export function useRouterPush(inSetup = true) {
   /**路由跳转保留当前重定向*/
   function routerPushKeepRedirect(path: string) {
     const { query } = route.value;
-  
+
     if (query?.redirect) {
       const redirect = query.redirect as string;
       const routeLocation: RouteLocationRaw = {
         path: path as string,
         query: { redirect },
       };
-     return routerPush(routeLocation);
+      return routerPush(routeLocation);
     } else {
       return routerPush(path);
     }
@@ -42,7 +42,8 @@ export function useRouterPush(inSetup = true) {
   /**根据路由参数跳转 */
   function routerPushByParams(path?: any) {
     const { query } = route.value;
-    const routeLocation: RouteLocationRaw =path ||  query.redirect;
+    console.log('query: ', query);
+    const routeLocation: RouteLocationRaw = path || query.redirect || "/";
     routerPush(routeLocation);
   }
 
@@ -64,6 +65,13 @@ export function useRouterPush(inSetup = true) {
    */
   function toAdminHome(newTab = false) {
     routerPush({ name: routeName("admin") }, newTab);
+  }
+  function toHome(newTab = false) {
+    if (localStorage.getItem("currentPath") == "admin") {
+      return toAdminHome();
+    } else {
+      return toWebsiteHome();
+    }
   }
 
   /**
@@ -139,5 +147,6 @@ export function useRouterPush(inSetup = true) {
     toPublish,
     routerPushKeepRedirect,
     routerPushByParams,
+    toHome
   };
 }

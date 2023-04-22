@@ -1,60 +1,15 @@
 <template>
-  <div class="welcome-page">
-    <h1>Welcome to Renting Management System</h1>
-    <p>Please log in to access the system.</p>
-    <form class="login-form" @submit.prevent="login">
-      <div class="form-group">
-        <label for="username">Username:</label>
-        <input type="text" id="username" v-model="username" />
-      </div>
-      <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" v-model="password" />
-      </div>
-      <button class="btn btn-primary">Log In</button>
-    </form>
-    <div class="info">
-      <div class="info-item">
-        <div class="info-label">Total Users:</div>
-        <div class="info-value">{{ totalUsers }}</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Total Properties:</div>
-        <div class="info-value">{{ totalProperties }}</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Total Orders:</div>
-        <div class="info-value">{{ totalOrders }}</div>
-      </div>
-    </div>
-  </div>
+  <n-space :vertical="true">
+  
+    <DashboardAnalysisDataCard />
+    <DashboardAnalysisTopCard />
+  </n-space>
 </template>
 
-<script lang="ts" >
-export default {
-  name: "WelcomePage",
-  data() {
-    return {
-      username: "",
-      password: "",
-      totalUsers: 0,
-      totalProperties: 0,
-      totalOrders: 0,
-    };
-  },
-  methods: {
-    login() {
-      // TODO: perform login operation
-      console.log("Login button clicked");
-    },
-  },
-  created() {
-    // TODO: fetch and display statistics data
-    this.totalUsers = 100;
-    this.totalProperties = 200;
-    this.totalOrders = 300;
-  },
-};
+<script setup lang="ts" >
+import DashboardAnalysisDataCard from '@/pages/admin/dashboard/analysis/components/data-card/index.vue';
+import DashboardAnalysisTopCard from '@/pages/admin/dashboard/analysis/components/top-chart/index.vue';
+import searchBaiduMap from '@/components/common/searchMap.vue';
 </script>
 
 <style scoped>

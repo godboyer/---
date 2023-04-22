@@ -14,7 +14,7 @@ export async function handleRefreshToken(axiosConfig: AxiosRequestConfig) {
   if (data) {
     localStg.set('token', data.token);
     localStg.set('refreshToken', data.refreshToken);
-
+    debugger;
     const config = { ...axiosConfig };
     if (config.headers) {
       const headers = config.headers as { [key: string]: string };

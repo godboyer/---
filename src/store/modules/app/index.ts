@@ -1,6 +1,6 @@
-import { nextTick } from 'vue';
-import { defineStore } from 'pinia';
-
+import { nextTick } from "vue";
+import { defineStore } from "pinia";
+import { getAppVar } from "./helpers";
 interface AppState {
   /** 重载页面(控制页面的显示) */
   reloadFlag: boolean;
@@ -12,16 +12,18 @@ interface AppState {
   mixSiderFixed: boolean;
   /**设置地图找房 */
   showMapFlag: boolean;
+  /**当前访问的页面变量 */
+  currentPath: "website" | "admin" | string;
 }
 
-export const useAppStore = defineStore('app-store', {
+export const useAppStore = defineStore("app-store", {
   state: (): AppState => ({
     reloadFlag: true,
     settingDrawerVisible: false,
     siderCollapse: false,
     mixSiderFixed: false,
-    showMapFlag:false
-    
+    showMapFlag: false,
+    currentPath: getAppVar("currentPath"),
   }),
   actions: {
     /**
@@ -41,6 +43,12 @@ export const useAppStore = defineStore('app-store', {
       setTimeout(() => {
         document.documentElement.scrollTo({ left: 0, top: 0 });
       }, 100);
+    },
+    /**改变页面变量 */
+    changeCurrentPath(path: "website" | "admin") {
+      this.currentPath = path;
+      //存储到本地
+      localStorage.setItem("currentPath", path);
     },
     /** 打开设置抽屉 */
     openSettingDrawer() {
@@ -71,8 +79,8 @@ export const useAppStore = defineStore('app-store', {
       this.mixSiderFixed = !this.mixSiderFixed;
     },
     /**关闭或打开地图 */
-    toggleShowMapFlag(isShow:boolean) {
-        this.showMapFlag = isShow
-    }
-  }
+    toggleShowMapFlag(isShow: boolean) {
+      this.showMapFlag = isShow;
+    },
+  },
 });

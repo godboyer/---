@@ -4,7 +4,7 @@ import {fetchHouseInfo} from "@/service/api/house";
 
 export const useHouseDetailStore = defineStore("houseDetailStore", {
   state: (): {
-    HouseDetail: HouseManagement.HouseInfo | null;
+    HouseDetail: HouseManagement.House | null;
     HomeownerInfo: Auth.UserInfo | null;
   } => {
     return { HouseDetail: null,HomeownerInfo:null };
@@ -18,7 +18,7 @@ export const useHouseDetailStore = defineStore("houseDetailStore", {
       let { error, data } = await fetchHouseInfo(id)
       
       if (!error) { 
-        this.HouseDetail = data as unknown as HouseManagement.HouseInfo;
+        this.HouseDetail = data as unknown as HouseManagement.House;
         this.HomeownerInfo = this.HouseDetail?.owner_id as unknown as Auth.UserInfo;
       }
 

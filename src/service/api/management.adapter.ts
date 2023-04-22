@@ -1,11 +1,13 @@
-export function adapterOfFetchUserList(data: ApiUserManagement.User[] | null): UserManagement.User[] {
+export function adapterOfFetchUserList(
+  data: ApiUserManagement.User[] | null
+): UserManagement.User[] {
   if (!data) return [];
 
   return data.map((item, index) => {
     const user: UserManagement.User = {
       index: index + 1,
       key: item.user_id,
-      ...item
+      ...item,
     };
 
     return user;
@@ -14,7 +16,10 @@ export function adapterOfFetchUserList(data: ApiUserManagement.User[] | null): U
 
 type AdapterFunction<T, U> = (data: T | null) => U[];
 
-export function createAdapter<T, U>(adapterFunc: (item: T, index: number) => U): AdapterFunction<T[], U> { // 这里的返回值类型应该是 AdapterFunction<T[], U>
+export function createAdapter<T, U>(
+  adapterFunc: (item: T, index: number) => U
+): AdapterFunction<T[], U> {
+  // 这里的返回值类型应该是 AdapterFunction<T[], U>
   return (data: T[] | null) => {
     if (!data) return [];
 
@@ -22,97 +27,108 @@ export function createAdapter<T, U>(adapterFunc: (item: T, index: number) => U):
   };
 }
 
-
-export const cityAdapter = createAdapter<ApiCityManagement.City, CityManagement.City>((item, index) => {
+export const cityAdapter = createAdapter<
+  ApiCityManagement.City,
+  CityManagement.City
+>((item, index) => {
   const city: CityManagement.City = {
-    index: index+1,
+    index: index + 1,
     key: item._id,
-    ...item
+    ...item,
   };
   return city;
-}); 
+});
 
-
-export const CommentAdapter = createAdapter<ApiCommentManagement.Comment, CommentManagement.Comment>((item, index) => {
+export const CommentAdapter = createAdapter<
+  ApiCommentManagement.Comment,
+  CommentManagement.Comment
+>((item, index) => {
   const Comment: CommentManagement.Comment = {
-    index: index+1,
+    index: index + 1,
     key: item.comment_id,
-    ...item
+    ...item,
   };
   return Comment;
 });
 
-
-export const NoticeAdapter = createAdapter<ApiNoticeManagement.Notice, NoticeManagement.Notice>((item, index) => {
+export const NoticeAdapter = createAdapter<
+  ApiNoticeManagement.Notice,
+  NoticeManagement.Notice
+>((item, index) => {
   const Notice: NoticeManagement.Notice = {
-    index: index+1,
+    index: index + 1,
     key: item.notice_id,
-    ...item
+    ...item,
   };
   return Notice;
 });
 
 /**留言接口适配--LeavewordAdapter */
-export const LeavewordAdapter = createAdapter<ApiLeavewordManagement.Leaveword, LeavewordManagement.Leaveword>((item, index) => {
+export const LeavewordAdapter = createAdapter<
+  ApiLeavewordManagement.Leaveword,
+  LeavewordManagement.Leaveword
+>((item, index) => {
   const Leaveword: LeavewordManagement.Leaveword = {
-    index: index+1,
+    index: index + 1,
     key: item.leaveword_id,
-    ...item
+    ...item,
   };
   return Leaveword;
 });
 
-
 /**房源管理接口适配--r */
-export const HouseAdapter = createAdapter<ApiHouseManagement.House, HouseManagement.House>((item, index) => {
- 
+export const HouseAdapter = createAdapter<
+  ApiHouseManagement.House,
+  HouseManagement.House
+>((item, index) => {
   const House: HouseManagement.House = {
-    index: index+1,
-    key: item['_id'],
-    ...item
+    index: index + 1,
+    key: item["_id"],
+    ...item,
+    area: item.area.value + item.area.unit,
   };
   return House;
 });
 
-export const FeedbackAdapter = createAdapter<ApiFeedbackManagement.Feedback, FeedbackManagement.Feedback>((item, index) => {
- 
-  const House:FeedbackManagement.Feedback = {
-    index: index+1,
-    key: item['_id'],
-    ...item
+export const FeedbackAdapter = createAdapter<
+  ApiFeedbackManagement.Feedback,
+  FeedbackManagement.Feedback
+>((item, index) => {
+  const House: FeedbackManagement.Feedback = {
+    index: index + 1,
+    key: item["_id"],
+    ...item,
   };
   return House;
 });
 
+/**房源管理接口适配 */
 
-/**房源管理接口适配--LeavewordAdapter */
-export const HouseCardAdapter = function (fetchData: ApiHouseManagement.ApiData | null) {
-  if (!fetchData) return [];
-  let {houseCardList,houseStatus} = fetchData
 
-    houseCardList = houseCardList.map((item, index) => {
-      const House: HouseManagement.House = {
-        index: index+1,
-        key: item['_id'],
-        ...item
-      };
-      return House;
-    });
-  
-  return fetchData
-  
+/**房源列表接口适配 */
+export const HouseListAdapter = function (
+  fetchData: ApiHouseManagement.ApiDataList | null
+) {
+  if (!fetchData) return null;
+  let { houseList, city_id, city_name, houseTotal } = fetchData;
+
+  let nweHouseList = houseList.map((item, index) => {
+    const House: HouseManagement.House = {
+      index: index + 1,
+      key: item["_id"],
+      ...item,
+      area: item.area.value + item.area.unit,
+    };
+    return House;
+  });
+
+  return {
+    city_id,
+    city_name,
+    houseTotal,
+    houseList: nweHouseList,
+  };
 };
-
-export const HouseNewCardAdapter = createAdapter<HousePage.Card, HousePage.CardList>((item, index) => {
- 
-  const House: HousePage.CardList = {
-    index: index+1,
-    key: item['_id'],
-    ...item
-  };
-  return House;
-});
-
 
 
 
@@ -122,14 +138,13 @@ interface FetchTableData {
   tableDatas: any;
 }
 
-
 export const TableAdapter = function (fetchData: FetchTableData) {
-    let { tableName,tableColumns,tableDatas  } = fetchData;
-    //处理表格的数据
-    tableDatas = tableDatas.map((item: any, index: number) => {
-        item.key = item._id;
-        item.index = index + 1;
-     return item;
-    })
-    return fetchData
-} 
+  let { tableName, tableColumns, tableDatas } = fetchData;
+  //处理表格的数据
+  tableDatas = tableDatas.map((item: any, index: number) => {
+    item.key = item._id;
+    item.index = index + 1;
+    return item;
+  });
+  return fetchData;
+};

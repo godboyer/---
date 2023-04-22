@@ -1,10 +1,6 @@
 <template>
   <div class="p-1">
-    <n-card
-      :bordered="false"
-      :content-style="contentstyle"
-      :header-style="headerstyle"
-    >
+    <n-card :bordered="false" :content-style="contentstyle" :header-style="headerstyle">
       <template #cover class="cover">
         <n-skeleton v-if="loading" height="100%" width="100%" size="medium" />
         <swiper-house-pic v-else :card-data="cardDate" />
@@ -15,7 +11,7 @@
           <div v-else>
             <icon-material-symbols:pin-drop-rounded class="text-24px" />
             <span>
-              {{ cardDate?.location ?? "无" }}
+              {{location ?? "无" }}
             </span>
           </div>
         </div>
@@ -25,68 +21,44 @@
             <span>
               <icon-local-area class="text-18px" />
 
-              {{ cardDate.area }}
+              {{ area }}
             </span>
 
             <span>
               <icon-local-storey class="text-18px" />
-              {{ cardDate.des.split("|")[1] }}
+              {{ floor + "层"  }}
             </span>
           </div>
           <n-skeleton v-if="loading" height="22px" width="20%" size="medium" />
           <div v-else class="price">
-            {{ cardDate.price.split("/").join("元/") }}
+            {{ price + "元/月"}}
           </div>
         </div>
       </div>
       <template #header>
         <n-skeleton v-if="loading" height="29px" width="60%" size="medium" />
         <n-ellipsis v-else style="max-width: 200px,height:25px">
-          {{ cardDate?.title ?? "无标题" }}
+          {{ title ?? "无标题" }}
         </n-ellipsis>
       </template>
       <template #header-extra>
-        <n-skeleton
-          v-if="loading"
-          :round="true"
-          height="38px"
-          width="38px"
-          size="medium"
-        />
-        <n-avatar
-          v-else
-          round
-          :size="38"
-          :src="
-            cardDate?.Homeowner_info.pic ??
-            'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
-          "
-        />
+        <n-skeleton v-if="loading" :round="true" height="38px" width="38px" size="medium" />
+        <n-avatar v-else round :size="38" :src="
+          Homeowner_info?.avatar ??
+          'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
+        " />
       </template>
 
       <template #footer>
         <div class="tag h-22px w-full">
-          <n-skeleton
-            v-if="loading"
-            v-for="v in cardDate?.tags"
-            :key="v"
-            height="22px"
-            width="20%"
-            size="medium"
-          />
+          <n-skeleton v-if="loading" v-for="v in cardDate?.tags" :key="v" height="22px" width="20%" size="medium" />
 
           <template v-else>
-            <n-tag
-              v-for="(v, idx) in cardDate?.tags"
-              size="small"
-              :color="{
-                color: '#42B2B6',
-                textColor: '#fff',
-                borderColor: '#42B2B6',
-              }"
-              :key="idx"
-              >{{ v }}</n-tag
-            >
+            <n-tag v-for="(v, idx) in cardDate?.tags" size="small" :color="{
+              color: '#42B2B6',
+              textColor: '#fff',
+              borderColor: '#42B2B6',
+            }" :key="idx">{{ v }}</n-tag>
           </template>
         </div>
       </template>
@@ -95,9 +67,9 @@
 </template>
 
 <script setup lang="ts">
-import { debounce } from "lodash-es";
 import swiperHousePic from "../swiper/index.vue";
 import { onMounted, reactive, ref, watch } from "vue";
+
 
 defineOptions({ name: "houseInfoCard" });
 const loading = ref(true);
@@ -105,6 +77,7 @@ const props = defineProps<{
   cardDate: HousePage.CardList;
 }>();
 
+const {Homeowner_info,title,price,floor,area,location} = props.cardDate;
 const contentstyle = reactive({
   fontSize: "12px",
   lineHeight: "22px",
@@ -116,6 +89,9 @@ const contentstyle = reactive({
 const headerstyle = reactive({
   padding: "12px",
 });
+
+
+
 
 onMounted(() => {
   setTimeout(() => {
@@ -174,13 +150,16 @@ watch(
 }
 
 .n-card {
-  // max-width: 280px;
   width: 100%;
   box-sizing: border-box;
-  transition: width 5s ease-in-out;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .3);
+  overflow: hidden;
+  transition: box-shadow .5s cubic-bezier(.19,1,.22,1),transform .5s cubic-bezier(.19,1,.22,1);
   &:hover {
-    border: 1px solid #42b2b6;
-    box-shadow: 3px 1px 10px 7px #d5d8d89a;
+    // border: 1px solid #42b2b6;
+    // box-shadow: 3px 1px 10px 7px #d5d8d89a;
+    box-shadow: 0 2px 7px 0 rgba(0, 0, 0, .3);
+    transform: scale(1.03);
   }
 }
 

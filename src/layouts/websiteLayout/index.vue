@@ -1,7 +1,7 @@
 <template>
   <n-layout class="wh-full">
     <n-layout-header :bordered="true">
-      <system-header>
+      <system-header >
         <template  #search>
           <search-box />
         </template>
@@ -13,7 +13,6 @@
           <KeepAlive>
             <Suspense>
               <component :is="Component"></component>
-
               <template #fallback>
                 加载中。。。
               </template>

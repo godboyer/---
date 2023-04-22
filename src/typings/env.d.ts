@@ -1,3 +1,5 @@
+/// <reference path="../../node_modules/@types/baidumap-web-sdk/index.d.ts" />
+
 /**
  *后台服务的环境类型
  * - dev: 后台开发环境

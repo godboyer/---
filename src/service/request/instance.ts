@@ -48,7 +48,6 @@ export default class CustomAxiosInstance {
         if (handleConfig.headers) {
           // 数据转换matcher
           const contentType = handleConfig.headers['Content-Type'] as unknown as UnionKey.ContentType;
-            console.log('contentType: ', contentType);
 
           // 设置token
           const headers = handleConfig.headers as { [key: string]: string };
@@ -60,6 +59,7 @@ export default class CustomAxiosInstance {
             contentType
           );
         }
+
         return handleConfig;
       },
       (axiosError: AxiosError) => {

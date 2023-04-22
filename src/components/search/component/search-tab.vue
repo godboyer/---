@@ -5,11 +5,8 @@
     :class="{ 'backdrop-box': search.visibleBackDrop }"
   >
     <n-space>
-      <address-popover />
       <price-range-popover />
       <categoryPopover />
-      <!-- <area-and-floor-popover /> -->
-      <!-- <more-filter-popver /> -->
      
     </n-space>
     <slot name="switch"></slot>

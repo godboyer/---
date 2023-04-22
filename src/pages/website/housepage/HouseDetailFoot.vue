@@ -8,12 +8,12 @@
             <n-space :vertical="true" :size="25">
               <ul class="description-ul">
                 <n-h3>房源简介</n-h3>
-                <li v-if="!HouseDescription">
+                <li v-if="!houseInfo?.house_description">
                   这套舒适雅致的房源位于保利公园九里五期。小区共有9栋楼。在小区内可以看到全天执勤的安保人员。该小区日常开放3个门。房源离东门较近，走一会就到了。小区内配备饮水站，快递柜。其中便利店就在楼下，生活便利。房源附近有篮球场，锻炼身体很方便。楼栋概况\n房源所在小区建于2018年，楼栋外立面很新。楼栋共有34层，2梯4户，私密性好。小区注重卫生管理，会定期安排人员维护楼栋的卫生。单元有门禁。房源概况\n这间4居室的05卧面积较大，两人住也不会太拥挤。房源位于第25层，在窗边能俯瞰波澜水面，城市美景尽收眼底。卧室朝南，白天光照充足，冬天比较暖和。厨房有1扇窗户，采光通风好。公用卫生间有窗户，保证了通风采光。装修亮点
                   <br />卧室的装修以灰、粉色为主，营造出简约低调的居室氛围。房间优选环保无醛板材，为您居住安全保驾护航。
                 </li>
                 <li v-else>
-                  {{ HouseDescription }}
+                  {{ houseInfo?.house_description }}
                 </li>
               </ul>
               <ul>
@@ -43,12 +43,12 @@
             </n-scrollbar>
           </n-tab-pane>
 
-          <n-tab-pane name="Facilities" :tab="Facilities?.title">
-            <n-h3>{{ Facilities?.title }}</n-h3>
+          <n-tab-pane name="Facilities" tab="房屋设备">
+            <n-h3>房屋设备</n-h3>
             <ul class="Facilities-ul">
-              <li v-for="(v, idx) in (Facilities as any)?.data" :key="idx">
-                <i :class="'iconfont ' + v.icon"></i>
-                <span>{{ v?.name }}</span>
+              <li v-for="(v, idx) in houseInfo?.facilities" :key="idx">
+                <i :class="'iconfont ' + v.value"></i>
+                <span>{{ v?.label }}</span>
               </li>
             </ul>
           </n-tab-pane>
@@ -63,22 +63,26 @@
         <n-card class="w-full mt-50px">
           <template #header>
             <div class="mt-10px p-15px">
-              <n-h3 class="text-center">{{ ownerInfo.houseName }}</n-h3>
+              <n-h3 class="text-center">{{ HomeownerInfo?.own_house_name }}</n-h3>
             </div>
           </template>
           <div class="owner-info mb-24px">
-            <n-avatar round :size="80" :src="ownerAvatar" />
+            <n-avatar round :size="80" :src="(HomeownerInfo?.avatar as string )" />
             <div class="owner-info-item">
-              <span class="name">{{ owner?.username }}</span>
-              <span class="phone">{{ owner?.phone }}</span>
+              <span class="name">{{ HomeownerInfo?.username }}</span>
+              <span class="phone">{{ HomeownerInfo?.phone }}</span>
             </div>
           </div>
           <n-space :vertical="true" :size="12">
             <n-button size="large" type="primary" block>立即预约</n-button>
-            <n-button @click="handleGotoRentOrder" size="large" type="error" block>线上签约</n-button>
+            <n-button
+              @click="handleGotoRentOrder"
+              size="large"
+              type="error"
+              block
+              >线上签约</n-button
+            >
           </n-space>
-         
-
         </n-card>
       </n-grid-item>
     </n-grid>
@@ -87,48 +91,29 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useHouseDetailStore } from "@/store/index";
+import { useOrderStore, useHouseStore,useAuthStore } from "@/store";
 import { BaiduMap } from "@/components/map/components";
 import { fetchCommentList } from "@/service";
 import commentItme from "@/components/comment/index.vue";
-import BetterScroll from "@/components/custom/BetterScroll.vue";
 import { useRouterPush } from "@/composables";
-
-const store = useHouseDetailStore();
+import { storeToRefs } from "pinia";
+const house = useHouseStore();
+const { setLesser, setLessor, setHouseId } = useOrderStore();
+const {userInfo}= useAuthStore();
 const dividerRef = ref<HTMLElement | undefined>(undefined);
-const Facilities = computed(() => {
-  return store.HouseDetail?.facilities;
-});
-const HouseDescription = computed(() => {
-  return store.HouseDetail?.house_description;
-});
+
+const { OneHouseDetailInfo: houseInfo,HomeownerInfo } = storeToRefs(house);
+
+
 const rentinfo = computed(() => {
-  return store.HouseDetail?.rentinfo;
+  return houseInfo.value?.rentinfo;
 });
 const houseDetail = computed(() => {
-  return store.HouseDetail?.houseDetail;
+  return houseInfo.value?.houseDetail;
 });
 
-const ownerInfo = computed(() => {
-  return {
-    houseName: store.HouseDetail?.owner_id?.own_house_name.replace(
-      "自如友家·",
-      ""
-    ),
-    owner: store.HouseDetail?.owner_id,
-    ownerAvatar: store.HouseDetail?.owner_id?.avatar,
-    houseDetail: store.HouseDetail?.houseDetail,
-    HouseDescription: store.HouseDetail?.house_description,
-    Facilities: store.HouseDetail?.facilities,
-  };
-});
 
-const owner = computed(() => {
-  return store.HouseDetail?.owner_id;
-});
-const ownerAvatar = computed(() => {
-  return store.HouseDetail?.owner_id?.avatar;
-});
+
 
 const showTop = ref(false);
 const handleClickTab = (name: string) => {
@@ -140,31 +125,24 @@ const commentList = ref([]);
 
 async function getCommentList() {
   const { error, data } = await fetchCommentList();
-  console.log("data: ", data);
   if (!error && data) {
     commentList.value = data as any;
   }
 }
 getCommentList();
-const {routerPush} = useRouterPush()
-
+const { routerPush } = useRouterPush();
 
 function handleGotoRentOrder() {
-  console.log("去租赁订单");
-  routerPush('/rentOrder')
+  setLesser(userInfo.username as string );
+  setLessor(HomeownerInfo.value?.username as string);
+  setHouseId(houseInfo.value?.house_id as string);
+  routerPush({
+    path: "/rent/order",
+    query: {
+      houseId: houseInfo.value?.house_id,
+    },
+  });
 }
-
-
-
-
-
-
-
-
-
-
-
-
 </script>
 
 <style lang="scss" scoped>

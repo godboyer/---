@@ -15,6 +15,8 @@ import Aegis from "aegis-web-sdk";
 async function setupApp() {
   // 网站页面加载
   const appLoading = createApp(AppLoading);
+  //存入全局变量
+  localStorage.setItem("currentPath", "website");
   appLoading.mount("#appLoading");
 
   //创建app
@@ -44,7 +46,7 @@ async function setupApp() {
   app.mount("#app");
   aegis.ready();
 
-  console.log("启动前端性能监控", aegis);
+  console.log("启动前端性能监控");
 }
 
 //执行安装app函数

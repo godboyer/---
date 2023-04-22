@@ -40,6 +40,11 @@ declare namespace UserManagement {
     key: string | null;
   }
 
+  interface UserInfo extends ApiUserManagement.User {
+    idCard?: string | null;
+    realName?: string | null;
+  }
+
   /**
    * 用户性别
    * - 0: 女
@@ -262,17 +267,58 @@ declare namespace LeavewordManagement {
 declare namespace HouseManagement {
   interface House extends ApiHouseManagement.House {
     /** 序号 */
-    index: number | null;
+    index: number;
     /** 表格的key（id） */
     key: string | null;
+    area: string | null;
   }
 
-  /**房屋信息 */
-  interface HouseInfo extends ApiHouseManagement.House {
-      
-
-
+  interface FetchHoseCardData {
+    houseCardList: HousePage.CardList[];
+    houseStatus: ApiHouseManagement.HouseStatus;
   }
+
+  interface FetchHouseListData extends ApiHouseManagement.ApiDataList {
+    houseList: House[];
+  }
+
+  // /**房屋信息 */
+  // interface HouseInfo extends ApiHouseManagement.House {
+  //   /** 序号 */
+  //   index: number;
+  //   /** 表格的key（id） */
+  //   key: string | null;
+  // }
+  /**发布房源的信息 */
+  type PublishHouseInfo = Pick<
+    HousePublishManagement.HousePublishInfo,
+    | "title"
+    | "price"
+    | "area"
+    | "rental_category"
+    | "user_id"
+    | "house_category"
+    | "address"
+    | "city_id"
+    | "create_time"
+    | "decoration_condition"
+    | "exam_status"
+    | "first_picture"
+    | "house_description"
+    | "location"
+    | "city_name"
+    | "swiper_pic"
+    | "tags"
+    | "video"
+    | "floor"
+    | "total_floor"
+    | "bedroom"
+    | "living_room"
+    | "bathroom"
+    | "kitchen"
+    | "elevator"
+    | "realName"
+  >;
 
   /**
    * 出租状态
@@ -291,6 +337,75 @@ declare namespace HouseManagement {
    *
    */
   type defaultStatusKey = NonNullable<House["deleted_state"]>;
+
+  type RentalCategoryKey = NonNullable<House["rental_category"]>;
+  type RentalDurationKey = NonNullable<House["rental_duration"]>;
+}
+
+/**租赁订单模块*/
+declare namespace RentalOrderManagement {
+  interface RentalOrder extends ApiRentalOrderManagement.RentalOrder {
+    /** 序号 */
+    index: number;
+    /** 表格的key（id） */
+    key: string | null;
+  }
+}
+
+
+/**房源发布管理 */
+declare namespace HousePublishManagement {
+  interface House extends ApiHouseManagement.House {
+    /** 序号 */
+  }
+  interface TagsOption {
+    label: string;
+    value: string;
+    checked: boolean;
+  }
+
+  interface PublishInfo extends ApiHouseManagement.House {
+    images: ApiUpload.ImgInfo[] | null;
+    video: string | null;
+    swiper_pic: string[] | null;
+    tags: TagsOption[];
+    deposit: number | null;
+    point: Bmap.Point;
+    area: string | null;
+  }
+  /**发布房源的信息 */
+  type PublishHouseInfo = Pick<
+    PublishInfo,
+    | "title"
+    | "price"
+    | "area"
+    | "rental_category"
+    | "user_id"
+    | "house_category"
+    | "address"
+    | "city_id"
+    | "create_time"
+    | "decoration_condition"
+    | "exam_status"
+    | "first_picture"
+    | "house_description"
+    | "location"
+    | "city_name"
+    | "swiper_pic"
+    | "tags"
+    | "video"
+    | "floor"
+    | "total_floor"
+    | "bedroom"
+    | "living_room"
+    | "bathroom"
+    | "kitchen"
+    | "elevator"
+    | "realName"
+    | "deposit"
+    | "facilities"
+    | "point"
+  >;
 }
 
 /**房源相关模块 */
@@ -303,11 +418,7 @@ declare namespace LeaseManagement {
   }
 
   /**房屋信息 */
-  interface HouseInfo extends ApiHouseManagement.House {
-      
-
-
-  }
+  interface HouseInfo extends ApiHouseManagement.House {}
 
   // /**
   //  * 出租状态
@@ -327,7 +438,6 @@ declare namespace LeaseManagement {
   //  */
   // type defaultStatusKey = NonNullable<House["deleted_state"]>;
 }
-
 
 declare namespace TableManagement {
   interface Table extends ApiTableManagement.Table {
@@ -353,20 +463,16 @@ declare namespace TableManagement {
   type TableStatusKey = NonNullable<Table["deleted_state"]>;
 }
 
-
-declare namespace AdminManagement { 
-
-    type StatusKey = '1'|'2'|'3'|'4'|'5'|'0' |string | number | symbol;
+declare namespace AdminManagement {
+  type StatusKey = "1" | "2" | "3" | "4" | "5" | "0" | string | number | symbol;
 }
 
-declare namespace FeedbackManagement { 
-
-  interface Feedback extends ApiFeedbackManagement.Feedback{
-        /** 序号 */
+declare namespace FeedbackManagement {
+  interface Feedback extends ApiFeedbackManagement.Feedback {
+    /** 序号 */
     index: number;
     /** 表格的key（id） */
     key?: string;
-
   }
 
   interface FeedbackInfo extends ApiFeedbackManagement.Feedback {
@@ -375,7 +481,7 @@ declare namespace FeedbackManagement {
     /**视频 */
     video?: ApiFeedbackManagement.VideoInfo;
   }
-  type TypeKey  = "suggest" | "bug" | "other" ;
+  type TypeKey = "suggest" | "bug" | "other";
 
-    type StatusKey = '1'|'2'|'0' |string | number | symbol;
+  type StatusKey = "1" | "2" | "0" | string | number | symbol;
 }

@@ -152,7 +152,7 @@ const originalData = computed(() => {
   return unref(tableData);
 });
 function handleSearchEnd(data: any) {
-  console.log("data: ", data);
+  // console.log("data: ", data);
   setTableData(data);
 }
 function setTableData(data: any[]) {

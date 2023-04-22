@@ -1,6 +1,7 @@
 <template>
   <div
     class="header-box flex items-center justify-between pl-6 pr-6"
+    v-bind="attrs"
   >
     <div class="w-146px">
       <router-link to="/home">
@@ -20,11 +21,11 @@
 </template>
 
 <script setup lang="ts">
-import { type Ref, ref } from "vue";
-
+import { type Ref, ref,useAttrs } from "vue";
 import userMenu from "./user-menu.vue";
 
 defineOptions({ name: "systemHeader" });
+const attrs = useAttrs();
 
 const isSticky: Ref<boolean> = ref(false);
 const showNav = ref(true);
@@ -47,7 +48,6 @@ function changeState(show: boolean) {
   height: 80px;
   background-color: #fff;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
-  //   border-bottom: 1px solid #e5e5e5;
 }
 
 .header-box::before {

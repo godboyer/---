@@ -25,7 +25,7 @@
           </div>
         </div>
         <div class="w-full bg-#fff p-25px">
-          <transition name="fade-slide" mode="out-in" appear>
+          <transition  mode="out-in" appear>
             <component :is="activeModule.module" />
           </transition>
         </div>

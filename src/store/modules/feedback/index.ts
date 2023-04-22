@@ -34,6 +34,7 @@ export const useFeedbackStore = defineStore("feedback-store", {
         filename: "string",
         path: "string",
         size: 0,
+        servicePath: "string",
       },
       createAt: Date.now().toString(),
     },
@@ -60,6 +61,11 @@ export const useFeedbackStore = defineStore("feedback-store", {
     /**push上传后的图片路径 */
     setFeedbackPushImg(imgPath: ApiFeedbackManagement.ImgInfo) {
       this.feedbackInfo.images?.push(imgPath);
+    },
+
+    /**设置视频信息 */
+    setFeedbackVideoInfo(videoInfo: ApiFeedbackManagement.VideoInfo) {
+      this.feedbackInfo.video = videoInfo;
     },
     async fetchFeedbackListHandle() {
       let { error, data } = await fetchFeedbackList();

@@ -1,8 +1,8 @@
 <template>
-  <section>
+  <section class="p-t-10px">
     <n-carousel class="swiper-show" autoplay draggable>
       <n-carousel-item v-for="item in swiperItem" :key="item.key">
-        <img :src="item.src" class="w-full h-350px" :alt="item.src" />
+        <img :src="item.src" class="w-full h-450px" :alt="item.src" />
       </n-carousel-item>
     </n-carousel>
 

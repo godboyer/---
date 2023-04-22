@@ -43,12 +43,10 @@ const keywords = ref([
     label: '有电梯',
     value: '电梯'
   },
-
   {
     label: '有独卫',
     value: '独卫'
   },
-
   {
     label: '有床',
     value: '床'
@@ -61,10 +59,7 @@ const keywords = ref([
     label: '有热水器',
     value: '热水器'
   },
-  {
-    label: '有宽带',
-    value: '宽带'
-  },
+ 
   {
     label: '有洗衣机',
     value: '洗衣机'
@@ -95,15 +90,8 @@ const keywords = ref([
     value: '餐桌'
   },
 
-  {
-    label: '有独立阳台',
-    value: '独立阳台'
-  },
-  {
-    label: '有独立厨房',
-    value: '独立厨房'
-  },
-
+ 
+ 
 
 
 ])

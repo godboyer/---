@@ -129,9 +129,9 @@ export function transformAuthRouteToVueRoute(item: AuthRoute.Route) {
     }
     itemRoute.redirect = redirectPath;
   }
-  if (itemRoute.name =='notice') {
-    console.log(itemRoute);
-  }
+  // if (itemRoute.name =='notice') {
+  //   console.log(itemRoute);
+  // }
   resultRoute.push(itemRoute);
 
   return resultRoute;

@@ -17,7 +17,7 @@ import { DropdownOption } from "naive-ui";
 
 interface AuthState {
   /** 用户信息 */
-  userInfo: ApiUserManagement.User;
+  userInfo: UserManagement.UserInfo;
   /** 用户token */
   token: string;
   /** 登录的加载状态 */

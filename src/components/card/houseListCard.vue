@@ -7,11 +7,11 @@
 
     <template #suffix>
       <span class="price">
-        {{ cardDate.price.split("/").join("元/") }}
+        {{ price + "元/月"}}
       </span>
 
       <n-avatar class="mr-6 mb-3" round :size="38" :src="
-        cardDate?.Homeowner_info.pic ??
+        Homeowner_info?.avatar ??
         'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
       " />
     </template>
@@ -26,12 +26,12 @@
         <span>
           <icon-local-area class="text-20px" />
 
-          {{ cardDate.area }}
+        {{ area }}
         </span>
 
         <span>
           <icon-local-storey class="text-20px" />
-          {{ cardDate.des.split("|")[1] }}
+          {{ floor + "层"  }}
         </span>
       </p>
       <p class="tag">
@@ -59,7 +59,7 @@ const { toHouseDetail } = useRouterPush();
 const props = defineProps<{
   cardDate: HousePage.CardList;
 }>();
-
+const {Homeowner_info,title,price,floor,area,location} = props.cardDate;
 
 const contentstyle = reactive({
   height: "148px",
@@ -78,6 +78,13 @@ const footerstyle = reactive({
   paddingLeft: "16px",
 
 });
+
+
+
+
+
+
+
 </script>
   
 <style lang="scss" scoped>

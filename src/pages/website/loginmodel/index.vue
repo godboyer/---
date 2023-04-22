@@ -17,18 +17,7 @@
         :is="activeModule.component"
       />
     </transition>
-    <!-- <template #action>
-        <n-popover placement="top-start" trigger="focus">
-          <template #trigger>
-              <div ref="agrementRef">
-  
-                <Login-agreement  v-model:value="agreement" />
-              </div>
-          </template>
-  
-          请先阅读隐私政策!
-        </n-popover>
-      </template> -->
+ 
   </n-modal>
 </template>
 

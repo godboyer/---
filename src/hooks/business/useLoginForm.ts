@@ -22,7 +22,7 @@ export function useLoginForm(emit: Emits) {
     let { error, data } = await fetchRegisterUser(username, phone, password);
 
     if (!error) {
-      console.log("data: ", data);
+      // console.log("data: ", data);
       window.$message?.success("注册成功！");
       changeModule("pwd-login");
     }

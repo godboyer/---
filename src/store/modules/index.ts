@@ -9,6 +9,7 @@ export * from './admin'
 export * from './search';
 export * from './feedback';
 export * from './notice';
+export * from './publish';
 // export * from './notice';
 
 

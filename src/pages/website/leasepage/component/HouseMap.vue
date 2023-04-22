@@ -5,11 +5,8 @@
         <template #footer>
           <div class="h-5 bg-#fff"></div>
         </template>
-        <template
-          v-for="item in house.HouseCardList"
-          @click.stop.prevent="GoToHouseDetail(item.house_id)"
-        >
-          <house-list-card  :card-date="item" />
+        <template v-for="item in HouseCardListData">
+          <house-list-card :card-date="item" />
         </template>
       </n-list>
     </section>
@@ -24,28 +21,17 @@
 import BaiduMap from "@/components/map/components/baidu-map.vue";
 import houseListCard from "@/components/card/houseListCard.vue";
 import { useHouseStore } from "@/store";
-import { onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { storeToRefs } from "pinia";
 
 defineOptions({ name: "houseMap" });
 
 const house = useHouseStore();
-const { GetHouseCardInfoByCity } = useHouseStore();
-const router = useRouter();
-//跳转对应的详情
-const GoToHouseDetail = function (id: string) {
-  router.push({
-    path: `/house/${id}`,
-  });
-};
+const { HouseCardListData } = storeToRefs(house);
+async function InitalData() {
+  await house.GetHouseListByCity();
+}
 
-onMounted(() => {
-  GetHouseCardInfoByCity({
-    page: 1,
-    pageSize: 40,
-    city_id: house.cityId,
-  });
-});
+InitalData();
 </script>
 
 <style lang="scss" scoped>

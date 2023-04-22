@@ -1,6 +1,9 @@
 import { request } from "../request";
 import { adapter } from "@/utils";
-import { HouseAdapter, HouseCardAdapter, HouseNewCardAdapter } from "./management.adapter";
+import {
+  HouseAdapter,
+  HouseListAdapter
+} from "./management.adapter";
 
 export type HouseFormModel = Pick<
   HouseManagement.House,
@@ -16,8 +19,6 @@ export type HouseFormModel = Pick<
   | "price"
 >;
 
-
-
 /**
  * 房屋信息相关请求库
  * @function fetchHouseAddToAdmin --添加房源/发布房源信息的接口
@@ -26,7 +27,7 @@ export type HouseFormModel = Pick<
  * @function fetchHouseDeleteToAdmin --删除房源信息的接口
  *  @function fetchHouseListToCard --获取房源信息卡片的接口
  *
- * 
+ *
  */
 class HouseFetch {
   async fetchHouseAddToAdmin(data: any) {
@@ -61,84 +62,94 @@ class HouseFetch {
     return data;
   }
 
-  async fetchHouseListToCard(params: ApiQuery.QeuryPage) {
-    const { page, pageSize, pageCount } = params;
-    const data = await request.get<ApiHouseManagement.ApiData | null>(
-      `/house/card-list`,
-      { params: { page, pageSize, pageCount } }
-    );
-    return adapter(HouseCardAdapter, data);
-  }
+  // async fetchHouseListToCard(params: ApiQuery.QeuryPage) {
+  //   const { page, pageSize, pageCount } = params;
+  //   const data = await request.get<ApiHouseManagement.ApiData | null>(
+  //     `/house/card-list`,
+  //     { params: { page, pageSize, pageCount } }
+  //   );
+  //   return adapter(HouseCardAdapter, data);
+  // }
 
-  
-  async fetchHouseListToCardByCity(params: ApiQuery.QueryCityId) {
-    const { page, pageSize, city_id } = params;
-    const data = await request.get<ApiHouseManagement.ApiData | null>(
-      `/house/card-list/${city_id}`,
-      { params: { page, pageSize } }
-    );
-    return adapter(HouseCardAdapter, data);
-  }
+  // async fetchHouseListToCardByCity(params: ApiQuery.QueryCityId) {
+  //   const { page, pageSize, city_id } = params;
+  //   const data = await request.get<ApiHouseManagement.ApiData | null>(
+  //     `/house/card-list`,
+  //     { params: { city_id, page, pageSize } }
+  //   );
+  //   return adapter(HouseCardAdapter, data);
+  // }
 
-   async fetchHouseState(params?: ApiQuery.QeuryPage) {
+  async fetchHouseState(params?: ApiQuery.QeuryPage) {
     // const { page, pageSize, pageCount } = params;
-    const data = await request.get<HousePage.HouseState >(
-      `/house/count`,
-      { params }
-    );
+    const data = await request.get<HousePage.HouseState>(`/house/count`, {
+      params,
+    });
     return data;
   }
 
-     async fetchHouseInfo(houseId: string) {
-    const data = await request.get<HousePage.HouseState >(
-      `/house/${houseId}`,
-    );
+  async fetchHouseInfo(houseId: string) {
+    const data = await request.get<HousePage.HouseState>(`/house/${houseId}`);
     return data;
   }
-
-
 }
 
 export default HouseFetch;
 
-
-
 export async function fetchHouseInfo(houseId: string) {
-  const data = await request.get<HouseManagement.HouseInfo>(
-    `/house/${houseId}`,
+  const data = await request.get<HouseManagement.House>(
+    `/house/${houseId}`
   );
   return data;
 }
 
 export async function fetchNewHouseInfo() {
-  const data = await request.get<HousePage.Card[]>(
-    `/house/new`,
-  );
-  return adapter(HouseNewCardAdapter, data);
-}
-
-export async function fetchHouseListToCardByCity(params: ApiQuery.QueryCityId) {
-  const { page, pageSize, city_id } = params;
-  const data = await request.get<ApiHouseManagement.ApiData | null>(
-    `/house/card-list/${city_id}`,
-    { params: { page, pageSize } }
-  );
-  return adapter(HouseCardAdapter, data);
-}
-
-export  async function fetchHouseState(params?: ApiQuery.QeuryPage) {
-  const data = await request.get<HousePage.HouseState>(
-    `/house/count`,
-    { params }
-  );
+  const data = await request.get<HousePage.CardList[]>(`/house/new`);
   return data;
 }
 
-export   async   function  fetchHouseListToCard(params: ApiQuery.QeuryPage) {
-  const { page, pageSize, pageCount } = params;
-  const data = await request.get<ApiHouseManagement.ApiData | null>(
-    `/house/card-list`,
-    { params: { page, pageSize, pageCount } }
-  );
-  return adapter(HouseCardAdapter, data);
+
+
+export async function fetchHouseState(params?: ApiQuery.QeuryPage) {
+  const data = await request.get<HousePage.HouseState>(`/house/count`, {
+    params,
+  });
+  return data;
 }
+
+// export async function fetchHouseListToCard(params: ApiQuery.QeuryPage) {
+//   const { page, pageSize, pageCount } = params;
+//   const data = await request.get<ApiHouseManagement.ApiData | null>(
+//     `/house/card-list`,
+//     { params: { page, pageSize, pageCount } }
+//   );
+//   return adapter(HouseCardAdapter, data);
+// }
+
+//通过城市id获取房源列表
+export async function fetchHouseListByCityId(city_id: string) {
+  const data = await request.get<ApiHouseManagement.ApiDataList | null>(
+    `/${city_id}/house`
+  );
+  return adapter(HouseListAdapter, data);
+}
+
+/**发布房源 */
+export function fetchAddPublishHouse(data: any) {
+  let reslut = request.post("/house", data);
+  return reslut;
+}
+
+
+/**提交订单  */
+export function fetchAddOrder(houseId:string,data: any) {
+  let reslut = request.post<ApiRentalOrderManagement.RentalOrder>(`/order/${houseId}`, data);
+  return reslut;
+}
+
+/**修改订单 */
+export function fetchUpdateOrder(houseId:string,data: any) {
+  let reslut = request.put(`/order/${houseId}`, data);
+  return reslut;
+}
+

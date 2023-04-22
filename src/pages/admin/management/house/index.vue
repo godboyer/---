@@ -197,7 +197,7 @@ const slotList = [
 ];
 
 function handleSearchEnd(data: any) {
-  console.log("data: ", data);
+  // console.log("data: ", data);
   setTableData(data);
 }
 

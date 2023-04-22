@@ -5,3 +5,4 @@ export * from './pattern';
 export * from './Extractdata';
 export * from './search';
 export * from './DateFormat';
+export * from './city';
